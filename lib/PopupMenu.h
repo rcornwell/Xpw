@@ -26,9 +26,12 @@
  */
 
 /*
- * $Id$
+ * $Id: PopupMenu.h,v 1.1 1997/10/04 05:08:42 rich Exp rich $
  *
- * $Log:$
+ * $Log: PopupMenu.h,v $
+ * Revision 1.1  1997/10/04 05:08:42  rich
+ * Initial revision
+ *
  *
  */
 
@@ -97,7 +100,6 @@ extern WidgetClass  popupMenuWidgetClass;
 
 #define XtNcursor "cursor"
 #define XtNbottomMargin "bottomMargin"
-#define XtNcolumnWidth "columnWidth"
 #define XtNlabelClass "labelClass"
 #define XtNmenuOnScreen "menuOnScreen"
 #define XtNpopupOnEntry "popupOnEntry"
@@ -111,7 +113,5 @@ extern WidgetClass  popupMenuWidgetClass;
 #define XtCRowHeight "RowHeight"
 #define XtCVerticalMargins "VerticalMargins"
 
-#define XtNuserData "userData"
-#define XtCUserData "UserData"
 
 #endif /* _PopupMenu_h */

@@ -25,14 +25,17 @@
  */
 
 /*
- * $Id$
+ * $Id: PmeLineP.h,v 1.1 1997/10/04 05:08:13 rich Exp rich $
  *
- * $Log:$
+ * $Log: PmeLineP.h,v $
+ * Revision 1.1  1997/10/04 05:08:13  rich
+ * Initial revision
+ *
  *
  */
 
-#ifndef _XPmeLineP_h
-#define _XPmeLineP_h
+#ifndef _PmeLineP_h
+#define _PmeLineP_h
 
 /***********************************************************************
  *
@@ -50,6 +53,9 @@
 
 typedef struct _PmeLinePart {
     void                (*notify) ();
+    void                (*highlight) ();
+    void                (*unhighlight) ();
+    char               *(*getmenuname) ();
     XtPointer           extension;
 } PmeLineClassPart;
 
@@ -91,4 +97,4 @@ typedef struct _PmeLineRec {
  *
  ************************************************************/
 
-#endif /* _XPmeLineP_h */
+#endif /* _PmeLineP_h */

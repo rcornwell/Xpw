@@ -3,12 +3,15 @@
  *
  * Handles playlist control.
  *
- * $Log: $
+ * $Log: playlist.cc,v $
+ * Revision 1.1  1997/12/16 05:48:46  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: playlist.cc,v 1.1 1997/12/16 05:48:46 rich Exp rich $";
 
 #endif
 
@@ -18,8 +21,16 @@ static char        *rcsid = "$Id: $";
 #include <stdlib.h>
 
 /* Include all the widget stuff we need */
+#include <X11/Xos.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
+#include <X11/Intrinsic.h>
+#include <X11/Shell.h>
+#include <X11/StringDefs.h>
 
 /* Local includes */
+#include "xcdplay.h"
 #include "string.h"
 #include "playlist.h"
 
@@ -32,148 +43,191 @@ PlayList::PlayList()
     srand(tim);
     playlist = new int [2];
     playsize = -2;
-    ignorlist = NULL;
-    tlenght = NULL;
-    ntrcks = 0;
+    for(int i = 0; i<MAXDRIVES; i++) {
+	ignorlist[i] = NULL;
+    	tlenght[i] = NULL;
+    	ntrcks[i] = 0;
+    }
     randplay = 0;
 }
 
 /* Free a playlist */
 PlayList::~PlayList()
 {
+    for(int i = 0; i<MAXDRIVES; delete [] ignorlist[i++]);
+    for(int i = 0; i<MAXDRIVES; delete [] tlenght[i++]);
     delete [] playlist;
-    delete [] tlenght;
-    delete [] ignorlist;
 }
 
 /* Change number of tracks */
 void
-PlayList::setinfo(int num, Str nord)
+PlayList::setinfo(int drive, int num, Str nord)
 {
     int		nsize = 0;
-    int		ig, n;
-    char	*po = nord.cstring();
+    int		ig, n, i;
+    char	*po;
+
     
-    if (num != ntrcks) {
-        delete   []         tlenght;
-        delete   []         ignorlist;
-	tlenght = new int[num];
-	ignorlist = new char[num];
-	ntrcks = num;
+    if (num != ntrcks[drive]) {
+        delete   []         tlenght[drive];
+        delete   []         ignorlist[drive];
+	tlenght[drive] = new int[num];
+	ignorlist[drive] = new char[num];
+	ntrcks[drive] = num;
     }
     for (n = 0; n < num; n++) {
-	tlenght[n] = 0;
-	ignorlist[n] = 0;
+	tlenght[drive][n] = 0;
+	ignorlist[drive][n] = 0;
     }
     curtrk = -1;
 
    /* Remove old list */
-    playorder = nord;
-    delete []	playlist;
+    playorder[drive] = nord;
 
    /* Count number of entries and update ignore list */
-    for (ig = 0, n = 0; *po != '\0' && *po != '\n'; po++) {
-        if (*po == '-')
-	    ig = 1;
-        else if (*po >= '0' && *po <= '9')
-	    n = (n * 10) + (*po - '0');
-        else if (*po == ',') {
-  	    if (n >= 1 && n <=ntrcks) 
-		    ignorlist[n-1] = ig;
-	    if (!ig)
-		    nsize++;
-	    ig = n = 0;
+    for (i = 0; i < MAXDRIVES; i++) {
+	po = playorder[i].cstring();
+        for (ig = 0, n = 0; *po != '\0' && *po != '\n'; po++) {
+            if (*po == '-')
+	        ig = 1;
+            else if (*po >= '0' && *po <= '9')
+	        n = (n * 10) + (*po - '0');
+            else if (*po == ',') {
+  	        if (n >= 1 && n <=ntrcks[i]) 
+		        ignorlist[i][n-1] = ig;
+	        if (!ig)
+		        nsize++;
+	        ig = n = 0;
+            }
         }
+
+       /* Fill in last entry */
+        if (n >= 1 && n <=ntrcks[i]) 
+            ignorlist[i][n-1] |= ig;
+        if (!ig)
+	    nsize++;
     }
 
-   /* Fill in last entry */
-    if (n >= 1 && n <=ntrcks) 
-        ignorlist[n-1] |= ig;
-    if (!ig)
-	nsize++;
+    for(i = 0, n = 0; i<MAXDRIVES; n += ntrcks[i++]);
+
+    if (nsize < n)
+	nsize = n;
 
    /* Allocate array */
-    if (nsize < ntrcks)
-	nsize = ntrcks;
-    playlist = new int [nsize];
+    delete []	playlist;
+    playlist = new int [nsize + 1];
     playsize = nsize;
 
    /* Initialize array */
-    for (n = 0; n < nsize; n++) 
-	playlist[n] = (n > ntrcks)? 0: (n+1);
+    for (n = 0, i = 0, ig = 0; n < nsize; n++) {
+	if (i > ntrcks[ig]) {
+	   ig++;
+	   i = 0;
+	}
+        playlist[n] = ((i+1) * MAXDRIVES) + ig;
+	i++;
+    }
 }
 
 
 /* Compute time played on cd not including current track */
 int
-PlayList::timeplayed(int num)
+PlayList::timeplayed()
 {
     int                 len = 0;
 
    /* Compute played so far in list */
-    for (int i = 0; playlist[i] != num && i < playsize; i++)
-	if (playlist[i] != 0)
-	    len += tlenght[playlist[i] - 1];
+    for (int i = 0; i != curtrk && i < playsize; i++)
+	if (playlist[i] != 0) {
+	    int d = playlist[i] % MAXDRIVES;
+	    len += tlenght[d][(playlist[i]/MAXDRIVES) - 1];
+	}
     return len;
 }
 
 /* Compute total lenght of playlist */
 void
-PlayList::totaltime(int &sec, int &trks)
+PlayList::totaltime(int drive, int &sec, int &trks)
 {
 
     sec = trks = 0;
    /* Compute played so far in list */
     for (int i = 0; i < playsize; i++) {
 	if (playlist[i] != 0) {
-	    sec += tlenght[playlist[i] - 1];
-	    trks++;
+	    int d = playlist[i] % MAXDRIVES;
+	    if (d == drive) {
+	        sec += tlenght[d][(playlist[i]/MAXDRIVES) - 1];
+	        trks++;
+	    }
 	}
     }
 }
 
-/* Make simple playlist */
+void
+PlayList::rolllist(int num)
+{
+    int	tlist[playsize];
+    int i, j;
+
+    for(i = num, j = 0; playlist[i] != 0 && i < playsize; 
+	tlist[j++] = playlist[i++]);
+    for(i = 0; i < num; tlist[j++] = playlist[i++]);
+    for(; j < playsize; tlist[j++] = 0);
+    for(i = 0; i < playsize; i++)
+	playlist[i] = tlist[i];
+}
 
 void
-PlayList::simplelist(int num)
+PlayList::randomize(int drive, int num, int *md, int size)
 {
-    int                 i, j;
+    int base[MAXDRIVES];
 
-   /* Reinitialize list */
-    for (i = 0, j = 0; i < ntrcks; i++)
-        if (!ignorlist[i])
-	    playlist[j++] = i + 1;
+    for(int i = 0, b = 0; i< MAXDRIVES; i++) {
+	base[i] = b;
+	b += md[i];
+    }
 
-    if (randplay) {
-       /* Now randomize the list */
-	for (i = 0; i < j; i++) {
-	    int                 k;
+   /* Now randomize the list */
+    for (int i = 0; i < size; i++) {
+	int x, d, k;
 
-	    k = int ((float (j) * float (rand())) /float (RAND_MAX));
-	    if (i != k && playlist[k] != 0) {
-		int                 x;
+	d = playlist[i]%MAXDRIVES;
+	x = (randplay == 2)?md[d]:size;
+	k = int ((float (x) * float (rand())) /float (RAND_MAX));
+	if (randplay == 2)
+	   k += base[d];
+	if (i != k && playlist[k] != 0) {
+	    int                 z;
 
-		x = playlist[i];
-		playlist[i] = playlist[k];
-		playlist[k] = x;
-	    }
-	}
-
-   /* If a track is playing... make it the first in list */
-	if (num >= 0) {
-            for (i = 0; i < j; i++) {
-	        if (playlist[i] == num) {
-	            int                 x;
-    
-	            x = playlist[i];
-	            playlist[i] = playlist[0];
-	            playlist[0] = x;
-	            break;
-	        }
-            }
+	    z = playlist[i];
+	    playlist[i] = playlist[k];
+	    playlist[k] = z;
         }
     }
-    setcurtrk(num);
+}
+
+
+/* Make simple playlist */
+void
+PlayList::simplelist(int drive, int num)
+{
+    int                 i, j, k, n;
+    int			md[MAXDRIVES];
+
+   /* Reinitialize list */
+    for (k = 0, j = 0; k < MAXDRIVES; k++) {
+        for (i = 0, n = 0; i < ntrcks[k]; i++) {
+            if (!ignorlist[k][i]) {
+	        playlist[j++] = ((i + 1) * MAXDRIVES) + k;
+	        n++;
+	    }
+	}
+	md[k] = n;
+    }
+
+    if (randplay) 
+	randomize(drive, num, md, j);
+    setcurtrk(drive, num);
    /* Back up one so we start at correct track */
     if (curtrk >= 0)
 	curtrk--;
@@ -181,68 +235,57 @@ PlayList::simplelist(int num)
 
 /* Set playmode */
 void
-PlayList::restart(int num)
+PlayList::restart(int drive, int num)
 {
-    int                 i, j;
-    char		*po = playorder.cstring();
+    int                 i, j, d, t;
+    int			md[MAXDRIVES];
 
    /* Reinitialize list */
-    if (po != NULL && *po != '\0') {
+    for(d = 0, j = 0; d < MAXDRIVES; d++) {
 	int                 n, ig;
+        char		    *po;
 
-	for (n = 0, ig = 0, j = 0; *po != '\0' && *po != '\n'; po++) {
-	    if (*po == '-')
-		ig = 1;
-	    else if (*po >= '0' && *po <= '9')
-		n = (n * 10) + (*po - '0');
-	    else if (*po == ',') {
-		if (n >= 1 && n <=ntrcks) {
-		    if (!ig)
-		        playlist[j++] = n;
+	po = playorder[d].cstring();
+	t = 0;
+
+	if (*po == '\0') {
+	    for (i = 0; i < ntrcks[d]; i++) {
+	        if (!ignorlist[d][i]) {
+		    playlist[j++] = (i + 1)*MAXDRIVES + d;
+		    t++;
 		}
-		ig = n = 0;
+	    }
+	} else {
+
+	    for (n = 0, ig = 0; *po != '\0' && *po != '\n'; po++) {
+	        if (*po == '-')
+		    ig = 1;
+	        else if (*po >= '0' && *po <= '9')
+		    n = (n * 10) + (*po - '0');
+	        else if (*po == ',') {
+		    if (n >= 1 && n <=ntrcks[d]) {
+		        if (!ig) {
+		            playlist[j++] = n*MAXDRIVES + d;
+			    t++;
+			}
+		    }
+		    ig = n = 0;
+	        }
+	    }
+	    /* Handle last entry */
+	    if (n >= 1 && n <=ntrcks[d]) {
+	        if (!ig) {
+	            playlist[j++] = n*MAXDRIVES + d;
+		    t++;
+		}
 	    }
 	}
-	/* Handle last entry */
-	if (n >= 1 && n <=ntrcks) {
-	    if (!ig)
-	        playlist[j++] = n;
-	}
-	for(n = j; n < ntrcks; playlist[n++] = 0);
-    } else {
-	for (i = 0, j = 0; i < ntrcks; i++)
-	    if (!ignorlist[i])
-		playlist[j++] = i + 1;
+	md[d] = t;
     }
+    for(i = j; i < playsize; playlist[i++] = 0);
 
     if (randplay) {
-       /* Now randomize the list */
-	for (i = 0; i < j; i++) {
-	    int                 k;
-
-	    k = int ((float (j) * float (rand())) /float (RAND_MAX));
-	    if (i != k && playlist[k] != 0) {
-		int                 x;
-
-		x = playlist[i];
-		playlist[i] = playlist[k];
-		playlist[k] = x;
-	    }
-	}
-
-   /* If a track is playing... make it the first in list */
-	if (num >= 0) {
-            for (i = 0; i < j; i++) {
-	        if (playlist[i] == num) {
-	            int                 x;
-    
-	            x = playlist[i];
-	            playlist[i] = playlist[0];
-	            playlist[0] = x;
-	            break;
-	        }
-            }
-        }
+	randomize(drive, num, md, j);
     }
-    setcurtrk(num);
+    setcurtrk(drive, num);
 }

@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: Scroller.h,v 1.1 1997/10/04 05:09:08 rich Exp rich $
  *
- * $Log:$
+ * $Log: Scroller.h,v $
+ * Revision 1.1  1997/10/04 05:09:08  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _Scroller_H_
@@ -56,6 +59,7 @@
  * orientation         Orientation        Orientation	  orientVertical
  * delayTime           DelayTime          Int             0
  * repeatTime          RepeatTime         Int             0
+ * clue		       Label		  String	  Null
  *
  * From ThreeD Highlight:
  * 
@@ -95,7 +99,9 @@
 #define XtNuseArrows	"useArrows"
 #define XtCUseArrows	"UseArrows"
 
+#ifndef XtNposition
 #define XtNposition	"position"
+#endif
 
 typedef struct _ScrollerRec      *ScrollerWidget;
 typedef struct _ScrollerClassRec *ScrollerWidgetClass;

@@ -28,6 +28,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: MenuBar.c,v $
+ * Revision 1.2  1997/10/05 02:25:17  rich
+ * Make sure ident line is in object file.
+ *
  * Revision 1.1  1997/10/04 05:06:09  rich
  * Initial revision
  *
@@ -35,7 +38,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: MenuBar.c,v 1.1 1997/10/04 05:06:09 rich Exp rich $";
+static char        *rcsid = "$Id: MenuBar.c,v 1.2 1997/10/05 02:25:17 rich Exp rich $";
 
 #endif
 
@@ -116,6 +119,8 @@ static XtResource   resources[] =
      offset(v_space), XtRImmediate, (XtPointer) 4},
     {XtNforeground, XtCForeground, XtRPixel, sizeof(Pixel),
      offset(foreground), XtRString, XtDefaultForeground},
+    {XtNjustify, XtCJustify, XtRJustify, sizeof(XtJustify),
+     offset(justify), XtRImmediate, (XtPointer) XtJustifyRight}, 
     threeDresources
 };
 
@@ -220,13 +225,6 @@ Initialize(request, new, args, num_args)
     if (newself->core.height == 0)
 	newself->core.height = newself->menubar.preferred_height;
 
-#if 0
-    values.foreground = newself->menubar.foreground;
-    values.background = newself->core.background_pixel;
-
-    newself->menubar.normal_GC = XtGetGC(new,
-				 (GCForeground | GCBackground), &values);
-#endif
     newself->menubar.current_menu = NULL;
     newself->menubar.current_popup = NULL;
 
@@ -904,11 +902,22 @@ _XpwMenuPopupEntry(w, menubutton)
 
    /* Figure out where to place it when it is shown */
     menu_width = menu->core.width + 2 * menu->core.border_width;
-    button_height = w->core.height /* + 2 * w->core.border_width */ ;
+    button_height = w->core.height;
     menu_height = menu->core.height + 2 * menu->core.border_width;
 
     XtTranslateCoords(w, child->core.x, child->core.y, &button_x, &button_y);
     menu_x = button_x;
+    switch (self->menubar.justify) {
+    case XtJustifyCenter:
+        menu_x += (child->core.width - menu_width) / 2;
+        break;
+    case XtJustifyRight:
+        break;
+    case XtJustifyLeft:
+    default:
+        menu_x -= menu_width - child->core.width;
+        break;
+    }
     menu_y = button_y + button_height;
 
     if (menu_x >= 0) {

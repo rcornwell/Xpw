@@ -30,9 +30,12 @@
 /* 
  * MenuButtonP.h - Private definitions for MenuButton object
  *
- * $Id$
+ * $Id: MenuButtonP.h,v 1.1 1997/10/04 05:06:55 rich Exp rich $
  *
- * $Log:$
+ * $Log: MenuButtonP.h,v $
+ * Revision 1.1  1997/10/04 05:06:55  rich
+ * Initial revision
+ *
  * 
  */
 
@@ -50,11 +53,11 @@
 
 /************************************************************
  *
- * New fields for the MenuButton Object class record.
+ * New fields for the MenuButton class record.
  *
  ************************************************************/
 typedef struct _MenuButtonClassPart {
-    XtPointer           extension;
+    int                foo;
 } MenuButtonClassPart;
 
 /* Full class record declaration */
@@ -69,7 +72,8 @@ extern MenuButtonClassRec menubuttonClassRec;
 /* New fields for the MenuButton Object record */
 typedef struct {
    /* resources */
-    String              menu_name;	/* Sub Menu... used by parent! */
+    String              menu_name;	/* Sub Menu... */
+    XtJustify           justify;        /* Justification for the popup. */
 } MenuButtonPart;
 
 /****************************************************************
@@ -84,10 +88,5 @@ typedef struct _MenuButtonRec {
     MenuButtonPart      menubutton;
 } MenuButtonRec;
 
-/************************************************************
- *
- * Private declarations.
- *
- ************************************************************/
 
 #endif /* _MenuButtonP_h */

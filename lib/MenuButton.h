@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id$
+ * $Id: MenuButton.h,v 1.1 1997/10/04 05:06:55 rich Exp rich $
  *
- * $Log:$
+ * $Log: MenuButton.h,v $
+ * Revision 1.1  1997/10/04 05:06:55  rich
+ * Initial revision
+ *
  *
  */
 
@@ -52,6 +55,7 @@
  * Name              Class              RepType         Default Value
  * ----              -----              -------         -------------
  * menuName          MenuName           String          NULL
+ * justify           Justify            Justify         right
  *
  * label Resources:
  * 

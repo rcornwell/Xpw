@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id$
+ * $Id: MenuBarP.h,v 1.1 1997/10/04 05:06:09 rich Exp rich $
  *
- * $Log:$
+ * $Log: MenuBarP.h,v $
+ * Revision 1.1  1997/10/04 05:06:09  rich
+ * Initial revision
+ *
  *
  */
 
@@ -57,6 +60,7 @@ typedef struct {
     GC                  normal_GC;
     Pixel               foreground;
     Dimension           h_space, v_space;
+    XtJustify           justify;        /* Justification for the popup. */
 
    /* private state */
     Dimension           preferred_width, preferred_height;

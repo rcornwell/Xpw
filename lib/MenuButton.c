@@ -27,6 +27,9 @@
  *
  *
  * $Log: MenuButton.c,v $
+ * Revision 1.3  1997/10/05 02:25:17  rich
+ * Make sure ident line is in object file.
+ *
  * Revision 1.2  1997/10/05 02:17:28  rich
  * Fixed translations so clues get poped up.
  *
@@ -37,7 +40,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: MenuButton.c,v 1.2 1997/10/05 02:17:28 rich Exp rich $";
+static char        *rcsid = "$Id: MenuButton.c,v 1.3 1997/10/05 02:25:17 rich Exp rich $";
 
 #endif
 
@@ -61,6 +64,8 @@ static XtResource   resources[] =
 {
     {XtNmenuName, XtCMenuName, XtRString, sizeof(String),
      offset(menu_name), XtRString, (XtPointer) NULL},
+    {XtNjustify, XtCJustify, XtRJustify, sizeof(XtJustify),
+     offset(justify), XtRImmediate, (XtPointer) XtJustifyRight},
 };
 
 #undef offset
@@ -133,7 +138,7 @@ MenuButtonClassRec  menubuttonClassRec =
 	0,
     },
     { /* Menu ButtonClass Fields */
-	NULL				/* extension 		   */
+	0				/* extension 		   */
     }
 };
 
@@ -254,6 +259,18 @@ Popup(w, event, params, num_params)
 
     XtTranslateCoords(w, 0, 0, &button_x, &button_y);
     menu_x = button_x;
+    switch (self->menubutton.justify) {
+    case XtJustifyCenter:
+        menu_x += (self->core.width - menu_width) / 2;
+        break;
+    case XtJustifyRight:
+        break;
+    case XtJustifyLeft:
+    default:
+        menu_x -= menu_width - self->core.width;
+        break;
+    }
+
     menu_y = button_y + self->core.height;
 
     if (menu_x >= 0) {

@@ -30,9 +30,12 @@
  */
 
 /*
- * $Id$
+ * $Id: MenuBar.h,v 1.1 1997/10/04 05:06:09 rich Exp rich $
  *
- * $Log:$
+ * $Log: MenuBar.h,v $
+ * Revision 1.1  1997/10/04 05:06:09  rich
+ * Initial revision
+ *
  *
  */
 
@@ -49,6 +52,7 @@
  * hSpace              HSpace             Dimension       4
  * vSpace              VSpace             Dimension       4
  * foreground          Foreground         Pixel           XtDefaultForeground
+ * justify             Justify            Justify         Right
  *
  * From ThreeD Highlight:
  * 

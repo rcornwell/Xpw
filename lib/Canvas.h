@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: Canvas.h,v 1.1 1997/10/19 01:41:37 rich Exp rich $
+ * $Id: Canvas.h,v 1.2 1997/10/21 18:50:30 rich Exp rich $
  *
  * $Log: Canvas.h,v $
+ * Revision 1.2  1997/10/21 18:50:30  rich
+ * Removed reference to 3D library.
+ *
  * Revision 1.1  1997/10/19 01:41:37  rich
  * Initial revision
  *
@@ -82,7 +85,7 @@ typedef enum {
 #define XtNactionCallback "actionCallback"
 
 #define XpwCanvasResize	0
-#define XpwCanvasExpore	1
+#define XpwCanvasExpose	1
 #define XpwCanvasAction	2
 
 #define XtNresizePolicy "resizePolicy"

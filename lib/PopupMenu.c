@@ -26,12 +26,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: PopupMenu.c,v $
+ * Revision 1.1  1997/10/04 05:08:42  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef line
-static char         rcsid[] = "$Id:$";
+static char         rcsid[] = "$Id: PopupMenu.c,v 1.1 1997/10/04 05:08:42 rich Exp rich $";
 
 #endif
 
@@ -539,7 +542,16 @@ static void
 ChangeManaged(w)
 	Widget              w;
 {
+    PopupMenuWidget     self = (PopupMenuWidget) w;
+    Dimension           s = self->popup_menu.threeD.shadow_width;
+    PmeEntryObject     *entry;
+
     Layout(w, (Dimension *) NULL, (Dimension *) NULL);
+
+    ForAllChildren(self, entry)	/* reset width of all entries. */
+	if (XtIsManaged((Widget) * entry))
+	(*entry)->rectangle.width = self->core.width - 4 * s;
+
 }
 
 /*
@@ -643,14 +655,21 @@ DoPopup(w)
     Arg                 arglist[2];
     Position            x, y;
     int                 popup_width, popup_height;
+    PmeEntryObjectClass class;
+    char	       *menu;
 
    /* Make sure we have a submenu! */
-    if (entry == NULL || entry->pme_entry.menu_name == NULL)
+    if (entry == NULL)
 	return;
 
-   /* Ok... find pionter to actual widget to popup! */
+    class = (PmeEntryObjectClass) entry->object.widget_class;
+    menu = (class->pme_entry_class.getmenuname) ((Widget) entry);
+    if (menu == NULL)
+	return;
+
+   /* Ok... find pointer to actual widget to popup! */
     for (; w != NULL; w = XtParent(w)) {
-	if ((child = XtNameToWidget(w, entry->pme_entry.menu_name)) != NULL)
+	if ((child = XtNameToWidget(w, menu)) != NULL)
 	    break;
     }
    /* Make sure we found a widget */
@@ -1202,6 +1221,7 @@ Unhighlight(w, event, params, num_params)
     PopupMenuWidget     self = (PopupMenuWidget) w;
     PmeEntryObject      entry = self->popup_menu.entry_set;
     Dimension           s = self->popup_menu.threeD.shadow_width;
+    PmeEntryObjectClass class;
 
     if (entry == NULL)
 	return;
@@ -1214,7 +1234,8 @@ Unhighlight(w, event, params, num_params)
 	self->popup_menu.entry_timer = (XtIntervalId) NULL;
     }
     self->popup_menu.entry_set = NULL;
-    _XpwDisArmClue((Widget) entry);
+    class = (PmeEntryObjectClass) entry->object.widget_class;
+    (class->pme_entry_class.unhighlight) ((Widget) entry);
 }
 
 /* 
@@ -1232,6 +1253,7 @@ Highlight(w, event, params, num_params)
     PopupMenuWidget     self = (PopupMenuWidget) w;
     PmeEntryObject      entry;
     Dimension           s = self->popup_menu.threeD.shadow_width;
+    PmeEntryObjectClass class;
 
     if (!XtIsSensitive(w))
 	return;
@@ -1250,8 +1272,8 @@ Highlight(w, event, params, num_params)
 	self->popup_menu.entry_set = NULL;
 	return;
     }
-    if (entry == NULL)
-	return;
+
+    class = (PmeEntryObjectClass) entry->object.widget_class;
 
     _XpwThreeDDrawShadow(w, event, NULL, &self->popup_menu.threeD,
 			 entry->rectangle.x - s, entry->rectangle.y - s,
@@ -1259,13 +1281,13 @@ Highlight(w, event, params, num_params)
 			 FALSE);
     self->popup_menu.entry_set = entry;
     DoPopdown(w, NULL, NULL);
-    if (entry->pme_entry.menu_name != NULL &&
+    if ((class->pme_entry_class.getmenuname) ((Widget) entry) != NULL &&
 	self->popup_menu.entry_timer == (XtIntervalId) NULL) {
 	self->popup_menu.entry_timer = XtAppAddTimeOut(
 			XtWidgetToApplicationContext((Widget) self), 750,
 					Popup_Timeout, (XtPointer) self);
     }
-    _XpwArmClue((Widget) entry, entry->pme_entry.clue);
+    (class->pme_entry_class.highlight) ((Widget) entry);
 }
 
 /*

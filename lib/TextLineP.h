@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id: TextLineP.h,v 1.1 1997/10/25 22:15:47 rich Exp rich $
+ * $Id: TextLineP.h,v 1.2 1997/11/01 06:39:09 rich Beta rich $
  *
  * $Log: TextLineP.h,v $
+ * Revision 1.2  1997/11/01 06:39:09  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/25 22:15:47  rich
  * Initial revision
  *
@@ -77,10 +80,10 @@ typedef struct {
     XFontStruct        *font;		/* The font to show text in. */
     XFontSet            fontset;	/* or fontset */
 
-    int			right_margin;
-    int			left_margin;
+    Dimension		right_margin;
+    Dimension		left_margin;
     int			vert_space;
-    int			centeramount;
+    Dimension		centeramount;
     Widget		focusGroup;
     String		string;		/* Edit buffer */
 

@@ -25,12 +25,15 @@
  * library in commercial applications, or for commercial software distribution.
  *
  *
- * $Log:$
+ * $Log: Arrow.c,v $
+ * Revision 1.1  1997/10/04 18:59:34  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id$";
+static char        *rcsid = "$Id: Arrow.c,v 1.1 1997/10/04 18:59:34 rich Exp rich $";
 #endif
 
 #include <stdio.h>
@@ -180,7 +183,7 @@ Initialize(request, new, args, num_args)
 
     CreateGCs(new);
     nself->arrow.set = FALSE;
-
+    nself->arrow.timer = (XtIntervalId) NULL;
 }
 
 /*
@@ -313,7 +316,7 @@ Redisplay(wid, event, region)
 
     XClearWindow(dpy, win);
    /* Figure out what colors to make arrow */
-    if (!self->arrow.set) 
+    if (self->arrow.set) 
 	cent = self->arrow.inverse_GC;
     else 
 	cent = self->arrow.norm_GC;

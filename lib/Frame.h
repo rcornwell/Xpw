@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: Frame.h,v 1.1 1997/10/04 05:04:15 rich Exp rich $
  *
- * $Log:$
+ * $Log: Frame.h,v $
+ * Revision 1.1  1997/10/04 05:04:15  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _Frame_H_
@@ -47,8 +50,9 @@
  * labelOnTop          LabelOnTop         Boolean	  True
  * outline             Outline      	  Boolean	  True
  * outlineType         FrameType          XtRFrameType    Grooved
- * outlineRaised       OutlineRaised       Boolean         False
+ * outlineRaised       OutlineRaised      Boolean         False
  * frameWidth          FrameWidth         Dimension       10
+ * usePreferedSize     UsePreferedSize    Boolean	  False
  *
  * From label Resources:
  * 
@@ -105,7 +109,8 @@ extern WidgetClass  frameWidgetClass;
 
 #define XtNframeWidth "frameWidth"
 #define XtCframeWidth "frameWidth"
-
+#define XtNusePreferedSize "usePreferedSize"
+#define XtCUsePreferedSize "UsePreferedSize"
 #define XtNlabelOnTop	"labelOnTop"
 #define XtCLabelOnTop	"labelOnTop"
 #define XtNoutline	"outline"

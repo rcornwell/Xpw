@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: Slider.h,v 1.1 1997/10/08 04:08:42 rich Exp $
  *
- * $Log: $
+ * $Log: Slider.h,v $
+ * Revision 1.1  1997/10/08 04:08:42  rich
+ * Initial revision
+ *
  *
  *
  */
@@ -42,13 +45,11 @@
 #include "threeDdraw.h"
 
 /* Slider Resources:
-/* Arrow Resources:
  * 
  * Name                Class              RepType         Default Value
  * ----                -----              -------         -------------
  * callback            Callback           Pointer         NULL
  * foreground          Foreground         Pixel           XtDefaultForeground
- * thumb               Foreground         Pixel           XtDefaultBackground
  * min                 Min                Int     	  0
  * max                 Max                Int     	  100
  * position            Position           Int     	  0

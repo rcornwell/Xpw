@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Line.c,v $
+ * Revision 1.2  1997/10/08 04:11:32  rich
+ * Reversed direction of shadow.
+ *
  * Revision 1.1  1997/10/04 05:05:03  rich
  * Initial revision
  *
@@ -33,7 +36,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Line.c,v 1.1 1997/10/04 05:05:03 rich Exp rich $";
+static char        *rcsid = "$Id: Line.c,v 1.2 1997/10/08 04:11:32 rich Exp rich $";
 
 #endif
 
@@ -102,7 +105,7 @@ LineClassRec       lineClassRec =
 	XtInheritAcceptFocus,		/* accept_focus          */
 	XtVersion,			/* version               */
 	NULL,				/* callback_private      */
-	XtInheritTranslations,		/* tm_table              */
+	NULL,				/* tm_table              */
 	QueryGeometry,			/* query_geometry        */
 	XtInheritDisplayAccelerator,	/* display_acceleator    */
 	NULL				/* extension             */

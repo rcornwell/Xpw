@@ -1,16 +1,23 @@
 /*
  * XCdplay: Plays a cd.
  *
- * $Id: xcdplay.h,v 1.1 1997/12/16 05:48:46 rich Exp rich $
+ * $Id: xcdplay.h,v 1.2 1998/01/26 01:02:02 rich Exp rich $
  *
  * $Log: xcdplay.h,v $
+ * Revision 1.2  1998/01/26 01:02:02  rich
+ * Support for hiding clues.
+ *
  * Revision 1.1  1997/12/16 05:48:46  rich
  * Initial revision
  *
  *
  */
 
-#define MAXDRIVES	4
+#ifndef CDROM_SELECT_DISC
+#define MAXDRIVES       1
+#else
+#define MAXDRIVES       4
+#endif
 
 typedef struct _XCdplayResources {
     String		rcpath;

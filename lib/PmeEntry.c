@@ -25,12 +25,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: PmeEntry.c,v $
+ * Revision 1.1  1997/10/04 05:07:44  rich
+ * Initial revision
+ *
  *
  */
 
 #ifdef lint
-static char         rcsid[] = "$Id$";
+static char         rcsid[] = "$Id: PmeEntry.c,v 1.1 1997/10/04 05:07:44 rich Exp rich $";
 
 #endif
 
@@ -71,7 +74,6 @@ static XtResource   resources[] =
  */
 static void         Initialize(Widget /*request */ , Widget /*new */ ,
 				 ArgList /*args */ , Cardinal * /*num_args */ );
-static void         Notify(Widget /*w */ );
 static void         Destroy(Widget /*w */ );
 static void         Redisplay(Widget /*w */ , XEvent * /*event */ ,
 					 Region /*region */ );
@@ -81,6 +83,12 @@ static Boolean      SetValues(Widget /*current */ , Widget /*request */ ,
 static XtGeometryResult QueryGeometry(Widget /*w */ ,
 					 XtWidgetGeometry * /*intended */ ,
 					 XtWidgetGeometry * /*return_val */ );
+
+/* Action Procs */
+static void         Notify(Widget /*w */ );
+static void         Highlight(Widget /*w */ );
+static void         Unhighlight(Widget /*w */ );
+static char	*   GetMenuName(Widget /*w */ );
 
 #define superclass (&rectObjClassRec)
 PmeEntryClassRec    pmeEntryClassRec =
@@ -122,6 +130,9 @@ PmeEntryClassRec    pmeEntryClassRec =
     {
      /* PmeEntryClass Fields */
 	Notify,				/* notify                */
+    	Highlight,			/* highlight		 */
+        Unhighlight,			/* unhighlight		 */
+    	GetMenuName,			/* getmenuname		 */
 	NULL				/* extension             */
     }
 };
@@ -242,16 +253,6 @@ Redisplay(w, event, region)
 		  self->rectangle.width, self->rectangle.height, FALSE);
 }
 
-/*
- * Preform callbacks.
- */
-static void
-Notify(w)
-	Widget              w;
-{
-    XtCallCallbacks(w, XtNcallback, (XtPointer) NULL);
-}
-
 /* 
  *  Destroy resources used.
  */
@@ -265,4 +266,55 @@ Destroy(w)
     _XpwLabelDestroy(w, &(self->pme_entry.label));
 }
 
+/************************************************************
+ *
+ * ACTION procedures.
+ *
+ ************************************************************/
 
+
+/*
+ * Preform callbacks.
+ */
+static void
+Notify(w)
+	Widget              w;
+{
+    XtCallCallbacks(w, XtNcallback, (XtPointer) NULL);
+}
+
+/*
+ * Trigger Clue popup if we have any.
+ */
+static void
+Highlight(w)
+	Widget		    w;
+{
+    PmeEntryObject      self = (PmeEntryObject) w;
+
+    _XpwArmClue(w, self->pme_entry.clue);
+}
+
+/*
+ * Disarm any clue Popops we may have.
+ */
+static void
+Unhighlight(w)
+        Widget              w;
+{
+    PmeEntryObject      self = (PmeEntryObject) w;
+
+    _XpwDisArmClue(w);
+}
+
+/*
+ * Disarm any clue Popops we may have.
+ */
+static char *
+GetMenuName(w)
+        Widget              w;
+{
+    PmeEntryObject      self = (PmeEntryObject) w;
+
+    return self->pme_entry.menu_name;
+}

@@ -27,6 +27,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: BarButton.c,v $
+ * Revision 1.2  1997/10/05 02:25:17  rich
+ * Make sure ident line is in object file.
+ *
  * Revision 1.1  1997/10/04 05:00:21  rich
  * Initial revision
  *
@@ -34,7 +37,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: BarButton.c,v 1.1 1997/10/04 05:00:21 rich Exp rich $";
+static char        *rcsid = "$Id: BarButton.c,v 1.2 1997/10/05 02:25:17 rich Exp rich $";
 #endif
 
 #include <X11/Xlib.h>
@@ -192,7 +195,6 @@ Initialize(request, new, args, num_args)
 	Cardinal           *num_args;
 {
     BarButton           self = (BarButton) new;
-    Screen             *scr = XtScreenOfObject(new);
 
     self->core.border_width = 0;
     _XpwLabelInit(new, &(self->bar_button.label),

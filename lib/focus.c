@@ -23,12 +23,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log: $
+ * $Log: focus.c,v $
+ * Revision 1.1  1997/10/25 22:16:54  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char         rcsid[] = "$Id: $";
+static char         rcsid[] = "$Id: focus.c,v 1.1 1997/10/25 22:16:54 rich Exp rich $";
 
 #endif
 
@@ -260,7 +263,7 @@ _XpwFindFocusWidget(grp, w)
 	FocusGroup          grp;
 	Widget              w;
 {
-    FocusWidget         fw, nfw;
+    FocusWidget         fw;
 
     for (fw = grp->tree; fw != NULL; fw = fw->next) {
 	if (fw->self == w)

@@ -4,6 +4,9 @@
  * Code to handle main interface panel.
  *
  * $Log: player.cc,v $
+ * Revision 1.2  1998/01/26 01:02:02  rich
+ * Support for Stacker CDrom drives.
+ *
  * Revision 1.1  1997/12/16 05:48:46  rich
  * Initial revision
  *
@@ -11,7 +14,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: player.cc,v 1.1 1997/12/16 05:48:46 rich Exp rich $";
+static char        *rcsid = "$Id: player.cc,v 1.2 1998/01/26 01:02:02 rich Exp rich $";
 #endif
     
 /* System stuff */
@@ -231,16 +234,26 @@ Player::checkstatus()
 
    /* If no table of contents. Get one */
     if (curmode == Empty || curmode == Eject) {	/* Cd ejected */
-    	for (int i = 0; i < MAXDRIVES; i++ ) 
-	    if (ioctl(device, CDROM_SELECT_DISC, i)== 0) 
-	        readtoc(&info[i]);
-	if (info[curdrive].numtracks == -1) {
+#if MAXDRIVES > 1
+        for (int i = 0; i < MAXDRIVES; i++ )
+            if (ioctl(device, CDROM_SELECT_DISC, i)== 0)
+                readtoc(&info[i]);
+        if (info[curdrive].numtracks == -1) {
             curmode = Mount;
             close(device);
             device = -1;
             return 0;
         }
         ioctl(device, CDROM_SELECT_DISC, curdrive);
+#else
+        readtoc(&info[0]);
+        if (info[0].numtracks == -1) {
+            curmode = Mount;
+            close(device);
+            device = -1;
+            return 0;
+        }
+#endif
         curmode = New;
         curpos = 0;
         curtrack = 1;

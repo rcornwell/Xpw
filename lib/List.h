@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: List.h,v 1.1 1997/10/09 02:40:35 rich Beta rich $
  *
- * $Log:$
+ * $Log: List.h,v $
+ * Revision 1.1  1997/10/09 02:40:35  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _List_H_
@@ -297,7 +300,8 @@ extern void XpwListSetItem(
 extern Boolean XpwListGetItem(
 #if NeedFunctionPrototypes
 			Widget /*w*/,
-			int /*index*/
+			int /*index*/,
+			XpwListReturnStruct */*rs*/
 #endif
 			);
 	
@@ -349,7 +353,6 @@ extern void XpwListGetSelected(
 #if NeedFunctionPrototypes
 			Widget /*w*/,
 			XpwListReturnStruct */*rs*/
-			
 #endif
 			);
 

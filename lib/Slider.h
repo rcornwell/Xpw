@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id: Slider.h,v 1.1 1997/10/08 04:08:42 rich Exp $
+ * $Id: Slider.h,v 1.2 1997/11/01 06:39:08 rich Beta rich $
  *
  * $Log: Slider.h,v $
+ * Revision 1.2  1997/11/01 06:39:08  rich
+ * Removed a comment error.
+ *
  * Revision 1.1  1997/10/08 04:08:42  rich
  * Initial revision
  *
@@ -53,7 +56,7 @@
  * min                 Min                Int     	  0
  * max                 Max                Int     	  100
  * position            Position           Int     	  0
- * thickness           Thickness          Int     	  14
+ * thickness           Thickness          Dimension    	  14
  * orientation         Orientation        Orientation	  orientVertical
  * clue                Label              String          NULL
  *

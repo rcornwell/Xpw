@@ -24,12 +24,15 @@
  * library in commercial applications, or for commercial software distribution.
  *
  *
- * $Log: $
+ * $Log: Vendor.c,v $
+ * Revision 1.1  1997/11/29 01:17:56  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: Vendor.c,v 1.1 1997/11/29 01:17:56 rich Exp rich $";
 #endif
 
 /* $XConsortium: Vendor.c,v 1.27 94/04/17 20:13:25 kaleb Exp $ */
@@ -482,7 +485,7 @@ XpwVendorShellExtResize(w)
     ShellWidget         sw = (ShellWidget) w;
     Widget              childwid;
     int                 i;
-    int                 core_height;
+    Dimension           core_height;
 
     _XpwImResizeVendorShell(w);
     core_height = _XpwImGetShellHeight(w);

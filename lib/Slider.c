@@ -26,18 +26,21 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * 
- * $Log: $
+ * $Log: Slider.c,v $
+ * Revision 1.1  1997/10/08 04:08:42  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
-
+static char        *rcsid = "$Id: Slider.c,v 1.1 1997/10/08 04:08:42 rich Exp rich $";
 #endif
 
 #include <stdio.h>
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
+#include <X11/Xmu/Drawing.h>
 #include <X11/Xmu/Misc.h>
 #include <X11/Shell.h>
 #include <X11/CoreP.h>
@@ -65,8 +68,18 @@ static void         Destroy(Widget /*w */ );
 /* Private Functions */
 static void         CreateGCs(Widget /*w */ );
 static void         DestroyGCs(Widget /*w */ );
-static void         RedrawThumb(Widget /*wid */ , XEvent *	/*event */
-				,Region /*region */ );
+static void         RedrawThumb(Widget /*wid */ );
+/* Actions */
+static void         MoveThumb(Widget /*w */ , XEvent * /*event */ ,
+			     String * /*params */ , Cardinal * /*num_params */ );
+static void         Notify(Widget /*w */ , XEvent * /*event */ ,
+			     String * /*params */ , Cardinal * /*num_params */ );
+static void         Arm(Widget /*w */ , XEvent * /*event */ ,
+			     String * /*params */ , Cardinal * /*num_params */ );
+static void         DisArm(Widget /*w */ , XEvent * /*event */ ,
+			     String * /*params */ , Cardinal * /*num_params */ );
+
+#define IsVert(w)       ( (w)->slider.orientation == XtorientVertical )
 
 /* Slider.c */
 
@@ -90,8 +103,6 @@ static XtResource   resources[] =
      offset(orientation), XtRImmediate, (XtPointer) XtorientVertical},
     {XtNforeground, XtCForeground, XtRPixel, sizeof(Pixel),
      offset(foreground), XtRString, XtDefaultForeground},
-    {XtNthumb, XtCThumb, XtRPixel, sizeof(Pixel),
-     offset(thumb), XtRString, XtDefaultForeground},
     {XtNcallback, XtCCallback, XtRCallback, sizeof(XtPointer),
      offset(callbacks), XtRCallback, (XtPointer) NULL},
     {XtNborderWidth, XtCBorderWidth, XtRDimension, sizeof(Dimension),
@@ -105,15 +116,6 @@ static XtResource   resources[] =
 
 #undef offset
 
-/* Actions */
-static void         MoveThumb(Widget /*w */ , XEvent * /*event */ ,
-			     String * /*params */ , Cardinal * /*num_params */ );
-static void         Notify(Widget /*w */ , XEvent * /*event */ ,
-			     String * /*params */ , Cardinal * /*num_params */ );
-static void         Arm(Widget /*w */ , XEvent * /*event */ ,
-			     String * /*params */ , Cardinal * /*num_params */ );
-static void         DisArm(Widget /*w */ , XEvent * /*event */ ,
-			     String * /*params */ , Cardinal * /*num_params */ );
 
 static XtActionsRec actionsSlider[] =
 {
@@ -217,19 +219,15 @@ Initialize(request, new, args, num_args)
     CreateGCs(new);
 
    /* Make sure we are not too small */
-    w = nself->core.width;
-    h = nself->core.height;
-    if (w == 0 || h == 0) {
-	if (nself->slider.orientation == XtorientHorizontal) {
-	    w = 2 * nself->slider.thickness;
-	    h = nself->slider.thickness;
-	} else {
-	    h = 2 * nself->slider.thickness;
-	    w = nself->slider.thickness;
-	}
-	w += 2 * s;
-	h += 2 * s;
+    if (IsVert(nself)) {
+        h = nself->slider.thickness;
+        w = 0;
+    } else {
+        w = nself->slider.thickness;
+        h = 0;
     }
+    w += 2 * s + nself->slider.thickness;
+    h += 2 * s + nself->slider.thickness;
     if (nself->core.width == 0)
 	nself->core.width = w;
     if (nself->core.height == 0)
@@ -252,21 +250,20 @@ SetValues(current, request, new, args, num_args)
     SliderWidget        self = (SliderWidget) new;
     SliderWidget        old_self = (SliderWidget) current;
     Boolean             ret_val = FALSE;
-    Boolean             re_size = FALSE;
 
     _XpwThreeDDestroyShadow(current, &old_self->slider.threeD);
     _XpwThreeDAllocateShadowGC(new, &self->slider.threeD,
 			       new->core.background_pixel);
 
-    if (self->core.sensitive != old_self->core.sensitive)
+    if (self->core.sensitive != old_self->core.sensitive) 
 	ret_val = TRUE;
+
     if (_XpmThreeDSetValues(new, &old_self->slider.threeD,
 		     &self->slider.threeD, new->core.background_pixel)) {
 	ret_val = TRUE;
     }
     if ((old_self->slider.foreground != self->slider.foreground) ||
-      (old_self->core.background_pixel != self->core.background_pixel) ||
-	(old_self->slider.thumb != self->slider.thumb)) {
+      (old_self->core.background_pixel != self->core.background_pixel)) {
 	DestroyGCs(current);
 	CreateGCs(new);
 
@@ -298,8 +295,7 @@ Realize(w, valueMask, attributes)
 	(w, valueMask, attributes);
 
    /* Now set the cursor */
-    cursor = (self->slider.orientation == XtorientVertical) ?
-	self->slider.verCursor : self->slider.horCursor;
+    cursor = IsVert(self) ? self->slider.verCursor : self->slider.horCursor;
     XDefineCursor(XtDisplay(w), XtWindow(w), cursor);
 }
 
@@ -317,30 +313,36 @@ QueryGeometry(w, intended, return_val)
     Dimension           s = self->slider.threeD.shadow_width;
     XtGeometryResult    ret_val = XtGeometryYes;
     XtGeometryMask      mode = intended->request_mode;
+    int			min = self->slider.min;
+    int			max = self->slider.max;
+    int			h;
 
    /* Compute the default size */
-    if (self->slider.orientation == XtorientHorizontal) {
-	width = self->slider.thickness + (self->slider.max - self->slider.min);
-	height = self->slider.thickness;
-    } else {
-	height = self->slider.thickness + (self->slider.max - self->slider.min);
-	width = self->slider.thickness;
-    }
+    width = 0;
+    height = 0;
+    
+    h = (min > max)? (min - max): (max - min);
+    if (h < 0)
+	h = -h;
+    if (IsVert(self))
+	height = h;
+    else 
+	width = h;
 
-    width += 2 * s;
-    height += 2 * s;
+    width += 2 * s + self->slider.thickness;
+    height += 2 * s + self->slider.thickness;
 
-    if (((mode & CWWidth) && (intended->width < width)) || !(mode & CWWidth)) {
+    if (((mode & CWWidth) && (intended->width != width)) || !(mode & CWWidth)) {
 	return_val->request_mode |= CWWidth;
 	return_val->width = width;
 	ret_val = XtGeometryAlmost;
     }
-    if (((mode & CWHeight) && (intended->height < height)) || !(mode & CWHeight)) {
+    if (((mode & CWHeight) && (intended->height != height)) || !(mode & CWHeight)) {
 	return_val->request_mode |= CWHeight;
 	return_val->height = height;
 	ret_val = XtGeometryAlmost;
     }
-    if (ret_val == XtGeometryAlmost) {
+    if (ret_val != XtGeometryAlmost) {
 	mode = return_val->request_mode;
 
 	if (((mode & CWWidth) && (width == self->core.width)) &&
@@ -378,13 +380,13 @@ Redisplay(wid, event, region)
     if (!XtIsRealized(wid))
 	return;
 
-    if (region == NULL) {
+    if (region == NULL) 
 	XClearWindow(dpy, win);
-	self->slider.t_top = -1;
-    }
-    RedrawThumb(wid, event, region);
+
+    self->slider.t_top = -1;
     _XpwThreeDDrawShadow(wid, event, region, &(self->slider.threeD), 0, 0,
 			 self->core.width, self->core.height, TRUE);
+    RedrawThumb(wid);
 }
 
 /*
@@ -432,20 +434,6 @@ CreateGCs(w)
     values.graphics_exposures = FALSE;
     mask |= GCTile | GCFillStyle;
     self->slider.gray_gc = XtGetGC(w, mask, &values);
-
-    values.foreground = self->slider.thumb;
-    values.background = self->core.background_pixel;
-    values.graphics_exposures = FALSE;
-    mask = GCForeground | GCBackground | GCGraphicsExposures;
-
-    self->slider.thumb_gc = XtGetGC(w, mask, &values);
-
-    values.fill_style = FillTiled;
-    values.tile = XmuCreateStippledPixmap(XtScreenOfObject(w),
-      self->slider.thumb, self->core.background_pixel, self->core.depth);
-    values.graphics_exposures = FALSE;
-    mask |= GCTile | GCFillStyle;
-    self->slider.gray_thumb_gc = XtGetGC(w, mask, &values);
 }
 
 /*
@@ -459,8 +447,6 @@ DestroyGCs(w)
 
     XtReleaseGC(w, self->slider.norm_gc);
     XtReleaseGC(w, self->slider.gray_gc);
-    XtReleaseGC(w, self->slider.thumb_gc);
-    XtReleaseGC(w, self->slider.gray_thumb_gc);
 }
 
 /*
@@ -468,10 +454,8 @@ DestroyGCs(w)
  */
 
 static void
-RedrawThumb(wid, event, region)
+RedrawThumb(wid)
 	Widget              wid;
-	XEvent             *event;
-	Region              region;
 {
     SliderWidget        self = (SliderWidget) wid;
     Display            *dpy = XtDisplayOfObject(wid);
@@ -479,7 +463,6 @@ RedrawThumb(wid, event, region)
     Dimension           s = self->slider.threeD.shadow_width;
     Dimension           h = self->core.height - 2 * s;
     Dimension           w = self->core.width - 2 * s;
-    float               size;
     float               pos;
     int                 x_loc, y_loc, sw, sh;
     int                 cx_loc, cy_loc, csw, csh;
@@ -491,9 +474,9 @@ RedrawThumb(wid, event, region)
 
    /* Set the context based on sensitivity setting */
     if (XtIsSensitive(wid) && XtIsSensitive(XtParent(wid)))
-	gc = self->slider.thumb_gc;
+	gc = self->slider.norm_gc;
     else
-	gc = self->slider.gray_thumb_gc;
+	gc = self->slider.gray_gc;
 
    /* Force position into range */
     if (self->slider.position < self->slider.min)
@@ -508,28 +491,7 @@ RedrawThumb(wid, event, region)
     if (pos > 1.0)
 	pos = 1.0;
 
-    if (self->slider.orientation == XtorientHorizontal) {
-	y_loc = s;
-	sh = h;
-	x_loc = (int) (pos * (float) (w - self->slider.thickness));
-	sw = self->slider.thickness;
-       /* Make sure it stays in range */
-	if (x_loc < 0)
-	    x_loc = 0;
-	if ((x_loc + sw) > w)
-	    x_loc = w - sw;
-	x_loc += s;
-	cx_loc = x_loc + self->slider.thickness / 2 - 2;
-	cy_loc = y_loc;
-	csh = sh;
-	csw = 4;
-	ox_loc = self->slider.t_top;
-	oy_loc = s;
-	osw = self->slider.t_bottom;
-	osh = h;
-	self->slider.t_top = x_loc;
-	self->slider.t_bottom = sw;
-    } else {
+    if (IsVert(self)) {
 	x_loc = s;
 	sw = w;
 	y_loc = (int) (pos * (float) (h - self->slider.thickness));
@@ -551,20 +513,40 @@ RedrawThumb(wid, event, region)
 	osh = self->slider.t_bottom;
 	self->slider.t_top = y_loc;
 	self->slider.t_bottom = sh;
+    } else {
+	y_loc = s;
+	sh = h;
+	x_loc = (int) (pos * (float) (w - self->slider.thickness));
+	sw = self->slider.thickness;
+       /* Make sure it stays in range */
+	if (x_loc < 0)
+	    x_loc = 0;
+	if ((x_loc + sw) > w)
+	    x_loc = w - sw;
+	x_loc += s;
+	cx_loc = x_loc + self->slider.thickness / 2 - 2;
+	cy_loc = y_loc;
+	csh = sh;
+	csw = 4;
+	ox_loc = self->slider.t_top;
+	oy_loc = s;
+	osw = self->slider.t_bottom;
+	osh = h;
+	self->slider.t_top = x_loc;
+	self->slider.t_bottom = sw;
     }
-    if (x_loc != ox_loc || y_loc != oy_loc || sw != osw || sh != osh
-    || (region != NULL && XRectInRegion(region, (int) x_loc, (int) y_loc,
-				    (unsigned int) sw, (unsigned int) sh)
-	!= RectangleOut)) {
+
+    if (x_loc != ox_loc || y_loc != oy_loc || sw != osw || sh != osh) {
        /* Decide if we need to remove old one */
 	if (ox_loc >= 0 && oy_loc >= 0)
 	    XClearArea(dpy, win, ox_loc, oy_loc, osw, osh, FALSE);
        /* Draw new one */
 	XFillRectangle(dpy, win, gc, x_loc + s, y_loc + s,
 				 sw - 2 * s, sh - 2 * s);
-	_XpwThreeDDrawShadow(wid, event, region, &(self->slider.threeD),
+        if (XtIsSensitive(wid) && XtIsSensitive(XtParent(wid)))
+	    _XpwThreeDDrawShadow(wid, NULL, NULL, &(self->slider.threeD),
 			     cx_loc, cy_loc, csw, csh, TRUE);
-	_XpwThreeDDrawShadow(wid, event, region, &(self->slider.threeD),
+	_XpwThreeDDrawShadow(wid, NULL, NULL, &(self->slider.threeD),
 			     x_loc, y_loc, sw, sh, FALSE);
 
     }
@@ -594,17 +576,20 @@ MoveThumb(w, event, params, num_params)
     if (!XtIsRealized(w))
 	return;
 
-    if (self->slider.orientation == XtorientHorizontal) {
-	point = event->xbutton.x - s - (self->slider.thickness / 2);
-	total = self->core.width - 2 * s - self->slider.thickness;
-    } else {
+    if ((!XtIsSensitive(w)) || (!XtIsSensitive(XtParent(w))))
+	return;
+
+    if (IsVert(self)) {
 	point = event->xbutton.y - s - (self->slider.thickness / 2);
 	total = self->core.height - 2 * s - self->slider.thickness;
+    } else {
+	point = event->xbutton.x - s - (self->slider.thickness / 2);
+	total = self->core.width - 2 * s - self->slider.thickness;
     }
     self->slider.position = self->slider.min + (int) (
 			((float) (self->slider.max - self->slider.min)) *
 				  (((float) (point)) / ((float) total)));
-    RedrawThumb(w, NULL, NULL);
+    RedrawThumb(w);
 }
 
 /*
@@ -620,6 +605,9 @@ Notify(w, event, params, num_params)
 	Cardinal           *num_params;		/* unused */
 {
     SliderWidget        self = (SliderWidget) w;
+
+    if ((!XtIsSensitive(w)) || (!XtIsSensitive(XtParent(w))))
+	return;
 
     if (self->slider.oposition != self->slider.position) {
 	XtCallCallbackList(w, self->slider.callbacks,
@@ -671,7 +659,7 @@ XpwSliderSetMinMax(w, min, max)
 
     self->slider.min = min;
     self->slider.max = max;
-    RedrawThumb(w, NULL, NULL);
+    RedrawThumb(w);
 }
 
 /*
@@ -686,6 +674,6 @@ XpwSliderSetPosition(w, pos)
 
     if (self->slider.position != pos) {
 	self->slider.position = pos;
-	RedrawThumb(w, NULL, NULL);
+	RedrawThumb(w);
     }
 }

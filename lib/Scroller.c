@@ -25,12 +25,15 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * 
- * $Log:$
+ * $Log: Scroller.c,v $
+ * Revision 1.1  1997/10/04 05:09:08  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id$";
+static char        *rcsid = "$Id: Scroller.c,v 1.1 1997/10/04 05:09:08 rich Exp rich $";
 
 #endif
 
@@ -43,23 +46,32 @@ static char        *rcsid = "$Id$";
 #include "XpwInit.h"
 #include "ScrollerP.h"
 #include "Arrow.h"
+#include "Clue.h"
 
 /* Semi Public Functions */
-static XtGeometryResult QueryGeometry(Widget /*w */ , XtWidgetGeometry * /*intended */ , XtWidgetGeometry * /*return_val */ );
+static XtGeometryResult QueryGeometry(Widget /*w */ ,
+				 XtWidgetGeometry * /*intended */ ,
+				 XtWidgetGeometry * /*return_val */ );
 static void         ClassInitialize(void);
-static void         Initialize(Widget /*request */ , Widget /*new */ , ArgList /*args */ , Cardinal * /*num_args */ );
-static Boolean      SetValues(Widget /*current */ , Widget /*request */ , Widget /*new */ , ArgList /*args */ , Cardinal * /*num_args */ );
-static void         CreateGCs(Widget /*w */ );
-static void         DestroyGCs(Widget /*w */ );
+static void         Initialize(Widget /*request */ , Widget /*new */ ,
+				 ArgList /*args */ , Cardinal * /*num_args */ );
+static Boolean      SetValues(Widget /*current */ , Widget /*request */ ,
+				 Widget /*new */ , ArgList /*args */ ,
+				 Cardinal * /*num_args */ );
+static void         Realize (Widget /*w*/, Mask */*valueMask*/,
+                            XSetWindowAttributes */*attributes*/);
 static void         Destroy(Widget /*w */ );
 static void         Resize(Widget /*w */ );
-static void         HandleScroll(Widget /*wid */ , XtPointer /*client_data */ , XtPointer /*call_data */ );
-static void         RedrawThumb(Widget /*wid */ , XEvent * /*event */ , Region /*region */ );
 static void         Redisplay(Widget /*wid */ , XEvent * /*event */ , Region /*region */ );
+/* Private Functions */
+static void         CreateGCs(Widget /*w */ );
+static void         DestroyGCs(Widget /*w */ );
+static void         HandleScroll(Widget /*wid */ , XtPointer /*client_data */ ,
+				 XtPointer /*call_data */ );
+static void         RedrawThumb(Widget /*wid */ , XEvent * /*event */ ,
+				 Region /*region */ );
 
 /* Scroller.c */
-
-#define abs(x)  (((x)<0)?-(x):(x))
 
 /* Our resources */
 #define offset(field) XtOffsetOf(ScrollerRec, scroller.field)
@@ -87,11 +99,18 @@ static XtResource   resources[] =
      offset(callbacks), XtRCallback, (XtPointer) NULL},
     {XtNborderWidth, XtCBorderWidth, XtRDimension, sizeof(Dimension),
      XtOffsetOf(ScrollerRec, core.border_width), XtRImmediate, (XtPointer) 0},
+    {XtNscrollVCursor, XtCCursor, XtRCursor, sizeof(Cursor),
+     offset(verCursor), XtRString, "sb_v_double_arrow"},
+    {XtNscrollHCursor, XtCCursor, XtRCursor, sizeof(Cursor),
+     offset(horCursor), XtRString, "sb_h_double_arrow"},
     /* Override Arrow Timeouts */
     {XtNdelayTime, XtCDelayTime, XtRInt, sizeof(int),
      offset(delayTime), XtRImmediate, (XtPointer) 5},
     {XtNrepeatTime, XtCRepeatTime, XtRInt, sizeof(int),
      offset(repeatTime), XtRImmediate, (XtPointer) 1},
+    {XtNclue, XtCLabel, XtRString, sizeof(String),
+     offset(clue), XtRImmediate, (XtPointer) 0},
+
     /* ThreeD resouces */
     threeDresources
 
@@ -100,23 +119,32 @@ static XtResource   resources[] =
 #undef offset
 
 /* Actions */
-static void         MoveThumb(Widget /*w */ , XEvent * /*event */ , String * /*params */ ,
-			      Cardinal * /*num_params */ );
-static void         Notify(Widget /*w */ , XEvent * /*event */ , String * /*params */ ,
-			   Cardinal * /*num_params */ );
+static void         MoveThumb(Widget /*w */ , XEvent * /*event */ ,
+			      String * /*params */ , Cardinal * /*num_params */ );
+static void         Notify(Widget /*w */ , XEvent * /*event */ ,
+			      String * /*params */ , Cardinal * /*num_params */ );
+static void         Arm(Widget /*w */, XEvent * /*event */,
+                              String * /*params */, Cardinal * /*num_params */);
+static void         DisArm(Widget /*w */, XEvent * /*event */,
+                              String * /*params */, Cardinal * /*num_params */);
+
 static XtActionsRec actionsScroller[] =
 {
+    {"Arm", Arm},
+    {"DisArm", DisArm},
     {"MoveThumb", MoveThumb},
     {"Notify", Notify},
 };
 
 /* Translations */
 static char         defaultTranslations[] =
-"<Btn1Down>:   MoveThumb(Forward) \n\
-     <Btn2Down>:   MoveThumb(Mouse) \n\
-     <Btn3Down>:   MoveThumb(Backward) \n\
-     <Btn2Motion>: MoveThumb(Mouse) Notify() \n\
-     <BtnUp>:      Notify()";
+"<EnterWindow>:    Arm()   \n\
+ <LeaveWindow>:    DisArm()   \n\
+    <Btn1Down>:    DisArm() MoveThumb(Forward) \n\
+    <Btn2Down>:    DisArm() MoveThumb(Mouse) \n\
+    <Btn3Down>:    DisArm() MoveThumb(Backward) \n\
+  <Btn2Motion>:    MoveThumb(Mouse) Notify() \n\
+       <BtnUp>:    Notify()";
 
 #define SuperClass ((WidgetClass) &compositeClassRec)
 
@@ -131,7 +159,7 @@ ScrollerClassRec    scrollerClassRec =
 	FALSE,				/* class_inited          */
 	Initialize,			/* initialize            */
 	NULL,				/* initialize_hook       */
-	XtInheritRealize,		/* realize               */
+	Realize,			/* realize               */
 	actionsScroller,		/* actions               */
 	XtNumber(actionsScroller),	/* num_actions           */
 	resources,			/* resources             */
@@ -214,6 +242,7 @@ Initialize(request, new, args, num_args)
 				    XtNarrowType,
      (nself->scroller.orientation == XtorientHorizontal) ? XaLeft : XaUp,
 				    XtNforeground, nself->scroller.thumb,
+				    XtNbackground, nself->core.background_pixel,
 				 XtNdelayTime, nself->scroller.delayTime,
 			       XtNrepeatTime, nself->scroller.repeatTime,
 							      NULL);
@@ -225,6 +254,7 @@ Initialize(request, new, args, num_args)
 				    XtNarrowType,
       (nself->scroller.orientation == XtorientHorizontal) ? XaRight : XaDown,
 				    XtNforeground, nself->scroller.thumb,
+				    XtNbackground, nself->core.background_pixel,
 				 XtNdelayTime, nself->scroller.delayTime,
 			       XtNrepeatTime, nself->scroller.repeatTime,
 							      NULL);
@@ -312,6 +342,7 @@ SetValues(current, request, new, args, num_args)
 				   XtNarrowType,
 	 (self->scroller.orientation == XtorientHorizontal) ? XaRight : XaUp,
 				     XtNforeground, self->scroller.thumb,
+				    XtNbackground, self->core.background_pixel,
 				  XtNdelayTime, self->scroller.delayTime,
 				XtNrepeatTime, self->scroller.repeatTime,
 								 NULL);
@@ -324,6 +355,7 @@ SetValues(current, request, new, args, num_args)
 				    XtNarrowType,
 	 (self->scroller.orientation == XtorientHorizontal) ? XaLeft : XaDown,
 				     XtNforeground, self->scroller.thumb,
+				    XtNbackground, self->core.background_pixel,
 				  XtNdelayTime, self->scroller.delayTime,
 				XtNrepeatTime, self->scroller.repeatTime,
 								 NULL);
@@ -351,8 +383,9 @@ SetValues(current, request, new, args, num_args)
        /* Set Arrow colors if needed */
 	if (self->scroller.tr_arrow) {
 	    XtSetArg(arglist[0], XtNforeground, self->scroller.thumb);
-	    XtSetValues(self->scroller.tr_arrow, arglist, 1);
-	    XtSetValues(self->scroller.bl_arrow, arglist, 1);
+	    XtSetArg(arglist[1], XtNbackground, self->core.background_pixel);
+	    XtSetValues(self->scroller.tr_arrow, arglist, 2);
+	    XtSetValues(self->scroller.bl_arrow, arglist, 2);
 	}
 	ret_val = TRUE;
     }
@@ -376,45 +409,25 @@ SetValues(current, request, new, args, num_args)
     return (ret_val);
 }
 
-/* 
- * Create GC's we need to.
+/*
+ * Set the cursor based on orientation.
  */
-
-static void
-CreateGCs(w)
-	Widget              w;
+static void Realize (w, valueMask, attributes)
+    Widget w;
+    Mask *valueMask;
+    XSetWindowAttributes *attributes;
 {
-    ScrollerWidget      self = (ScrollerWidget) w;
-    XGCValues           values;
-    XtGCMask            mask;
+    ScrollerWidget self = (ScrollerWidget) w;
+    Cursor       cursor;
 
-    values.foreground = self->scroller.foreground;
-    values.background = self->core.background_pixel;
-    values.graphics_exposures = FALSE;
-    mask = GCForeground | GCBackground | GCGraphicsExposures;
+    /* Do actual work of creating window.  */
+    (*scrollerWidgetClass->core_class.superclass->core_class.realize)
+        (w, valueMask, attributes);
 
-    self->scroller.norm_gc = XtGetGC(w, mask, &values);
-
-    values.fill_style = FillTiled;
-    values.tile = XmuCreateStippledPixmap(XtScreenOfObject(w),
-					  self->scroller.foreground, self->core.background_pixel, self->core.depth);
-    values.graphics_exposures = FALSE;
-    mask |= GCTile | GCFillStyle;
-    self->scroller.gray_gc = XtGetGC(w, mask, &values);
-
-    values.foreground = self->scroller.thumb;
-    values.background = self->core.background_pixel;
-    values.graphics_exposures = FALSE;
-    mask = GCForeground | GCBackground | GCGraphicsExposures;
-
-    self->scroller.thumb_gc = XtGetGC(w, mask, &values);
-
-    values.fill_style = FillTiled;
-    values.tile = XmuCreateStippledPixmap(XtScreenOfObject(w),
-    self->scroller.thumb, self->core.background_pixel, self->core.depth);
-    values.graphics_exposures = FALSE;
-    mask |= GCTile | GCFillStyle;
-    self->scroller.gray_thumb_gc = XtGetGC(w, mask, &values);
+    /* Now set the cursor */
+    cursor = (self->scroller.orientation == XtorientVertical) ?
+                 self->scroller.verCursor : self->scroller.horCursor;
+    XDefineCursor(XtDisplay(w), XtWindow(w), cursor);
 }
 
 /*
@@ -524,20 +537,8 @@ Redisplay(wid, event, region)
 	Region              region;
 {
     ScrollerWidget      self = (ScrollerWidget) wid;
-    int                 x_loc, y_loc;
     Display            *dpy = XtDisplayOfObject(wid);
     Window              win = XtWindowOfObject(wid);
-    Dimension           s = self->scroller.threeD.shadow_width;
-    Dimension           h = self->core.height;
-    Dimension           w = self->core.width;
-    int                 sr, sc;	/* Starting row and column */
-    int                 er, ec;	/* Ending row and column */
-    int                 i, j, l;
-    int                 rowh;
-    GC                  gc;
-    XGCValues           values;
-    XtGCMask            mask;
-    XRectangle          cliparea;
 
     if (!XtIsRealized(wid))
 	return;
@@ -548,22 +549,7 @@ Redisplay(wid, event, region)
     }
     RedrawThumb(wid, event, region);
     _XpwThreeDDrawShadow(wid, event, region, &(self->scroller.threeD), 0, 0,
-			 w, h, TRUE);
-}
-
-/*
- * Release old GC's.
- */
-static void
-DestroyGCs(w)
-	Widget              w;
-{
-    ScrollerWidget      self = (ScrollerWidget) w;
-
-    XtReleaseGC(w, self->scroller.norm_gc);
-    XtReleaseGC(w, self->scroller.gray_gc);
-    XtReleaseGC(w, self->scroller.thumb_gc);
-    XtReleaseGC(w, self->scroller.gray_thumb_gc);
+			 self->core.width, self->core.height, TRUE);
 }
 
 /*
@@ -589,6 +575,61 @@ Destroy(w)
  * Private functions
  *
  ************************************************************/
+/* 
+ * Create GC's we need to.
+ */
+
+static void
+CreateGCs(w)
+	Widget              w;
+{
+    ScrollerWidget      self = (ScrollerWidget) w;
+    XGCValues           values;
+    XtGCMask            mask;
+
+    values.foreground = self->scroller.foreground;
+    values.background = self->core.background_pixel;
+    values.graphics_exposures = FALSE;
+    mask = GCForeground | GCBackground | GCGraphicsExposures;
+
+    self->scroller.norm_gc = XtGetGC(w, mask, &values);
+
+    values.fill_style = FillTiled;
+    values.tile = XmuCreateStippledPixmap(XtScreenOfObject(w),
+					  self->scroller.foreground, self->core.background_pixel, self->core.depth);
+    values.graphics_exposures = FALSE;
+    mask |= GCTile | GCFillStyle;
+    self->scroller.gray_gc = XtGetGC(w, mask, &values);
+
+    values.foreground = self->scroller.thumb;
+    values.background = self->core.background_pixel;
+    values.graphics_exposures = FALSE;
+    mask = GCForeground | GCBackground | GCGraphicsExposures;
+
+    self->scroller.thumb_gc = XtGetGC(w, mask, &values);
+
+    values.fill_style = FillTiled;
+    values.tile = XmuCreateStippledPixmap(XtScreenOfObject(w),
+    self->scroller.thumb, self->core.background_pixel, self->core.depth);
+    values.graphics_exposures = FALSE;
+    mask |= GCTile | GCFillStyle;
+    self->scroller.gray_thumb_gc = XtGetGC(w, mask, &values);
+}
+
+/*
+ * Release old GC's.
+ */
+static void
+DestroyGCs(w)
+	Widget              w;
+{
+    ScrollerWidget      self = (ScrollerWidget) w;
+
+    XtReleaseGC(w, self->scroller.norm_gc);
+    XtReleaseGC(w, self->scroller.gray_gc);
+    XtReleaseGC(w, self->scroller.thumb_gc);
+    XtReleaseGC(w, self->scroller.gray_thumb_gc);
+}
 
 /*
  * Redraw the thumb.
@@ -623,14 +664,20 @@ RedrawThumb(wid, event, region)
     else
 	gc = self->scroller.gray_thumb_gc;
 
-/* Force position into range */
+   /* Force position into range */
     if (self->scroller.position < 0)
 	self->scroller.position = 0;
     if (self->scroller.position > self->scroller.tlenght)
 	self->scroller.position = self->scroller.tlenght;
-/* Compute new top and bottom of thumb */
+   /* Compute new top and bottom of thumb */
     size = ((float) self->scroller.tshown) / ((float) self->scroller.tlenght);
     pos = ((float) self->scroller.position) / ((float) self->scroller.tlenght);
+
+   /* Keep values in range */
+    if (size > 1.0)
+	size = 1.0;
+    if (pos > 1.0)
+	pos = 1.0;
 
     if (self->scroller.orientation == XtorientHorizontal) {
 	y_loc = s;
@@ -688,15 +735,40 @@ RedrawThumb(wid, event, region)
     || (region != NULL && XRectInRegion(region, (int) x_loc, (int) y_loc,
 				    (unsigned int) sw, (unsigned int) sh)
 	!= RectangleOut)) {
-/* Decide if we need to remove old one */
+   /* Decide if we need to remove old one */
 	if (ox_loc >= 0 && oy_loc >= 0)
 	    XClearArea(dpy, win, ox_loc, oy_loc, osw, osh, FALSE);
-/* Draw new one */
+   /* Draw new one */
 	_XpwThreeDDrawShadow(wid, event, region, &(self->scroller.threeD), x_loc, y_loc,
 			     sw, sh, 0);
 	XFillRectangle(dpy, win, gc, x_loc + s, y_loc + s, sw - 2 * s, sh - 2 * s);
 
     }
+}
+
+/*
+ * Handle arrow widgets.
+ */
+static void
+HandleScroll(wid, client_data, call_data)
+	Widget              wid;
+	XtPointer           client_data;
+	XtPointer           call_data;
+{
+    ScrollerWidget      self = (ScrollerWidget) client_data;
+
+    if (wid == self->scroller.tr_arrow)
+	self->scroller.position -= self->scroller.tshown;
+    else
+	self->scroller.position += self->scroller.tshown;
+   /* Range check */
+    if (self->scroller.position < 0)
+	self->scroller.position = 0;
+    if (self->scroller.position > self->scroller.tlenght)
+	self->scroller.position = self->scroller.tlenght;
+    if (XtIsRealized((Widget) self))
+	RedrawThumb((Widget) self, NULL, NULL);
+    Notify((Widget) self, NULL, NULL, NULL);
 }
 
 
@@ -783,32 +855,6 @@ MoveThumb(w, event, params, num_params)
 }
 
 /*
- * Handle arrow widgets.
- */
-static void
-HandleScroll(wid, client_data, call_data)
-	Widget              wid;
-	XtPointer           client_data;
-	XtPointer           call_data;
-{
-    ScrollerWidget      self = (ScrollerWidget) client_data;
-
-    if (wid == self->scroller.tr_arrow)
-	self->scroller.position -= self->scroller.tshown;
-    else
-	self->scroller.position += self->scroller.tshown;
-   /* Range check */
-    if (self->scroller.position < 0)
-	self->scroller.position = 0;
-    if (self->scroller.position > self->scroller.tlenght)
-	self->scroller.position = self->scroller.tlenght;
-    if (XtIsRealized((Widget) self))
-	RedrawThumb((Widget) self, NULL, NULL);
-    XtCallCallbackList((Widget) self, self->scroller.callbacks,
-		       (XtPointer) self->scroller.position);
-}
-
-/*
  * Report position of top of thumb.
  */
 
@@ -832,6 +878,30 @@ Notify(w, event, params, num_params)
 
 }
 
+/* ARGSUSED */
+static void
+Arm(w, event, params, num_params)
+        Widget              w;
+        XEvent             *event;
+        String             *params;     /* unused */
+        Cardinal           *num_params;         /* unused */
+{
+    ScrollerWidget     self = (ScrollerWidget) w;
+
+    _XpwArmClue(w, self->scroller.clue);
+}
+
+/* ARGSUSED */
+static void
+DisArm(w, event, params, num_params)
+        Widget              w;
+        XEvent             *event;
+        String             *params;     /* unused */
+        Cardinal           *num_params;         /* unused */
+{
+    _XpwDisArmClue(w);
+}
+
 /************************************************************
  *
  * Public interface functions
@@ -852,7 +922,7 @@ XpwScrollerSetThumb(w, length, shown)
 
     if (length > 0)
 	self->scroller.tlenght = length;
-    if (shown > 0)
+    if (shown >= 0)
 	self->scroller.tshown = shown;
     if (self->scroller.position > self->scroller.tlenght)
 	self->scroller.position = self->scroller.tlenght;
@@ -869,8 +939,9 @@ XpwScrollerSetPosition(w, pos)
 {
     ScrollerWidget      self = (ScrollerWidget) w;
 
-    if (pos > 0)
-	self->scroller.position = pos;
+    if (pos < 0)
+	return;
+    self->scroller.position = pos + (self->scroller.tshown / 2);
     if (self->scroller.position > self->scroller.tlenght)
 	self->scroller.position = self->scroller.tlenght;
     RedrawThumb(w, NULL, NULL);

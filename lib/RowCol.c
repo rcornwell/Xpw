@@ -25,12 +25,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: RowCol.c,v $
+ * Revision 1.1  1997/10/07 05:35:41  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id$";
+static char        *rcsid = "$Id: RowCol.c,v 1.1 1997/10/07 05:35:41 rich Exp rich $";
 
 #endif
 
@@ -47,7 +50,7 @@ static char        *rcsid = "$Id$";
 
 #include <ctype.h>
 
-#define ChildInfo(w)	((RowColConstraintsPart *)(w)->core.constraints)
+#define ChildInfo(w)	((RowColConstraints)(w)->core.constraints)
 #define IsVert(w)       ( (w)->rowcol.orientation == XtorientVertical )
 #define ChildSize(w, vert)   (((vert))?((w)->core.height):((w)->core.width))
 #define GetRequestInfo(geo, vert)  (((vert)?((geo)->height):((geo)->width)))
@@ -92,7 +95,7 @@ static XtResource   subresources[] =
     {XtNmin, XtCMin, XtRDimension, sizeof(Dimension),
      offset(min), XtRImmediate, (XtPointer) 1},
     {XtNmax, XtCMax, XtRDimension, sizeof(Dimension),
-     offset(max), XtRImmediate, (XtPointer) -1},
+     offset(max), XtRImmediate, (XtPointer) - 1},
 };
 
 #undef offset
@@ -100,45 +103,48 @@ static XtResource   subresources[] =
 /* Semi-public interface functions */
 static void         ClassInitialize(void);
 static void         Initialize(Widget /*request */ , Widget /*new */ ,
-			         ArgList /*args */ , Cardinal * /*num_args */ );
-static Boolean      SetValues(Widget /*old */ , Widget /*request */
-			         , Widget /*new */ , ArgList /*args */ ,
-			         Cardinal * /*num_args */ );
+			  ArgList /*args */ , Cardinal * /*num_args */ );
+static Boolean      SetValues(Widget /*old */ , Widget	/*request */
+			      ,Widget /*new */ , ArgList /*args */ ,
+			      Cardinal * /*num_args */ );
 static Boolean      ChildSetValues(Widget /*old */ , Widget /*request */ ,
-			         Widget /*new */ , ArgList /*args */ ,
-			         Cardinal * /*num_args */ );
+				   Widget /*new */ , ArgList /*args */ ,
+				   Cardinal * /*num_args */ );
 static void         Realize(Widget /*w */ , Mask * /*valueMask */ ,
-			         XSetWindowAttributes * /*attributes */ );
+			    XSetWindowAttributes * /*attributes */ );
+static XtGeometryResult QueryGeometry(Widget /*w */ ,
+				      XtWidgetGeometry * /*request */ ,
+				      XtWidgetGeometry * /*reply */ );
 static XtGeometryResult GeometryManager(Widget /*w */ ,
-			         XtWidgetGeometry * /*request */ ,
-			         XtWidgetGeometry * /*reply */ );
+					XtWidgetGeometry * /*request */ ,
+					XtWidgetGeometry * /*reply */ );
 static void         Resize(Widget /*w */ );
 static void         InsertChild(Widget /*w */ );
 static void         ChangeManaged(Widget /*w */ );
 
 /* private functions */
-static void         SetChildrenSizes(RowColWidget /*self */ , int /*off_size */ );
+static int          SetChildrenSizes(RowColWidget /*self */ , int /*off_size */ );
 static void         MoveChildren(RowColWidget /*self */ );
 static void         PositionChildren(RowColWidget /*self */ );
 static void         ResizeChildren(RowColWidget /*self */ , int * /*size */ );
 static void         ResizeRowCol(RowColWidget /*self */ , int /*off_size */ ,
-			         XtGeometryResult * /*result_ret */ ,
-			         Dimension * /*on_size_ret */ ,
-			         Dimension * /*off_size_ret */ );
+				 XtGeometryResult * /*result_ret */ ,
+				 Dimension * /*on_size_ret */ ,
+				 Dimension * /*off_size_ret */ );
 
 /* type converters */
 Boolean             cvtStringToPackingType(Display * /*dpy */ ,
-			         XrmValuePtr /*args */ ,
-			         Cardinal * /*num_args */ ,
-			         XrmValuePtr /*from */ ,
-			         XrmValuePtr /*to */ ,
-			         XtPointer * /*converter_data */ );
+					   XrmValuePtr /*args */ ,
+					   Cardinal * /*num_args */ ,
+					   XrmValuePtr /*from */ ,
+					   XrmValuePtr /*to */ ,
+				       XtPointer * /*converter_data */ );
 Boolean             cvtPackingTypeToString(Display * /*dpy */ ,
-			         XrmValuePtr /*args */ ,
-			         Cardinal * /*num_args */ ,
-			         XrmValuePtr /*from */ ,
-			         XrmValuePtr /*to */ ,
-			         XtPointer * /*converter_data */ );
+					   XrmValuePtr /*args */ ,
+					   Cardinal * /*num_args */ ,
+					   XrmValuePtr /*from */ ,
+					   XrmValuePtr /*to */ ,
+				       XtPointer * /*converter_data */ );
 
 #define SuperClass ((ConstraintWidgetClass)&constraintClassRec)
 
@@ -174,7 +180,7 @@ RowColClassRec      rowcolClassRec =
 	XtVersion,			/* version             */
 	NULL,				/* callback_private    */
 	NULL,				/* tm_table            */
-	XtInheritQueryGeometry,		/* query_geometry      */
+	QueryGeometry,			/* query_geometry      */
 	XtInheritDisplayAccelerator,	/* display_accelerator */
 	NULL				/* extension           */
     },
@@ -191,7 +197,7 @@ RowColClassRec      rowcolClassRec =
 	sizeof(RowColConstraintsRec),	/* constraint_size     */
 	NULL,				/* initialize          */
 	NULL,				/* destroy             */
-	ChildSetValues,			/* set_values          */
+	NULL,				/* set_values          */
 	NULL				/* extension           */
     }
 };
@@ -261,22 +267,11 @@ SetValues(old, request, new, args, num_args)
        /* Force a redraw */
 	return TRUE;
     }
-
     if (old_self->rowcol.packing != new_self->rowcol.packing) {
 	ChangeManaged(new);
        /* Force a redraw */
 	return TRUE;
     }
-    return FALSE;
-}
-
-/* ARGSUSED */
-static              Boolean
-ChildSetValues(old, request, new, args, num_args)
-	Widget              old, request, new;
-	ArgList             args;
-	Cardinal           *num_args;
-{
     return FALSE;
 }
 
@@ -292,13 +287,80 @@ Realize(w, valueMask, attributes)
     (*SuperClass->core_class.realize) (w, valueMask, attributes);
 
     ForAllChildren(self, childP)
-	XtIsRealized(*childP);
+	XtRealizeWidget(*childP);
 
    /* Set children to there prefered sizes */
     SetChildrenSizes(self, ChildSize(w, !IsVert(self)));
    /* Relayout and move children */
     PositionChildren(self);
     MoveChildren(self);
+}
+
+/*
+ * Calculate preferred size, given constraining box, caching it in the widget.
+ */
+
+static              XtGeometryResult
+QueryGeometry(w, intended, return_val)
+	Widget              w;
+	XtWidgetGeometry   *intended, *return_val;
+{
+    RowColWidget        self = (RowColWidget) w;
+    Dimension           width, height, off_size, size;
+    XtGeometryResult    ret_val = XtGeometryYes;
+    XtGeometryMask      mode = intended->request_mode;
+    Widget             *childP;
+    int                 num;
+
+    return_val->request_mode = 0;
+
+   /* Set children to there prefered sizes */
+    off_size = SetChildrenSizes(self, 0);
+
+    if (off_size == 0)
+	off_size = ChildSize(self, !IsVert(self));
+
+   /* Compute estimate of size of children. */
+    size = 0;
+    num = 0;
+    ForAllChildren(self, childP) {
+	if (!XtIsManaged(*childP))
+	    continue;
+	size += ChildInfo(*childP)->size;
+	num++;
+    }
+
+    size += (num - 1) * self->rowcol.spacing;
+
+    if (IsVert(self)) {
+	height = size;
+	width = off_size;
+    } else {
+	height = off_size;
+	width = size;
+    }
+
+    if (((mode & CWWidth) && (intended->width != width)) ||
+	!(mode & CWWidth)) {
+	return_val->request_mode |= CWWidth;
+	return_val->width = width;
+	ret_val = XtGeometryAlmost;
+    }
+    if (((mode & CWHeight) && (intended->height != height)) ||
+	!(mode & CWHeight)) {
+	return_val->request_mode |= CWHeight;
+	return_val->height = height;
+	ret_val = XtGeometryAlmost;
+    }
+    if (ret_val == XtGeometryAlmost) {
+	mode = return_val->request_mode;
+
+	if (((mode & CWWidth) && (width == self->core.width)) &&
+	    ((mode & CWHeight) && (height == self->core.height))) {
+	    ret_val = XtGeometryNo;
+	}
+    }
+    return (ret_val);
 }
 
 /* The Geometry Manager only allows changes after Realize if
@@ -322,7 +384,7 @@ GeometryManager(w, request, reply)
 {
     RowColWidget        self = (RowColWidget) XtParent(w);
     XtGeometryMask      mask = request->request_mode;
-    RowColConstraintsPart *child = ChildInfo(w);
+    RowColConstraints   child = ChildInfo(w);
     Dimension           old_size, old_wpsize, old_rowcol_size;
     Boolean             vert = IsVert(self);
     Dimension           on_size, off_size;
@@ -340,14 +402,14 @@ GeometryManager(w, request, reply)
 	return XtGeometryNo;
 
    /* Save old infomation. */
-    old_rowcol_size = ChildSize((Widget)self, vert);
+    old_rowcol_size = ChildSize((Widget) self, vert);
     old_wpsize = child->wp_size;
     old_size = child->size;
 
     child->wp_size = child->size = GetRequestInfo(request, vert);
 
    /* Try relayout with requested size, allow parent to resize if needed */
-    ResizeRowCol(self, ChildSize((Widget)self, !vert), &result,
+    ResizeRowCol(self, ChildSize((Widget) self, !vert), &result,
 		 &on_size, &off_size);
 
    /* If we did not fail, set size of child to returned size */
@@ -392,8 +454,8 @@ GeometryManager(w, request, reply)
     } else {
 
        /* If we matched, then actualy move the children */
-	ResizeRowCol(self, ChildSize((Widget)self, !vert),
-		 (XtGeometryResult *) NULL, &on_size, &off_size);
+	ResizeRowCol(self, ChildSize((Widget) self, !vert),
+		     (XtGeometryResult *) NULL, &on_size, &off_size);
 	PositionChildren(self);
 	MoveChildren(self);
     }
@@ -411,7 +473,7 @@ Resize(w)
     RowColWidget        self = (RowColWidget) w;
 
    /* Set children to there prefered sizes */
-    SetChildrenSizes(self, ChildSize(w, !IsVert(self)));
+    (void) SetChildrenSizes(self, ChildSize(w, !IsVert(self)));
    /* Move children to there new places */
     PositionChildren(self);
     MoveChildren(self);
@@ -421,7 +483,7 @@ static void
 InsertChild(w)
 	Widget              w;
 {
-    RowColConstraintsPart *child = ChildInfo(w);
+    RowColConstraints   child = ChildInfo(w);
 
    /* insert the child widget in the composite children list with the */
    /* superclass insert_child routine.                                */
@@ -458,7 +520,7 @@ ChangeManaged(w)
     }
 
    /* Set children to prefered sizes */
-    SetChildrenSizes(self, size);
+    (void) SetChildrenSizes(self, size);
    /* See if we will fit, but don't request parent to resize */
     ResizeRowCol(self, size, (XtGeometryResult *) NULL, (Dimension *) NULL,
 		 (Dimension *) NULL);
@@ -479,7 +541,7 @@ ChangeManaged(w)
 /*
  * Set size of each child to it's prefered size.
  */
-static void
+static int
 SetChildrenSizes(self, off_size)
 	RowColWidget        self;
 	Dimension           off_size;
@@ -487,9 +549,10 @@ SetChildrenSizes(self, off_size)
     Widget             *childP;
     Boolean             vert = IsVert(self);
     XtWidgetGeometry    request, reply;
+    int                 n_off_size = off_size;
 
     ForAllChildren(self, childP) {
-	RowColConstraintsPart *child = ChildInfo(*childP);
+	RowColConstraints  child = ChildInfo(*childP);
 
 	if (!XtIsManaged(*childP))
 	    continue;
@@ -501,17 +564,21 @@ SetChildrenSizes(self, off_size)
 	    request.request_mode = CWHeight;
 	    request.height = off_size;
 	}
-	if (XtQueryGeometry(*childP, &request, &reply)
-	    == XtGeometryAlmost &&
-	    (reply.request_mode = (vert ? CWHeight : CWWidth)))
+	if (off_size == 0)
+	    request.request_mode = CWHeight | CWWidth;
+	if (XtQueryGeometry(*childP, &request, &reply) == XtGeometryAlmost &&
+	    (reply.request_mode = (vert ? CWHeight : CWWidth))) {
 	    child->wp_size = GetRequestInfo(&reply, vert);
-	else
+	    if (off_size == 0 && GetRequestInfo(&reply, !vert) < n_off_size)
+		n_off_size = GetRequestInfo(&reply, !vert);
+	} else
 	    child->wp_size = ChildSize(*childP, vert);
 	if (child->resize_to_pref)
 	    child->size = child->wp_size;
 	else
 	    child->size = ChildSize(*childP, vert);
     }
+    return n_off_size;
 }
 
 /*
@@ -525,7 +592,7 @@ MoveChildren(self)
     Boolean             vert = IsVert(self);
 
     ForAllChildren(self, childP) {
-	RowColConstraintsPart *child = ChildInfo(*childP);
+	RowColConstraints  child = ChildInfo(*childP);
 
 	if (!XtIsManaged(*childP))
 	    continue;
@@ -533,11 +600,11 @@ MoveChildren(self)
 	if (vert) {
 	    XtMoveWidget(*childP, (Position) 0, child->location);
 	    XtResizeWidget(*childP, self->core.width,
-				 (Dimension) child->size, 0);
+			   (Dimension) child->size, 0);
 	} else {
 	    XtMoveWidget(*childP, child->location, (Position) 0);
 	    XtResizeWidget(*childP, (Dimension) child->size,
-				 self->core.height, 0);
+			   self->core.height, 0);
 	}
     }
 }
@@ -555,7 +622,7 @@ PositionChildren(self)
 	RowColWidget        self;
 {
     Boolean             vert = IsVert(self);
-    int		        size, gap, loc;
+    int                 size, gap, loc;
     Widget             *childP;
 
     if (!XtIsRealized((Widget) self) ||
@@ -570,18 +637,19 @@ PositionChildren(self)
     }
 
    /* If they don't fit try readjusting */
-    if (size != ChildSize((Widget) self, IsVert(self))) 
+    if (size != ChildSize((Widget) self, vert))
 	ResizeChildren(self, (int *) &size);
 
     size += (self->rowcol.num_children - 1) * self->rowcol.spacing;
 
    /* Compute gap if needed */
-    if (size < ChildSize((Widget) self, IsVert(self)) &&
+    if (size < ChildSize((Widget) self, vert) &&
 	self->rowcol.packing == XpwEven && self->rowcol.num_children > 2)
-	gap = (ChildSize((Widget) self, IsVert(self)) - size) / (self->rowcol.num_children - 1);
-    else if (size < ChildSize((Widget) self, IsVert(self)) &&
-	self->rowcol.packing == XpwEven && self->rowcol.num_children == 2)
-	gap = ChildSize((Widget) self, IsVert(self)) - size;
+	gap = (ChildSize((Widget) self, vert) - size) /
+	    (self->rowcol.num_children - 1);
+    else if (size < ChildSize((Widget) self, vert) &&
+       self->rowcol.packing == XpwEven && self->rowcol.num_children == 2)
+	gap = ChildSize((Widget) self, vert) - size;
     else
 	gap = 0;
 
@@ -621,11 +689,12 @@ ResizeChildren(self, size)
 
    /* Compute number of children we can play with */
     ForAllChildren(self, childP) {
-	if (!XtIsManaged(*childP) || (ChildInfo(*childP)->skip_adjust) ||
-	    (ChildInfo(*childP)->resize_to_pref &&
-	      ChildInfo(*childP)->size == ChildInfo(*childP)->wp_size))
+	RowColConstraints  child = ChildInfo(*childP);
+
+	if (!XtIsManaged(*childP) || (child->skip_adjust) ||
+	    (child->resize_to_pref && child->size == child->wp_size))
 	    continue;
-        resizable++;
+	resizable++;
 
     }
 
@@ -640,49 +709,50 @@ ResizeChildren(self, size)
     * prefered size.
     */
     if (self->rowcol.packing == XpwNoFill) {
-    	ForAllChildren(self, childP) {
+	ForAllChildren(self, childP) {
+	    RowColConstraints   child = ChildInfo(*childP);
 	    int                 nsize;
 
-	    if (!XtIsManaged(*childP) || ChildInfo(*childP)->resize_to_pref
-		|| ChildInfo(*childP)->skip_adjust)
+	    if (!XtIsManaged(*childP) || child->resize_to_pref
+		|| child->skip_adjust)
 		continue;
 
-	    nsize = ChildInfo(*childP)->wp_size;
-	    if (nsize > ChildInfo(*childP)->max)
-		nsize = ChildInfo(*childP)->max;
-	    if (nsize < ChildInfo(*childP)->min)
-		nsize = ChildInfo(*childP)->min;
-	    *size += nsize - ChildInfo(*childP)->size;
-	    ChildInfo(*childP)->size = nsize;
+	    nsize = child->wp_size;
+	    if (nsize > child->max)
+		nsize = child->max;
+	    if (nsize < child->min)
+		nsize = child->min;
+	    *size += nsize - child->size;
+	    child->size = nsize;
 	}
-	/* If we got below the window size, leave */
+       /* If we got below the window size, leave */
 	if (*size <= win_size)
-	   return;
-   }
-    
+	    return;
+    }
    /* If still bigger, reduce any none prefered size widgets */
     changed = TRUE;
     while (*size != win_size && resizable != 0 && changed) {
 	changed = FALSE;
 	amount = (win_size - *size) / resizable;
 	if (amount == 0)
-	   break;
+	    break;
 	ForAllChildren(self, childP) {
+	    RowColConstraints   child = ChildInfo(*childP);
 	    int                 nsize;
 
-	    if (!XtIsManaged(*childP) || ChildInfo(*childP)->resize_to_pref
-		|| ChildInfo(*childP)->skip_adjust)
+	    if (!XtIsManaged(*childP) || child->resize_to_pref
+		|| child->skip_adjust)
 		continue;
 
-	    nsize = ChildInfo(*childP)->size + amount;
-	    if (nsize > ChildInfo(*childP)->max)
-		nsize = ChildInfo(*childP)->max;
-	    if (nsize < ChildInfo(*childP)->min)
-		nsize = ChildInfo(*childP)->min;
-	    if (nsize != ChildInfo(*childP)->size) {
+	    nsize = child->size + amount;
+	    if (nsize > child->max)
+		nsize = child->max;
+	    if (nsize < child->min)
+		nsize = child->min;
+	    if (nsize != child->size) {
 		changed = TRUE;
-		*size += nsize - ChildInfo(*childP)->size;
-		ChildInfo(*childP)->size = nsize;
+		*size += nsize - child->size;
+		child->size = nsize;
 	    }
 	}
     }
@@ -698,23 +768,25 @@ ResizeRowCol(self, off_size, result_ret, on_size_ret, off_size_ret)
 	XtGeometryResult   *result_ret;
 	Dimension          *on_size_ret, *off_size_ret;
 {
-    Dimension           old_size = ChildSize((Widget) self, IsVert(self));
+    Boolean             vert = IsVert(self);
+    Dimension           old_size = ChildSize((Widget) self, vert);
     Dimension           new_size = 0;
     Widget             *childP;
     XtWidgetGeometry    request, reply;
-    int			resizable = 0;
+    int                 resizable = 0;
 
     request.request_mode = CWWidth | CWHeight;
 
     ForAllChildren(self, childP) {
+	RowColConstraints  child = ChildInfo(*childP);
+
 	if (!XtIsManaged(*childP))
 	    continue;
-	new_size += ChildInfo(*childP)->size;
-	if (ChildInfo(*childP)->skip_adjust ||
-	    (ChildInfo(*childP)->resize_to_pref &&
-	      ChildInfo(*childP)->size == ChildInfo(*childP)->wp_size))
+	new_size += child->size;
+	if (child->skip_adjust ||
+	    (child->resize_to_pref && child->size == child->wp_size))
 	    continue;
-       resizable++;
+	resizable++;
 
     }
 
@@ -746,12 +818,12 @@ ResizeRowCol(self, off_size, result_ret, on_size_ret, off_size_ret)
 	    return;
 	}
 	if (*result_ret != XtGeometryAlmost) {
-	    *on_size_ret = GetRequestInfo(&request, IsVert(self));
-	    *off_size_ret = GetRequestInfo(&request, !IsVert(self));
+	    *on_size_ret = GetRequestInfo(&request, vert);
+	    *off_size_ret = GetRequestInfo(&request, !vert);
 	    return;
 	}
-	*on_size_ret = GetRequestInfo(&reply, IsVert(self));
-	*off_size_ret = GetRequestInfo(&reply, !IsVert(self));
+	*on_size_ret = GetRequestInfo(&reply, vert);
+	*off_size_ret = GetRequestInfo(&reply, !vert);
 	return;
     } else {
 

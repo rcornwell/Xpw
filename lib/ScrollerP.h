@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: ScrollerP.h,v 1.1 1997/10/04 05:09:08 rich Exp rich $
  *
- * $Log:$
+ * $Log: ScrollerP.h,v $
+ * Revision 1.1  1997/10/04 05:09:08  rich
+ * Initial revision
+ *
  *
  */
 
@@ -62,9 +65,12 @@ typedef struct {
     int			delayTime;	/* Delay time for arrows */
     int			repeatTime;	/* Repeat time for arrows */
 
+    Cursor              horCursor;
+    Cursor              verCursor;
     Pixel               foreground;
     Pixel		thumb;
     XtCallbackList	callbacks;
+    String              clue;
 
 /* private resources. */
     Widget		tr_arrow;

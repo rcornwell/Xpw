@@ -1,12 +1,15 @@
 /*
  * Xmixer: Control sound card volume settings.
  *
- * $Log: $
+ * $Log: xmixer.c,v $
+ * Revision 1.1  1997/10/29 05:41:32  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: xmixer.c,v 1.1 1997/10/29 05:41:32 rich Exp rich $";
 #endif
 
 /* System stuff */
@@ -113,36 +116,23 @@ static void         slide_call(Widget /*w */ , XtPointer /*client_data */ ,
 static void         rec_call(Widget /*w */ , XtPointer /*client_data */ ,
 			 XtPointer /*call_data */ );
 
+/*
+ * Define the bare minimum here to make appliation look correct.
+ */
 static String       fallback_resources[] =
 {
    /* Global Stuff */
-    "XMixer*Font:                  -*-lucidabright-demibold-r-normal-*-14-*",
-    "XMixer*background:            grey",
-    "XMixer*CluePopup.background:  yellow",
-    "XMixer*Slider.background:	   grey60",
-    "XMixer*Slider.thumb:	   grey",
-    "XMixer*Frame.frameWidth:	   2",
     "XMixer*Frame.outline:	   false",
-    "XMixer*Frame.usePreferedSize: true",
-    "XMixer*Frame.justify: 	   center",
-    "XMixer*RowCol.borderWidth:	   0",
     "XMixer*Label.shadowWidth:	   0",
    /* Labels */
-    "XMixer*iconName:              Mixer",
-    "XMixer*power.foreground:	   green",
-    "XMixer*power.clue:		   Quits Mixer Application",
-    "XMixer*iconify.foreground:	   yellow",
-    "XMixer*iconify.clue:	   Iconifies Mixer Application",
-    "XMixer*botbar*Slider.width:   15",
+    "XMixer*botbar*Slider.width:   20",
     "XMixer*left.label: 	   Left",
     "XMixer*right.label:	   Right",
     "XMixer*loud.label:		   Loudness",
     "XMixer*switch.shadowWidth:	   0",
     "XMixer*holder.shadowWidth:	   0",
-    "XMixer*switch.switchColor:	   red",
     "XMixer*switch.switchSize:	   20",
     "XMixer*switch.switchShape:	   square",
-    "XMixer*switch.clue:	   Use as record source",
     NULL
 };
 
@@ -562,28 +552,6 @@ balence_call(w, client_data, call_data)
 
     balence = data;
     slide_call(w, client_data, (XtPointer)Mixdata[cntl].value);
-#if 0
-    int                 left, right;
-    data = 0x7f & (100 - Mixdata[cntl].value);
-    if (balence > 50) {
-	left = data - (balence - 50)*2;
-	if (left < 0)
-	    left = 0;
-	right = data;
-    } else {
-	right = data - (50 - balence)*2;
-	if (right < 0)
-	    right = 0;
-	left = data;
-    }
-    data = (right << 8) + (left);
-
-    if (ioctl(mixdev, MIXER_WRITE(Mixdata[cntl].control), &data) < 0) {
-	fprintf(stderr, "%s: Unable to write setting for %s\n",
-		ProgramName, devnames[cntl]);
-	XBell(dpy, 0);
-    }
-#endif
 }
 
 /*

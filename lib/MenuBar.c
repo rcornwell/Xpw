@@ -28,6 +28,10 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: MenuBar.c,v $
+ * Revision 1.5  1997/11/01 06:39:04  rich
+ * Changed justify to menuJustify to avoid conflict with label.
+ * Removed unused resource foreground.
+ *
  * Revision 1.4  1997/10/21 18:52:09  rich
  * Removed need to have children be BarButtons.
  * Let Children repaint themselfs.
@@ -45,7 +49,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: MenuBar.c,v 1.4 1997/10/21 18:52:09 rich Exp rich $";
+static char        *rcsid = "$Id: MenuBar.c,v 1.5 1997/11/01 06:39:04 rich Beta rich $";
 
 #endif
 
@@ -217,7 +221,7 @@ Initialize(request, new, args, num_args)
 {
     MenuBarWidget       newself = (MenuBarWidget) new;
 
-    newself->menubar.last_query_mode = CWWidth | CWHeight;
+    newself->menubar.last_query_mode = -1;
     newself->menubar.last_query_width = newself->menubar.last_query_height = 0;
     newself->menubar.preferred_width = Max(newself->menubar.h_space, 1);
     newself->menubar.preferred_height = Max(newself->menubar.v_space, 1);

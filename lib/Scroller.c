@@ -26,6 +26,9 @@
  *
  * 
  * $Log: Scroller.c,v $
+ * Revision 1.3  1997/10/15 05:43:17  rich
+ * Removed destroy for arrow widgets.
+ *
  * Revision 1.2  1997/10/08 04:09:32  rich
  * Make sure the thumb is never bigger then window.
  * Fixed return information for arrows. Should not be possible to pass end of
@@ -43,7 +46,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Scroller.c,v 1.2 1997/10/08 04:09:32 rich Exp rich $";
+static char        *rcsid = "$Id: Scroller.c,v 1.3 1997/10/15 05:43:17 rich Exp rich $";
 
 #endif
 
@@ -51,6 +54,7 @@ static char        *rcsid = "$Id: Scroller.c,v 1.2 1997/10/08 04:09:32 rich Exp 
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
 #include <X11/Xmu/Misc.h>
+#include <X11/Xmu/Drawing.h>
 #include <X11/Shell.h>
 #include <X11/CoreP.h>
 #include "XpwInit.h"
@@ -78,8 +82,18 @@ static void         CreateGCs(Widget /*w */ );
 static void         DestroyGCs(Widget /*w */ );
 static void         HandleScroll(Widget /*wid */ , XtPointer /*client_data */ ,
 				 XtPointer /*call_data */ );
-static void         RedrawThumb(Widget /*wid */ , XEvent * /*event */ ,
-				 Region /*region */ );
+static void         RedrawThumb(Widget /*wid */ );
+/* Actions */
+static void         MoveThumb(Widget /*w */ , XEvent * /*event */ ,
+			      String * /*params */ , Cardinal * /*num_params */ );
+static void         Notify(Widget /*w */ , XEvent * /*event */ ,
+			      String * /*params */ , Cardinal * /*num_params */ );
+static void         Arm(Widget /*w */, XEvent * /*event */,
+                              String * /*params */, Cardinal * /*num_params */);
+static void         DisArm(Widget /*w */, XEvent * /*event */,
+                              String * /*params */, Cardinal * /*num_params */);
+
+#define IsVert(w)       ( (w)->scroller.orientation == XtorientVertical )
 
 /* Scroller.c */
 
@@ -103,8 +117,6 @@ static XtResource   resources[] =
      offset(orientation), XtRImmediate, (XtPointer) XtorientVertical},
     {XtNforeground, XtCForeground, XtRPixel, sizeof(Pixel),
      offset(foreground), XtRString, XtDefaultForeground},
-    {XtNthumb, XtCThumb, XtRPixel, sizeof(Pixel),
-     offset(thumb), XtRString, XtDefaultForeground},
     {XtNcallback, XtCCallback, XtRCallback, sizeof(XtPointer),
      offset(callbacks), XtRCallback, (XtPointer) NULL},
     {XtNborderWidth, XtCBorderWidth, XtRDimension, sizeof(Dimension),
@@ -127,16 +139,6 @@ static XtResource   resources[] =
 };
 
 #undef offset
-
-/* Actions */
-static void         MoveThumb(Widget /*w */ , XEvent * /*event */ ,
-			      String * /*params */ , Cardinal * /*num_params */ );
-static void         Notify(Widget /*w */ , XEvent * /*event */ ,
-			      String * /*params */ , Cardinal * /*num_params */ );
-static void         Arm(Widget /*w */, XEvent * /*event */,
-                              String * /*params */, Cardinal * /*num_params */);
-static void         DisArm(Widget /*w */, XEvent * /*event */,
-                              String * /*params */, Cardinal * /*num_params */);
 
 static XtActionsRec actionsScroller[] =
 {
@@ -240,6 +242,7 @@ Initialize(request, new, args, num_args)
     ScrollerWidget      nself = (ScrollerWidget) new;
     Dimension           w, h;
     Dimension           s = nself->scroller.threeD.shadow_width;
+    Arg			arglist[5];
 
    /* Make sure thumb gets redrawn */
     nself->scroller.t_top = nself->scroller.t_bottom = -1;
@@ -247,27 +250,18 @@ Initialize(request, new, args, num_args)
    /* make arrows if we need them */
     if (nself->scroller.usearrows) {
 
-	nself->scroller.tr_arrow = XtVaCreateManagedWidget(
-			    "tr_arrow", arrowWidgetClass, (Widget) nself,
-				    XtNarrowType,
-     (nself->scroller.orientation == XtorientHorizontal) ? XaLeft : XaUp,
-				    XtNforeground, nself->scroller.thumb,
-				    XtNbackground, nself->core.background_pixel,
-				 XtNdelayTime, nself->scroller.delayTime,
-			       XtNrepeatTime, nself->scroller.repeatTime,
-							      NULL);
-
+	XtSetArg(arglist[0], XtNarrowType, IsVert(nself) ? XaUp : XaLeft);
+	XtSetArg(arglist[1], XtNforeground, nself->scroller.foreground);
+	XtSetArg(arglist[2], XtNbackground, nself->core.background_pixel);
+	XtSetArg(arglist[3], XtNdelayTime, nself->scroller.delayTime);
+	XtSetArg(arglist[4], XtNrepeatTime, nself->scroller.repeatTime);
+	nself->scroller.tr_arrow = XtCreateManagedWidget( "tr_arrow",
+				arrowWidgetClass, (Widget) nself, arglist, 5);
+	XtSetArg(arglist[0], XtNarrowType, IsVert(nself) ? XaDown : XaRight);
+	nself->scroller.bl_arrow = XtCreateManagedWidget( "bl_arrow",
+				arrowWidgetClass, (Widget) nself, arglist, 5);
 	XtAddCallback(nself->scroller.tr_arrow,
 		      XtNcallback, HandleScroll, (XtPointer) nself);
-	nself->scroller.bl_arrow = XtVaCreateManagedWidget(
-			    "bl_arrow", arrowWidgetClass, (Widget) nself,
-				    XtNarrowType,
-      (nself->scroller.orientation == XtorientHorizontal) ? XaRight : XaDown,
-				    XtNforeground, nself->scroller.thumb,
-				    XtNbackground, nself->core.background_pixel,
-				 XtNdelayTime, nself->scroller.delayTime,
-			       XtNrepeatTime, nself->scroller.repeatTime,
-							      NULL);
 
 	XtAddCallback(nself->scroller.bl_arrow,
 		      XtNcallback, HandleScroll, (XtPointer) nself);
@@ -328,7 +322,7 @@ SetValues(current, request, new, args, num_args)
     ScrollerWidget      old_self = (ScrollerWidget) current;
     Boolean             ret_val = FALSE;
     Boolean             re_size = FALSE;
-    Arg                 arglist[2];
+    Arg                 arglist[5];
 
     _XpwThreeDDestroyShadow(current, &old_self->scroller.threeD);
     _XpwThreeDAllocateShadowGC(new, &self->scroller.threeD,
@@ -343,35 +337,21 @@ SetValues(current, request, new, args, num_args)
    /* make arrows if we need them */
     if (self->scroller.usearrows != old_self->scroller.usearrows) {
 	if (self->scroller.usearrows) {
-	    Dimension           s = self->scroller.threeD.shadow_width;
-	    Dimension           width = self->core.width - s * 2;
-	    Dimension           height = self->core.height - s * 2;
-
-	    self->scroller.tr_arrow = XtVaCreateManagedWidget(
-			     "tr_arrow", arrowWidgetClass, (Widget) self,
-				   XtNarrowType,
-	 (self->scroller.orientation == XtorientHorizontal) ? XaRight : XaUp,
-				     XtNforeground, self->scroller.thumb,
-				    XtNbackground, self->core.background_pixel,
-				  XtNdelayTime, self->scroller.delayTime,
-				XtNrepeatTime, self->scroller.repeatTime,
-								 NULL);
-
+	    XtSetArg(arglist[0], XtNarrowType, IsVert(self) ? XaUp : XaLeft);
+	    XtSetArg(arglist[1], XtNforeground, self->scroller.foreground);
+	    XtSetArg(arglist[2], XtNbackground, self->core.background_pixel);
+	    XtSetArg(arglist[3], XtNdelayTime, self->scroller.delayTime);
+	    XtSetArg(arglist[4], XtNrepeatTime, self->scroller.repeatTime);
+	    self->scroller.tr_arrow = XtCreateManagedWidget( "tr_arrow",
+				arrowWidgetClass, (Widget) self, arglist, 5);
+	    XtSetArg(arglist[0], XtNarrowType, IsVert(self) ? XaDown : XaRight);
+	    self->scroller.bl_arrow = XtCreateManagedWidget( "bl_arrow",
+				arrowWidgetClass, (Widget) self, arglist, 5);
 	    XtAddCallback(self->scroller.tr_arrow,
 			  XtNcallback, HandleScroll, (XtPointer) self);
-	    XtRealizeWidget(self->scroller.tr_arrow);
-	    self->scroller.bl_arrow = XtVaCreateManagedWidget(
-			     "bl_arrow", arrowWidgetClass, (Widget) self,
-				    XtNarrowType,
-	 (self->scroller.orientation == XtorientHorizontal) ? XaLeft : XaDown,
-				     XtNforeground, self->scroller.thumb,
-				    XtNbackground, self->core.background_pixel,
-				  XtNdelayTime, self->scroller.delayTime,
-				XtNrepeatTime, self->scroller.repeatTime,
-								 NULL);
-
 	    XtAddCallback(self->scroller.bl_arrow,
 			  XtNcallback, HandleScroll, (XtPointer) self);
+	    XtRealizeWidget(self->scroller.tr_arrow);
 	    XtRealizeWidget(self->scroller.bl_arrow);
 	} else {
 	    if (self->scroller.tr_arrow)
@@ -385,14 +365,13 @@ SetValues(current, request, new, args, num_args)
 	ret_val = TRUE;
     }
     if ((old_self->scroller.foreground != self->scroller.foreground) ||
-      (old_self->core.background_pixel != self->core.background_pixel) ||
-	(old_self->scroller.thumb != self->scroller.thumb)) {
+      (old_self->core.background_pixel != self->core.background_pixel)) {
 	DestroyGCs(current);
 	CreateGCs(new);
 
        /* Set Arrow colors if needed */
 	if (self->scroller.tr_arrow) {
-	    XtSetArg(arglist[0], XtNforeground, self->scroller.thumb);
+	    XtSetArg(arglist[0], XtNforeground, self->scroller.foreground);
 	    XtSetArg(arglist[1], XtNbackground, self->core.background_pixel);
 	    XtSetValues(self->scroller.tr_arrow, arglist, 2);
 	    XtSetValues(self->scroller.bl_arrow, arglist, 2);
@@ -435,8 +414,7 @@ static void Realize (w, valueMask, attributes)
         (w, valueMask, attributes);
 
     /* Now set the cursor */
-    cursor = (self->scroller.orientation == XtorientVertical) ?
-                 self->scroller.verCursor : self->scroller.horCursor;
+    cursor = IsVert(self) ?  self->scroller.verCursor : self->scroller.horCursor;
     XDefineCursor(XtDisplay(w), XtWindow(w), cursor);
 }
 
@@ -456,18 +434,7 @@ QueryGeometry(w, intended, return_val)
     XtGeometryMask      mode = intended->request_mode;
 
    /* Compute the default size */
-    if (self->scroller.orientation == XtorientHorizontal) {
-	width = 2 * self->scroller.min_thumb;
-	height = self->scroller.thickness;
-	if (self->scroller.tr_arrow != NULL) {
-	    width += self->scroller.tr_arrow->core.width;
-	    width += self->scroller.bl_arrow->core.width;
-	    if (self->scroller.tr_arrow->core.height > height)
-		height = self->scroller.tr_arrow->core.height;
-	    if (self->scroller.bl_arrow->core.height > height)
-		height = self->scroller.bl_arrow->core.height;
-	}
-    } else {
+    if (IsVert(self)) {
 	height = 2 * self->scroller.min_thumb;
 	width = self->scroller.thickness;
 	if (self->scroller.tr_arrow != NULL) {
@@ -477,6 +444,17 @@ QueryGeometry(w, intended, return_val)
 		width = self->scroller.tr_arrow->core.width;
 	    if (self->scroller.bl_arrow->core.width > width)
 		width = self->scroller.bl_arrow->core.width;
+	}
+    } else {
+	width = 2 * self->scroller.min_thumb;
+	height = self->scroller.thickness;
+	if (self->scroller.tr_arrow != NULL) {
+	    width += self->scroller.tr_arrow->core.width;
+	    width += self->scroller.bl_arrow->core.width;
+	    if (self->scroller.tr_arrow->core.height > height)
+		height = self->scroller.tr_arrow->core.height;
+	    if (self->scroller.bl_arrow->core.height > height)
+		height = self->scroller.bl_arrow->core.height;
 	}
     }
 
@@ -517,20 +495,17 @@ Resize(w)
     Dimension           height = self->core.height - s * 2;
     Dimension           arrows;
 
-    if (self->scroller.orientation == XtorientHorizontal)
-	arrows = height;
-    else
-	arrows = width;
+    arrows = (IsVert(self)) ? width : height;
 /* Move arrows if they exist */
     if (self->scroller.tr_arrow) {
 	XtMoveWidget(self->scroller.tr_arrow, s, s);
 	XtResizeWidget(self->scroller.tr_arrow, arrows, arrows, 0);
-	if (self->scroller.orientation == XtorientHorizontal)
-	    XtMoveWidget(self->scroller.bl_arrow,
-			 width - self->scroller.bl_arrow->core.width, s);
-	else
+	if (IsVert(self)) 
 	    XtMoveWidget(self->scroller.bl_arrow,
 		       s, height - self->scroller.bl_arrow->core.height);
+	else
+	    XtMoveWidget(self->scroller.bl_arrow,
+			 width - self->scroller.bl_arrow->core.width, s);
 	XtResizeWidget(self->scroller.bl_arrow, arrows, arrows, 0);
     }
     Redisplay(w, NULL, NULL);
@@ -553,13 +528,13 @@ Redisplay(wid, event, region)
     if (!XtIsRealized(wid))
 	return;
 
-    if (region == NULL) {
+    if (region == NULL) 
 	XClearWindow(dpy, win);
-	self->scroller.t_top = -1;
-    }
-    RedrawThumb(wid, event, region);
+
+    self->scroller.t_top = -1;
     _XpwThreeDDrawShadow(wid, event, region, &(self->scroller.threeD), 0, 0,
 			 self->core.width, self->core.height, TRUE);
+    RedrawThumb(wid);
 }
 
 /*
@@ -571,13 +546,6 @@ Destroy(w)
 {
     ScrollerWidget      self = (ScrollerWidget) w;
 
-#if 0
-   /* Free Arrow's if we have them */
-    if (self->scroller.tr_arrow)
-	XtDestroyWidget(self->scroller.tr_arrow);
-    if (self->scroller.bl_arrow)
-	XtDestroyWidget(self->scroller.bl_arrow);
-#endif
     DestroyGCs(w);
     _XpwThreeDDestroyShadow(w, &(self->scroller.threeD));
 }
@@ -612,20 +580,6 @@ CreateGCs(w)
     values.graphics_exposures = FALSE;
     mask |= GCTile | GCFillStyle;
     self->scroller.gray_gc = XtGetGC(w, mask, &values);
-
-    values.foreground = self->scroller.thumb;
-    values.background = self->core.background_pixel;
-    values.graphics_exposures = FALSE;
-    mask = GCForeground | GCBackground | GCGraphicsExposures;
-
-    self->scroller.thumb_gc = XtGetGC(w, mask, &values);
-
-    values.fill_style = FillTiled;
-    values.tile = XmuCreateStippledPixmap(XtScreenOfObject(w),
-    self->scroller.thumb, self->core.background_pixel, self->core.depth);
-    values.graphics_exposures = FALSE;
-    mask |= GCTile | GCFillStyle;
-    self->scroller.gray_thumb_gc = XtGetGC(w, mask, &values);
 }
 
 /*
@@ -639,8 +593,6 @@ DestroyGCs(w)
 
     XtReleaseGC(w, self->scroller.norm_gc);
     XtReleaseGC(w, self->scroller.gray_gc);
-    XtReleaseGC(w, self->scroller.thumb_gc);
-    XtReleaseGC(w, self->scroller.gray_thumb_gc);
 }
 
 /*
@@ -648,10 +600,8 @@ DestroyGCs(w)
  */
 
 static void
-RedrawThumb(wid, event, region)
+RedrawThumb(wid)
 	Widget              wid;
-	XEvent             *event;
-	Region              region;
 {
     ScrollerWidget      self = (ScrollerWidget) wid;
     Display            *dpy = XtDisplayOfObject(wid);
@@ -664,17 +614,15 @@ RedrawThumb(wid, event, region)
     int                 x_loc, y_loc, sw, sh;
     int                 ox_loc, oy_loc, osw, osh;
     GC                  gc;
-    int                 tlenght;	/* Total units high */
-    int                 tshown;	/* Total units showing */
 
     if (!XtIsRealized(wid))
 	return;
 
    /* Set the context based on sensitivity setting */
     if (XtIsSensitive(wid) && XtIsSensitive(XtParent(wid)))
-	gc = self->scroller.thumb_gc;
+	gc = self->scroller.norm_gc;
     else
-	gc = self->scroller.gray_thumb_gc;
+	gc = self->scroller.gray_gc;
 
    /* Force position into range */
     if (self->scroller.position < 0)
@@ -691,32 +639,7 @@ RedrawThumb(wid, event, region)
     if (pos > 1.0)
 	pos = 1.0;
 
-    if (self->scroller.orientation == XtorientHorizontal) {
-	y_loc = s;
-	sh = h;
-	if (self->scroller.tr_arrow)
-	    w -= self->scroller.tr_arrow->core.width +
-		self->scroller.bl_arrow->core.width;
-	x_loc = (int) (pos * (float) w);
-	sw = (int) (size * (float) w);
-	if (sw < self->scroller.min_thumb)
-	    sw = self->scroller.min_thumb;
-	x_loc -= sw / 2;
-       /* Make sure it stays in range */
-	if (x_loc < 0)
-	    x_loc = 0;
-	if ((x_loc + sw) > w)
-	    x_loc = w - sw;
-	if (self->scroller.tr_arrow)
-	    x_loc += self->scroller.tr_arrow->core.width;
-	x_loc += s;
-	ox_loc = self->scroller.t_top;
-	oy_loc = s;
-	osw = self->scroller.t_bottom;
-	osh = h;
-	self->scroller.t_top = x_loc;
-	self->scroller.t_bottom = sw;
-    } else {
+    if (IsVert(self)) {
 	x_loc = s;
 	sw = w;
 	if (self->scroller.tr_arrow)
@@ -742,16 +665,39 @@ RedrawThumb(wid, event, region)
 	osh = self->scroller.t_bottom;
 	self->scroller.t_top = y_loc;
 	self->scroller.t_bottom = sh;
-    }
-    if (x_loc != ox_loc || y_loc != oy_loc || sw != osw || sh != osh
-    || (region != NULL && XRectInRegion(region, (int) x_loc, (int) y_loc,
-				    (unsigned int) sw, (unsigned int) sh)
-	!= RectangleOut)) {
+     } else {
+	y_loc = s;
+	sh = h;
+	if (self->scroller.tr_arrow)
+	    w -= self->scroller.tr_arrow->core.width +
+		self->scroller.bl_arrow->core.width;
+	x_loc = (int) (pos * (float) w);
+	sw = (int) (size * (float) w);
+	if (sw < self->scroller.min_thumb)
+	    sw = self->scroller.min_thumb;
+	x_loc -= sw / 2;
+       /* Make sure it stays in range */
+	if (x_loc < 0)
+	    x_loc = 0;
+	if ((x_loc + sw) > w)
+	    x_loc = w - sw;
+	if (self->scroller.tr_arrow)
+	    x_loc += self->scroller.tr_arrow->core.width;
+	x_loc += s;
+	ox_loc = self->scroller.t_top;
+	oy_loc = s;
+	osw = self->scroller.t_bottom;
+	osh = h;
+	self->scroller.t_top = x_loc;
+	self->scroller.t_bottom = sw;
+    } 
+
+    if (x_loc != ox_loc || y_loc != oy_loc || sw != osw || sh != osh) {
    /* Decide if we need to remove old one */
 	if (ox_loc >= 0 && oy_loc >= 0)
 	    XClearArea(dpy, win, ox_loc, oy_loc, osw, osh, FALSE);
    /* Draw new one */
-	_XpwThreeDDrawShadow(wid, event, region, &(self->scroller.threeD), x_loc, y_loc,
+	_XpwThreeDDrawShadow(wid, NULL, NULL, &(self->scroller.threeD), x_loc, y_loc,
 			     sw, sh, 0);
 	XFillRectangle(dpy, win, gc, x_loc + s, y_loc + s, sw - 2 * s, sh - 2 * s);
 
@@ -769,6 +715,9 @@ HandleScroll(wid, client_data, call_data)
 {
     ScrollerWidget      self = (ScrollerWidget) client_data;
 
+    if ((!XtIsSensitive(wid)) || (!XtIsSensitive(XtParent(wid))))
+        return;
+
     if (wid == self->scroller.tr_arrow)
 	self->scroller.position -= self->scroller.tshown;
     else
@@ -779,7 +728,7 @@ HandleScroll(wid, client_data, call_data)
     if (self->scroller.position > self->scroller.tlenght)
 	self->scroller.position = self->scroller.tlenght;
     if (XtIsRealized((Widget) self))
-	RedrawThumb((Widget) self, NULL, NULL);
+	RedrawThumb((Widget) self);
     Notify((Widget) self, NULL, NULL, NULL);
 }
 
@@ -813,15 +762,11 @@ MoveThumb(w, event, params, num_params)
 	XtWarning("Too many parameters passed to MoveThumb action table.");
 	return;
     }
-    if (self->scroller.orientation == XtorientHorizontal) {
-	point = event->xbutton.x;
-	total = self->core.width - 2 * s;
-	if (self->scroller.tr_arrow) {
-	    point -= self->scroller.tr_arrow->core.width;
-	    total -= self->scroller.tr_arrow->core.width +
-		self->scroller.bl_arrow->core.width;
-	}
-    } else {
+
+    if ((!XtIsSensitive(w)) || (!XtIsSensitive(XtParent(w))))
+        return;
+
+    if (IsVert(self)) {
 	point = event->xbutton.y;
 	total = self->core.height - 2 * s;
 	if (self->scroller.tr_arrow) {
@@ -829,20 +774,31 @@ MoveThumb(w, event, params, num_params)
 	    total -= self->scroller.tr_arrow->core.height +
 		self->scroller.bl_arrow->core.height;
 	}
-    }
+    } else {
+	point = event->xbutton.x;
+	total = self->core.width - 2 * s;
+	if (self->scroller.tr_arrow) {
+	    point -= self->scroller.tr_arrow->core.width;
+	    total -= self->scroller.tr_arrow->core.width +
+		self->scroller.bl_arrow->core.width;
+	}
+    } 
+
     switch (params[0][0]) {
 	int                 amount;
 
     case 'm':
     case 'M':
 	self->scroller.position = (int) (
-					    ((float) self->scroller.tlenght) * (((float) (point)) / ((float) total)));
+	    ((float) self->scroller.tlenght) * (((float) (point)) /
+					 ((float) total)));
 
 	break;
     case 'f':
     case 'F':
 	amount = (int) (
-			   ((float) self->scroller.tshown) * (((float) (total - point)) / ((float) total)));
+	   ((float) self->scroller.tshown) * (((float) (total - point)) /
+					 ((float) total)));
 	if (amount == 0)
 	    amount = 1;
 	self->scroller.position -= amount;
@@ -863,7 +819,7 @@ MoveThumb(w, event, params, num_params)
     if (self->scroller.position > self->scroller.tlenght)
 	self->scroller.position = self->scroller.tlenght;
     if (XtIsRealized(w))
-	RedrawThumb(w, NULL, NULL);
+	RedrawThumb(w);
 }
 
 /*
@@ -880,6 +836,9 @@ Notify(w, event, params, num_params)
 {
     ScrollerWidget      self = (ScrollerWidget) w;
     int                 pos;
+
+    if ((!XtIsSensitive(w)) || (!XtIsSensitive(XtParent(w))))
+        return;
 
     pos = self->scroller.position - (self->scroller.tshown / 2);
     if (pos < 0)
@@ -938,7 +897,7 @@ XpwScrollerSetThumb(w, length, shown)
 	self->scroller.tshown = shown;
     if (self->scroller.position > self->scroller.tlenght)
 	self->scroller.position = self->scroller.tlenght;
-    RedrawThumb(w, NULL, NULL);
+    RedrawThumb(w);
 }
 
 /*
@@ -956,5 +915,5 @@ XpwScrollerSetPosition(w, pos)
     self->scroller.position = pos + (self->scroller.tshown / 2);
     if (self->scroller.position > self->scroller.tlenght)
 	self->scroller.position = self->scroller.tlenght;
-    RedrawThumb(w, NULL, NULL);
+    RedrawThumb(w);
 }

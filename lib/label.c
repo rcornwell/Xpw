@@ -23,12 +23,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: label.c,v $
+ * Revision 1.1  1997/10/12 05:20:24  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char         rcsid[] = "$Id$";
+static char         rcsid[] = "$Id: label.c,v 1.1 1997/10/12 05:20:24 rich Exp rich $";
 
 #endif
 
@@ -209,14 +212,14 @@ _XpwLabelDraw(w, label, event, region, x, y, wi, hi, dobg)
     char               *p, *p1;
 
    /* Set the context based on sensitivity setting */
-    if (XtIsSensitive(w) && XtIsSensitive(XtParent(w)))
+    if (XtIsSensitive(w))
 	gc = label->norm_gc;
     else
 	gc = label->norm_gray_gc;
 
+    x_loc = x + label->left_margin;
    /* Bitmap overrides label */
     if (label->bitmap != None) {
-	x_loc = x + label->left_margin;
 	t_width = label->bitmap_width;
 
 	switch (label->justify) {
@@ -260,7 +263,6 @@ _XpwLabelDraw(w, label, event, region, x, y, wi, hi, dobg)
 
 	   /* Justify label */
 	    y_loc = y;
-	    x_loc = x + label->left_margin;
 	    t_width = label->label_width;
 	    switch (label->justify) {
 	    case XtJustifyCenter:

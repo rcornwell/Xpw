@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: SliderP.h,v 1.1 1997/10/08 04:08:42 rich Exp rich $
  *
- * $Log: $
+ * $Log: SliderP.h,v $
+ * Revision 1.1  1997/10/08 04:08:42  rich
+ * Initial revision
+ *
  *
  */
 
@@ -39,46 +42,51 @@
 #include "Slider.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * Slider Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the Slider widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } SliderClassPart;
 
+/* Full class record declaration */
 typedef struct _SliderClassRec {
     CoreClassPart       core_class;
     SliderClassPart     slider_class;
 } SliderClassRec;
 
+/* New fields for the Slider widget Record */
 typedef struct {
     /* resources */
     XtOrientation	orientation;
     int		    	min;		/* Minium output */
     int			max;		/* Maximum output */
     Dimension		thickness;	/* How wide to make thumb */
-
     Pixel               foreground;
-    Pixel		thumb;
     XtCallbackList	callbacks;
     String		clue;
     Cursor		horCursor;
     Cursor		verCursor;
 
-/* private resources. */
+   /* Shadow info */
+    _XpmThreeDFrame	threeD;
+
+   /* private resources. */
     int			t_top;		/* Top of thumb */
     int			t_bottom;	/* Bottom of thumb */
     int			position;	/* Current position */
     int			oposition;	/* Last reported position */
     GC                  norm_gc;	/* normal color gc. */
-    GC                  thumb_gc;	/* Thumb GC */
     GC                  gray_gc;	/* Normal color (grayed out) gc. */
-    GC                  gray_thumb_gc;	/* Gray Thumb GC */
-
-   /* Shadow info */
-    _XpmThreeDFrame	threeD;
 
 } SliderPart;
 
+/* Full instance record declaration */
 typedef struct _SliderRec {
     CorePart            core;
     SliderPart        	slider;

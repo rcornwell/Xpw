@@ -1,4 +1,4 @@
-! $Id$
+! $Id: XMixer.ad,v 1.1 1997/10/29 05:42:29 rich Exp rich $
 !
 ! XMixer Applications default file.
 !
@@ -6,22 +6,25 @@
 !
 ! Private resources.
 !
-!XMixer.mixerDevice:		   /dev/mixer
-!XMixer.showALL:		   false
-!XMixer.pollRate:		   5000
+XMixer.mixerDevice:		   /dev/mixer
+XMixer.showALL:			   false
+XMixer.pollRate:		   5000
 !
 ! Global Stuff 
 !
-XMixer*Font:                 	   -*-lucidabright-demibold-r-normal-*-14-*
+XMixer*Font:                 	   -*-helvetica-bold-r-normal-*-12-*
 XMixer*background:          	   grey
 XMixer*CluePopup.background:	   yellow
 XMixer*Slider.background:	   grey60
-XMixer*Slider.thumb:	 	   grey
+XMixer*Slider.foreground: 	   grey
 XMixer*Frame.frameWidth:	   2
 XMixer*Frame.outline:		   false
 XMixer*Frame.usePreferedSize:	   true
 XMixer*Frame.justify:              center
 XMixer*RowCol.borderWidth:	   0
+XMixer*Select.borderWidth:	   0
+XMixer*Select.leftMargin:	   0
+XMixer*Select.rightMargin:	   0
 XMixer*Label.shadowWidth:	   0
 !
 ! Labels
@@ -31,7 +34,7 @@ XMixer*power.foreground:	   green
 XMixer*power.clue:		   Quits Mixer Application
 XMixer*iconify.foreground:	   yellow
 XMixer*iconify.clue:		   Iconifies Mixer Application
-XMixer*botbar*Slider.width:	   15
+XMixer*botbar*Slider.width:	   20
 XMixer*left.label: 		   Left
 XMixer*right.label:		   Right
 XMixer*loud.label:		   Loudness

@@ -28,6 +28,10 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: MenuBar.c,v $
+ * Revision 1.4  1997/10/21 18:52:09  rich
+ * Removed need to have children be BarButtons.
+ * Let Children repaint themselfs.
+ *
  * Revision 1.3  1997/10/15 05:42:55  rich
  * Added justification to pulldown menus.
  *
@@ -41,7 +45,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: MenuBar.c,v 1.3 1997/10/15 05:42:55 rich Exp rich $";
+static char        *rcsid = "$Id: MenuBar.c,v 1.4 1997/10/21 18:52:09 rich Exp rich $";
 
 #endif
 
@@ -120,10 +124,8 @@ static XtResource   resources[] =
      offset(h_space), XtRImmediate, (XtPointer) 4},
     {XtNvSpace, XtCVSpace, XtRDimension, sizeof(Dimension),
      offset(v_space), XtRImmediate, (XtPointer) 4},
-    {XtNforeground, XtCForeground, XtRPixel, sizeof(Pixel),
-     offset(foreground), XtRString, XtDefaultForeground},
-    {XtNjustify, XtCJustify, XtRJustify, sizeof(XtJustify),
-     offset(justify), XtRImmediate, (XtPointer) XtJustifyRight}, 
+    {XtNmenuJustify, XtCJustify, XtRJustify, sizeof(XtJustify),
+     offset(menu_justify), XtRImmediate, (XtPointer) XtJustifyRight}, 
     threeDresources
 };
 
@@ -198,7 +200,6 @@ ClassPartInitialize(class)
 	WidgetClass         class;
 {
     MenuBarWidgetClass  c = (MenuBarWidgetClass) class;
-    MenuBarWidgetClass  super;
     CompositeClassExtensionRec *ext;
 
     ext = (XtPointer) XtMalloc(sizeof(*ext));
@@ -215,7 +216,6 @@ Initialize(request, new, args, num_args)
 	Cardinal           *num_args;
 {
     MenuBarWidget       newself = (MenuBarWidget) new;
-    XGCValues           values;
 
     newself->menubar.last_query_mode = CWWidth | CWHeight;
     newself->menubar.last_query_width = newself->menubar.last_query_height = 0;
@@ -487,7 +487,6 @@ DoLayout(self, width, height, reply_width, reply_height, position)
 	Dimension          *reply_width, *reply_height;		/* bounding box */
 	Boolean             position;	/* actually reposition the windows? */
 {
-    Cardinal            i;
     Dimension           w, h;	/* Width and height needed for box              */
     Dimension           lw, lh;	/* Width and height needed for current line     */
     Dimension           bw, bh;	/* Width and height needed for current widget   */
@@ -883,7 +882,7 @@ _XpwMenuPopupEntry(w, menubutton)
 
     XtTranslateCoords(w, child->core.x, child->core.y, &button_x, &button_y);
     menu_x = button_x;
-    switch (self->menubar.justify) {
+    switch (self->menubar.menu_justify) {
     case XtJustifyCenter:
         menu_x += (child->core.width - menu_width) / 2;
         break;

@@ -30,9 +30,12 @@
  */
 
 /*
- * $Id: MenuBar.h,v 1.1 1997/10/04 05:06:09 rich Exp rich $
+ * $Id: MenuBar.h,v 1.2 1997/10/15 05:42:55 rich Exp rich $
  *
  * $Log: MenuBar.h,v $
+ * Revision 1.2  1997/10/15 05:42:55  rich
+ * Added justification to pulldown menus.
+ *
  * Revision 1.1  1997/10/04 05:06:09  rich
  * Initial revision
  *
@@ -51,8 +54,7 @@
  * ----                -----              -------         -------------
  * hSpace              HSpace             Dimension       4
  * vSpace              VSpace             Dimension       4
- * foreground          Foreground         Pixel           XtDefaultForeground
- * justify             Justify            Justify         Right
+ * menuJustify         Justify            Justify         Right
  *
  * From ThreeD Highlight:
  * 
@@ -92,6 +94,10 @@ extern WidgetClass  menubarWidgetClass;
 #ifndef _XtStringDefs_h_
 #define XtNhSpace "hSpace"
 #define XtNvSpace "vSpace"
+#endif
+
+#ifndef XtNmenuJustify
+#define XtNmenuJustify "menuJustify"
 #endif
 
 /************************************************************

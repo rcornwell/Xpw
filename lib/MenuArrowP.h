@@ -30,9 +30,13 @@
 /* 
  * MenuArrowP.h - Private definitions for MenuArrow.
  *
- * $Id: MenuArrowP.h,v 1.1 1997/10/15 05:42:22 rich Exp rich $
+ * $Id: MenuArrowP.h,v 1.2 1997/11/01 06:39:04 rich Beta rich $
  *
  * $Log: MenuArrowP.h,v $
+ * Revision 1.2  1997/11/01 06:39:04  rich
+ * Changed justify to menuJustify to avoid conflict with label.
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/15 05:42:22  rich
  * Initial revision
  *
@@ -70,6 +74,7 @@ typedef struct {
    /* resources */
     String              menu_name;	
     XtJustify           menu_justify;        /* Justification for the popup. */
+    Boolean		align_parent;
 } MenuArrowPart;
 
 /* Full instance record declaration */

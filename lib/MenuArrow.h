@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: MenuArrow.h,v 1.1 1997/10/15 05:42:22 rich Exp rich $
+ * $Id: MenuArrow.h,v 1.2 1997/11/01 06:39:04 rich Beta rich $
  *
  * $Log: MenuArrow.h,v $
+ * Revision 1.2  1997/11/01 06:39:04  rich
+ * Changed justify to menuJustify to avoid conflict with label.
+ *
  * Revision 1.1  1997/10/15 05:42:22  rich
  * Initial revision
  *
@@ -55,6 +58,7 @@
  * ----              -----              -------         -------------
  * menuName          MenuName           String          NULL
  * menuJustify	     Justify		XtJustify	left
+ * alignToParent     AlignToParent      Boolean         False
  *
  * Name                Class              RepType         Default Value
  * ----                -----              -------         -------------
@@ -106,6 +110,11 @@ extern WidgetClass  menuarrowWidgetClass;
 
 #ifndef XtNmenuJustify
 #define XtNmenuJustify "menuJustify"
+#endif
+
+#ifndef XtNalignToParent
+#define XtNalignToParent "alignToParent"
+#define XtCAlignToParent "AlignToParent"
 #endif
 
 #endif /* _MenuArrow_h */

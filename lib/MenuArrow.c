@@ -27,6 +27,9 @@
  *
  *
  * $Log: MenuArrow.c,v $
+ * Revision 1.2  1997/11/01 06:39:04  rich
+ * Changed justify to menuJustify to avoid conflict with label.
+ *
  * Revision 1.1  1997/10/15 05:42:22  rich
  * Initial revision
  *
@@ -34,7 +37,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: MenuArrow.c,v 1.1 1997/10/15 05:42:22 rich Exp rich $";
+static char        *rcsid = "$Id: MenuArrow.c,v 1.2 1997/11/01 06:39:04 rich Beta rich $";
 
 #endif
 
@@ -60,7 +63,8 @@ static XtResource   resources[] =
      offset(menu_name), XtRString, (XtPointer) NULL},
     {XtNmenuJustify, XtCJustify, XtRJustify, sizeof(XtJustify),
      offset(menu_justify), XtRImmediate, (XtPointer) XtJustifyRight}, 
-
+    {XtNalignToParent, XtCAlignToParent, XtRBoolean, sizeof(Boolean),
+     offset(align_parent), XtRImmediate, (XtPointer) False},
 };
 
 #undef offset
@@ -251,7 +255,10 @@ Popup(w, event, params, num_params)
     menu_width = menu->core.width + 2 * menu->core.border_width;
     menu_height = menu->core.height + 2 * menu->core.border_width;
 
-    XtTranslateCoords(w, 0, 0, &arrow_x, &arrow_y);
+    if (self->menuarrow.align_parent) 
+    	XtTranslateCoords(XtParent(w), 0, 0, &arrow_x, &arrow_y);
+    else
+    	XtTranslateCoords(w, 0, 0, &arrow_x, &arrow_y);
     menu_x = arrow_x;
     switch (self->menuarrow.menu_justify) {
     case XtJustifyCenter:
@@ -265,7 +272,10 @@ Popup(w, event, params, num_params)
         break;
     }
 
-    menu_y = arrow_y + self->core.height;
+    if (self->menuarrow.align_parent) 
+        menu_y = arrow_y + XtParent(w)->core.height;
+    else
+        menu_y = arrow_y + self->core.height;
 
     if (menu_x >= 0) {
         int                 scr_width = WidthOfScreen(XtScreen(menu));

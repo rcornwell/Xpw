@@ -6,9 +6,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: tracklist.h,v 1.1 1997/12/16 05:48:46 rich Exp rich $
  *
- * $Log: $
+ * $Log: tracklist.h,v $
+ * Revision 1.1  1997/12/16 05:48:46  rich
+ * Initial revision
+ *
  *
  */
 
@@ -58,6 +61,8 @@ private:
         static void editok(Widget, XtPointer, XtPointer);
         static void saveok(Widget, XtPointer, XtPointer);
         static void dialogdone(Widget, XtPointer, XtPointer);
+        static void showplay(Widget, XtPointer, XtPointer);
+        static void hideplay(Widget, XtPointer, XtPointer);
         static void playclear(Widget, XtPointer, XtPointer);
         static void playaddall(Widget, XtPointer, XtPointer);
         static void playadd(Widget, XtPointer, XtPointer);
@@ -67,8 +72,6 @@ private:
         static void playtrack(Widget, XtPointer, XtPointer);
         static void playmove(Widget, XtPointer, XtPointer);
         static void playplay(Widget, XtPointer, XtPointer);
-        static void playapply(Widget, XtPointer, XtPointer);
-        static void playok(Widget, XtPointer, XtPointer);
 
        /* General private functions */
         void editsave(Widget parent);
@@ -82,7 +85,6 @@ public:
 	void readfile();
 	void writefile();
         void editTrack();
-        void editPlaylist();
 	/* Get track name for a given track.  */
 	Str getname(int num) { return tracks[num].gettrk(); }
 	char *gettitle() { return title.cstring(); }

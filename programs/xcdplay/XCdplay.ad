@@ -1,4 +1,4 @@
-! $Id: $
+! $Id: XCdplay.ad,v 1.1 1997/12/16 05:48:46 rich Exp $
 !
 ! XCdplay Applications default file.
 !
@@ -24,7 +24,7 @@ XCdplay*Dialog.packing:            		even
 ! Labels.
 XCdplay*menubar.windows.label:			Windows
 XCdplay*menubar.file.label:			File
-XCdplay*menubar.option.label:			Options
+XCdplay*menubar.option.label:			Modes
 XCdplay*filemenu.play.label:			Play CD
 XCdplay*filemenu.stop.label:			Stop CD
 XCdplay*filemenu.edittrack.label:		Edit Track
@@ -58,6 +58,8 @@ XCdplay*toolbar*toolEject.clue:	   		Eject Cd.
 XCdplay*toolbar*toolPlay.clue:	   		Start Cd Playing.
 XCdplay*toolbar*toolStop.clue:	  		Stop Cd.
 XCdplay*toolbar*toolNormal.clue:		Sets Normal play mode.
+XCdplay*toolbar*toolShuffle.clue:		Sets Shuffle play mode.
+XCdplay*toolbar*toolRepeat.clue:		Sets Repeat play mode.
 XCdplay*toolbar*toolRandom.clue:		Sets Random play mode.
 XCdplay*toolbar*toolIntro.clue:	  		Sets Intro play mode.
 XCdplay*toolbar*toolElapsed.clue:		Sets display to elapsed time in track.
@@ -74,20 +76,19 @@ XCdplay*status*mainwindow.raised:		false
 XCdplay*status*mainwindow.resizeToPreferred:	false
 XCdplay*status*mainwindow.background:  		black
 XCdplay*status*mainwindow.foreground: 		SpringGreen
-XCdplay*status.f1.rows:    			2
+XCdplay*status.f1.resizeToPreferred:		true
+XCdplay*status.f1.rows:    			3
 XCdplay*status.f1.cols:    			4
+XCdplay*status.f1.*.resizeToPreferred:		false
 XCdplay*status.f1.*.justify:			center
-XCdplay*status.f1.play.resizeToPreferred:	false
 XCdplay*status.f1.play.colSpan:			3
 XCdplay*status.f1.play.row:			0
 XCdplay*status.f1.play.col:			0
-XCdplay*status.f1.stop.resizeToPreferred:	false
 XCdplay*status.f1.stop.colSpan:			3
 XCdplay*status.f1.stop.row:			0
 XCdplay*status.f1.stop.col:			0
 XCdplay*status.f1.pause.row:			0
 XCdplay*status.f1.pause.col:			3
-XCdplay*status.f1.pause.resizeToPreferred:	false
 XCdplay*status.f1.skipback.row:			1
 XCdplay*status.f1.skipback.col:			0
 XCdplay*status.f1.fastback.row:			1
@@ -96,6 +97,10 @@ XCdplay*status.f1.fastforw.row:			1
 XCdplay*status.f1.fastforw.col:			2
 XCdplay*status.f1.skipforw.row:			1
 XCdplay*status.f1.skipforw.col:			3
+XCdplay*status.f1.drives.row:			2
+XCdplay*status.f1.drives.col:			0
+XCdplay*status.f1.drives.colSpan:		4
+XCdplay*status.f1.drives*resizeToPreferred:	false
 ! Title
 XCdplay*manager.title.background:		grey60
 XCdplay*manager.title.raised:			false
@@ -123,74 +128,76 @@ XCdplay*SaveQuest*title:			Save Changes
 XCdplay*SaveQuest*message:			Save Track List Changes?
 XCdplay*SaveQuest*cancelLabelString:		No
 XCdplay*SaveQuest.dialog.dialogType:		modeless
-! Track Editor.
+XCdplay*Question*Label.shadowWidth:		0
+XCdplay*Question*title:				Create Database Directory
+XCdplay*Question*cancelLabelString:		No
+XCdplay*Question*okLabelString:			Yes
+XCdplay*Question.dialog.dialogType:		modeless
+!! Track Editor.
 XCdplay*EditTrack*SaveQuest*message:		Save Track List Changes?
 XCdplay*EditTrack*Label.shadowWidth:		0
+XCdplay*EditTrack*showplay.label:		Show Playlist
+XCdplay*EditTrack*hideplay.label:		Hide Playlist
 XCdplay*EditTrack.dialog.dialogType:		modeless
 XCdplay*EditTrack.dialog.autoUnmanage:		false
 XCdplay*EditTrack*message:			CD Title:
 XCdplay*EditTrack*list.label:			Track List
 XCdplay*EditTrack*tracklist.defaultColumns:	1
+XCdplay*EditTrack*tracklist.alwaysNotify:	true
 XCdplay*EditTrack*tracklist.height:		100
-XCdplay*EditTrack*tracklist.onlyOne:		true
+!XCdplay*EditTrack*tracklist.onlyOne:		true
+XCdplay*EditTrack*manager.allowResize:		true
+XCdplay*EditTrack*manager.packing:		fill
+XCdplay*EditTrack*tmanager.resizeToPreferred:	false
+XCdplay*EditTrack*tmanager.allowResize:		true
 XCdplay*EditTrack*tracklabel.label:		Track Title:
 ! Play List Editor.
-XCdplay*EditPlayList*SaveQuest*message:		Save Track List Changes?
-XCdplay*EditPlayList.dialog.dialogType:		modeless
-XCdplay*EditPlayList.dialog.autoUnmanage:	false
-XCdplay*EditPlayList*message:			Play List:
-XCdplay*EditPlayList*tracklist.alwaysNotify:	true
-XCdplay*EditPlayList*tracklist.row:		0
-XCdplay*EditPlayList*tracklist.rowSpan:		6
-XCdplay*EditPlayList*tracklist.col:		0
-XCdplay*EditPlayList*tracklist.defaultColumns:	1
-XCdplay*EditPlayList*tracklist.height:		100
-XCdplay*EditPlayList*tracklist.width:		150
-XCdplay*EditPlayList*playlist.alwaysNotify:	true
-XCdplay*EditPlayList*playlist.row:		0
-XCdplay*EditPlayList*playlist.rowSpan:		6
-XCdplay*EditPlayList*playlist.col:		2
-XCdplay*EditPlayList*playlist.defaultColumns:	1
-XCdplay*EditPlayList*playlist.height:		100
-XCdplay*EditPlayList*playlist.width:		150
-XCdplay*EditPlayList*manager.cols:		4
-XCdplay*EditPlayList*manager.rows:		6
-XCdplay*EditPlayList*clear.label:		Clear List
-XCdplay*EditPlayList*clear.clue:		Removes all tracks from play list
-XCdplay*EditPlayList*clear.col:			1
-XCdplay*EditPlayList*clear.row:			0
-XCdplay*EditPlayList*addall.label:		Add All Tracks
-XCdplay*EditPlayList*addall.clue:		Add all tracks to play list
-XCdplay*EditPlayList*addall.col:		1
-XCdplay*EditPlayList*addall.row:		1
-XCdplay*EditPlayList*add.label:			Add Tracks
-XCdplay*EditPlayList*add.clue:			Add selected tracks to play list
-XCdplay*EditPlayList*add.col:			1
-XCdplay*EditPlayList*add.row:			2
-XCdplay*EditPlayList*remove.label:		Remove Tracks
-XCdplay*EditPlayList*remove.clue:		Removes selected tracks from play list
-XCdplay*EditPlayList*remove.col:		1
-XCdplay*EditPlayList*remove.row:		3
-XCdplay*EditPlayList*delete.label:		Mark Unplayable
-XCdplay*EditPlayList*delete.clue:		Marks track so they will not be playable.
-XCdplay*EditPlayList*delete.col:		1
-XCdplay*EditPlayList*delete.row:		4
-XCdplay*EditPlayList*undelete.label:		Mark Playable
-XCdplay*EditPlayList*undelete.clue:		Marks track so they can be playable.
-XCdplay*EditPlayList*undelete.col:		1
-XCdplay*EditPlayList*undelete.row:		5
-XCdplay*EditPlayList*top.col:			3
-XCdplay*EditPlayList*top.row:			0
-XCdplay*EditPlayList*top.clue:			Moves selected track to top of playlist.
-XCdplay*EditPlayList*up.col:			3
-XCdplay*EditPlayList*up.row:			1
-XCdplay*EditPlayList*up.clue:			Moves selected track forward in playlist.
-XCdplay*EditPlayList*down.col:			3
-XCdplay*EditPlayList*down.row:			4
-XCdplay*EditPlayList*down.clue:			Moves selected track backward in playlist.
-XCdplay*EditPlayList*bot.col:			3
-XCdplay*EditPlayList*bot.row:			5
-XCdplay*EditPlayList*bot.clue:			Moves selected track to end of playlist.
+XCdplay*EditTrack*SaveQuest*message:		Save Track List Changes?
+XCdplay*EditTrack*playlist.alwaysNotify:	true
+XCdplay*EditTrack*playlist.row:			0
+XCdplay*EditTrack*playlist.rowSpan:		6
+XCdplay*EditTrack*playlist.col:			1
+XCdplay*EditTrack*playlist.defaultColumns:	1
+XCdplay*EditTrack*playlist.height:		100
+XCdplay*EditTrack*playlist.width:		150
+XCdplay*EditTrack*pmanager.cols:		3
+XCdplay*EditTrack*pmanager.rows:		6
+XCdplay*EditTrack*clear.label:			Clear List
+XCdplay*EditTrack*clear.clue:			Removes all tracks from play list
+XCdplay*EditTrack*clear.col:			0
+XCdplay*EditTrack*clear.row:			0
+XCdplay*EditTrack*addall.label:			Add All Tracks
+XCdplay*EditTrack*addall.clue:			Add all tracks to play list
+XCdplay*EditTrack*addall.col:			0
+XCdplay*EditTrack*addall.row:			1
+XCdplay*EditTrack*add.label:			Add Tracks
+XCdplay*EditTrack*add.clue:			Add selected tracks to play list
+XCdplay*EditTrack*add.col:			0
+XCdplay*EditTrack*add.row:			2
+XCdplay*EditTrack*remove.label:			Remove Tracks
+XCdplay*EditTrack*remove.clue:			Removes selected tracks from play list
+XCdplay*EditTrack*remove.col:			0
+XCdplay*EditTrack*remove.row:			3
+XCdplay*EditTrack*delete.label:			Mark Unplayable
+XCdplay*EditTrack*delete.clue:			Marks track so they will not be playable.
+XCdplay*EditTrack*delete.col:			0
+XCdplay*EditTrack*delete.row:			4
+XCdplay*EditTrack*undelete.label:		Mark Playable
+XCdplay*EditTrack*undelete.clue:		Marks track so they can be playable.
+XCdplay*EditTrack*undelete.col:			0
+XCdplay*EditTrack*undelete.row:			5
+XCdplay*EditTrack*top.col:			2
+XCdplay*EditTrack*top.row:			0
+XCdplay*EditTrack*top.clue:			Moves selected track to top of playlist.
+XCdplay*EditTrack*up.col:			2
+XCdplay*EditTrack*up.row:			1
+XCdplay*EditTrack*up.clue:			Moves selected track forward in playlist.
+XCdplay*EditTrack*down.col:			2
+XCdplay*EditTrack*down.row:			4
+XCdplay*EditTrack*down.clue:			Moves selected track backward in playlist.
+XCdplay*EditTrack*bot.col:			2
+XCdplay*EditTrack*bot.row:			5
+XCdplay*EditTrack*bot.clue:			Moves selected track to end of playlist.
 !
 ! Options Popup.
 !
@@ -214,7 +221,7 @@ XCdplay*EditOptions*cdDevice*col:		1
 XCdplay*EditOptions*cdDevice*row:		0
 XCdplay*EditOptions*mixDevice*label:		Mixer device:
 XCdplay*EditOptions*mixDevice*col:		1
-XCdplay*EditOptions*mixDevice*row:		6
+XCdplay*EditOptions*mixDevice*row:		7
 XCdplay*EditOptions*cddbPath*label:		Track Database:
 XCdplay*EditOptions*cddbPath*col:		1
 XCdplay*EditOptions*cddbPath*row:		1
@@ -254,6 +261,9 @@ XCdplay*EditOptions*skipTime.row:		7
 XCdplay*EditOptions*autoPlay*label:		Start CD Play on load
 XCdplay*EditOptions*autoPlay.col:		1
 XCdplay*EditOptions*autoPlay.row:		5
+XCdplay*EditOptions*showClues*label:		Display help clues
+XCdplay*EditOptions*showClues.col:		1
+XCdplay*EditOptions*showClues.row:		6
 ! Save Options Popup.
 XCdplay*SaveOptions*Label.shadowWidth:		0
 XCdplay*SaveOptions*title:		        Save Options

@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: player.h,v 1.1 1997/12/16 05:48:46 rich Exp rich $
  *
- * $Log: $
+ * $Log: player.h,v $
+ * Revision 1.1  1997/12/16 05:48:46  rich
+ * Initial revision
+ *
  *
  */
 
@@ -40,6 +43,16 @@ struct rawtrackinfo
      int	start;		/* Start frame */
      int	data;		/* Data track */
 };
+
+struct driveinfo
+{
+     int	id;		/* Idnumber of disc */
+     int	numtracks;	/* Number of tracks */
+     int	length;		/* Total run time in seconds */
+     rawtrackinfo *tracks;	/* Track list */
+};
+
+   
 
 const max_volume = 256;
 const min_volume = 128;
@@ -52,52 +65,59 @@ class Player
      int	device;		/* Open device */
      int	mixdevice;	/* Mixer device */
      Str	name;		/* Name opened on */
-     int	id;		/* Idnumber of disc */
-     int	numtracks;	/* Number of tracks */
-     int	length;		/* Total run time in seconds */
+     int	numdrives;	/* Number of drives. */
+     driveinfo  info[MAXDRIVES];/* Drive info */
      int	volume;		/* Current volume setting */
+     int	curdrive;	/* Current Drive */
      Cdmode	curmode;	/* Current mode */
      int	curtrack;	/* Current track */
      int	curpos;		/* Current position */
+     int	changing; 	/* Changing drives */
      int	frame;		/* Current frame */
-     rawtrackinfo *tracks;	/* Track list */
 
      int	checkstatus();	/* Check cd status */
-     int	readtoc();
+     int	readtoc(driveinfo *);
      int	scalevolume(int value) {
 		return ((100 * 100 - (100 - value) * (100 - value)) *
 		(max_volume - min_volume) / (100 * 100) + min_volume);
 	}
+     int	opendrive();	/* Open the drive */
    public:
      Player() { device = -1;
 		 curmode = Empty;
-		tracks = new rawtrackinfo[1];
-		numtracks = 0;
+		for(int i= 0; i<MAXDRIVES; i++) {
+		    info[i].tracks = NULL;
+		    info[i].numtracks = -1;
+		}
 		mixdevice = -1;
+		curdrive = 0;
+		numdrives = -1;
+		changing = 0;
 	       };
      ~Player() { if (device >= 0) close(device);
-		  delete [] tracks; }
-     void setdevice(char *devname) { name = devname; }
+		  delete [] info; }
+     int setdevice(char *);
      void pause();
      void resume();
      void stop();
      void start();
      void eject();
      void setvolume(int value);
+     int setdrive(int num);
      int play_cd(int track, int start, int duration);
-     int getdiscid() { return id; }
-     int gettracks() { return numtracks; }
-     int getlength() { return length; }
+     int getdiscid() { return info[curdrive].id; }
+     int gettracks() { return info[curdrive].numtracks; }
+     int getlength() { return info[curdrive].length; }
      Cdmode getposition(int &track, int &trktime);
      int getvolume();
      int gettracklength(int track) {
-	 return (track < 0 || track >= numtracks) ? -1 : tracks[track].length;
+	 return (track < 0 || track >= info[curdrive].numtracks) ? -1 : info[curdrive].tracks[track].length;
 	 }
      int getdata(int track) {
-         return (track < 0 || track >= numtracks) ? -1 : tracks[track].data;
+         return (track < 0 || track >= info[curdrive].numtracks) ? -1 : info[curdrive].tracks[track].data;
 	 }
      int getframe(int track) {
-	 return (track < 0 || track >= numtracks) ? 0 : tracks[track].start;
+	 return (track < 0 || track >= info[curdrive].numtracks) ? 0 : info[curdrive].tracks[track].start;
 	 }
 };
 

@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: mainwindow.h,v 1.1 1997/12/16 05:48:46 rich Exp rich $
  *
- * $Log: $
+ * $Log: mainwindow.h,v $
+ * Revision 1.1  1997/12/16 05:48:46  rich
+ * Initial revision
+ *
  *
  */
 
@@ -42,6 +45,7 @@ class MainWindow
      XtAppContext context;
      Widget	toplevel;	/* Toplevel of display */
      Widget	manager;	/* Main Manager */
+     Widget	drives;		/* Drives menu */
      Widget	toolbar;	/* Toolbar */
      Widget	status;		/* Make status function. */
      Widget	volume;		/* Volume control */
@@ -52,13 +56,15 @@ class MainWindow
      Widget	toolplay;	/* Radio groups to update */
      Widget	menuplay;
      Widget	dialog;
+     Widget	drivegrp;
      Timemode	timemode;
      Widget	tooltime;
      Widget	menutime;
      XtIntervalId	timer;	/* Update Timer */
      Player	player;		/* Cd Player object */
      PlayList   list;
-     TrackList	*tlist;		/* List of track names */
+     TrackList	*tlist[MAXDRIVES]; /* List of track names */
+     int	curdrive;	/* Current drive */
      int	curtrack;	/* Current track */
      State	cdstate;
      int	playing;	/* Currently playing */
@@ -87,7 +93,6 @@ class MainWindow
 	static void setintromode(Widget, XtPointer, XtPointer);
 	static void setrepeatmode(Widget, XtPointer, XtPointer);
 	static void setvolume(Widget, XtPointer, XtPointer);
-	static void editPlay(Widget, XtPointer, XtPointer);
 	static void editTrack(Widget, XtPointer, XtPointer);
 	static void Update(XtPointer, XtIntervalId *);
 	static void editapply(Widget, XtPointer, XtPointer);
@@ -106,6 +111,7 @@ class MainWindow
 	void hideshow(char *, int);
 	void settimemode(Timemode);
 	void setstate(State);
+	void setdrive(int);
 	void Update();
 	void editOptions();
 	void editsave(Widget);

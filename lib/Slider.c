@@ -27,6 +27,14 @@
  *
  * 
  * $Log: Slider.c,v $
+ * Revision 1.2  1997/11/01 06:39:08  rich
+ * Make sure slider does not work when set insensitve.
+ * Thumb resource no longer used.
+ * Fixed up some errors in geometry query code.
+ * Added IsVert to clean up code.
+ * General code cleanup.
+ * RedrawThumb no longer accepts region and event.
+ *
  * Revision 1.1  1997/10/08 04:08:42  rich
  * Initial revision
  *
@@ -34,7 +42,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Slider.c,v 1.1 1997/10/08 04:08:42 rich Exp rich $";
+static char        *rcsid = "$Id: Slider.c,v 1.2 1997/11/01 06:39:08 rich Beta rich $";
 #endif
 
 #include <stdio.h>
@@ -97,7 +105,7 @@ static XtResource   resources[] =
      offset(horCursor), XtRString, "sb_h_double_arrow"},
     {XtNposition, XtCPosition, XtRInt, sizeof(int),
      offset(position), XtRImmediate, (XtPointer) 0},
-    {XtNthickness, XtCThickness, XtRInt, sizeof(int),
+    {XtNthickness, XtCThickness, XtRDimension, sizeof(Dimension),
      offset(thickness), XtRImmediate, (XtPointer) 14},
     {XtNorientation, XtCOrientation, XtROrientation, sizeof(XtOrientation),
      offset(orientation), XtRImmediate, (XtPointer) XtorientVertical},

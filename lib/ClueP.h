@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: ClueP.h,v 1.1 1997/10/04 05:02:12 rich Exp rich $
  *
- * $Log:$
+ * $Log: ClueP.h,v $
+ * Revision 1.1  1997/10/04 05:02:12  rich
+ * Initial revision
+ *
  *
  */
 
@@ -40,12 +43,19 @@
 #include "Clue.h"
 #include <X11/ShellP.h>
 
+/*********************************************************************
+ *
+ * Clue Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the Clue widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } ClueClassPart;
 
+/* Full class record declaration */
 typedef struct _ClueClassRec {
     CoreClassPart       core_class;
     CompositeClassPart  composite_class;
@@ -54,6 +64,7 @@ typedef struct _ClueClassRec {
     ClueClassPart       clue_class;
 } ClueClassRec;
 
+/* New fields for the Clue widget Record */
 typedef struct {
    /* resources */
     _XpwLabel		label;		/* Label gadget to display clues in */
@@ -63,6 +74,7 @@ typedef struct {
     Boolean		showing;	/* Is it currently popped up? */
 } CluePart;
 
+/* Full instance record declaration */
 typedef struct _ClueRec {
     CorePart            core;
     CompositePart       composite;

@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: LabelP.h,v 1.1 1997/10/04 05:04:39 rich Exp rich $
  *
- * $Log:$
+ * $Log: LabelP.h,v $
+ * Revision 1.1  1997/10/04 05:04:39  rich
+ * Initial revision
+ *
  *
  */
 
@@ -40,27 +43,35 @@
 #include "labelP.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * Label Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the Label widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } LabelClassPart;
 
+/* Full class record declaration */
 typedef struct _LabelClassRec {
     CoreClassPart       core_class;
     LabelClassPart      label_class;
 } LabelClassRec;
 
+/* Full class record declaration */
 typedef struct {
    /* resources */
     _XpwLabel		label;
+   String		clue;
 
    /* Shadow info */
     _XpmThreeDFrame	threeD;
-
-   String		clue;
 } LabelPart;
 
+/* Full instance record declaration */
 typedef struct _LabelRec {
     CorePart            core;
     LabelPart           label;

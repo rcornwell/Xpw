@@ -31,31 +31,30 @@
 /* 
  * SelectP.h - Private definitions for Selection object
  *
- * $Id: $
+ * $Id: PmeSelectP.h,v 1.1 1997/10/05 02:16:36 rich Exp rich $
  *
- * $Log: $
+ * $Log: PmeSelectP.h,v $
+ * Revision 1.1  1997/10/05 02:16:36  rich
+ * Initial revision
+ *
  *
  * 
  */
 
 #ifndef _PmeSelectP_h
 #define _PmeSelectP_h
-
-/***********************************************************************
- *
- * Private Data
- *
- ***********************************************************************/
-
 #include "PmeSelect.h"
 #include "labelP.h"
 #include "threeDdrawP.h"
 
-/************************************************************
+/*********************************************************************
  *
- * New fields for the PmeSelect Object class record.
+ * PmeSelect Object Private Data
  *
- ************************************************************/
+ *********************************************************************/
+
+/* New fields for the PmeSelect object class record */
+
 typedef struct _PmeSelectClassPart {
     void                (*Notify) ();
     void                (*highlight) ();
@@ -80,52 +79,37 @@ typedef struct _RadioGroup {
 /* New fields for the PmeSelect Object record */
 typedef struct {
    /* resources */
-	/* First entries must be in same order as PmeEntry */
-    XtCallbackList      callbacks;	/* The callback list */
     _XpwLabel           label;
-
+    String		menu_name;	/* Unused */
     String		clue;		/* Help Clue */
-    ShapeType		switchShape;
-    Dimension		switchSize;
-    Dimension		switchShadow;
-    Pixel		switchColor;
+    XtCallbackList      callbacks;	/* The callback list */
+
     Boolean             rightbutton;	/* Button is on right or left */
     Boolean             state;		/* Current state */
     Boolean             allownone;	/* If in radio group can we have none */
     Boolean             blankOff;	/* Show no marker if selection is off */
     XtPointer           radio_data;	/* Pointer to radiogroup data 
 					 * selected */
+    ShapeType		switchShape;
+    Dimension		switchSize;
+    Dimension		switchShadow;
+    Pixel		switchColor;
+   /* Shadow info */
+    _XpmThreeDFrame     threeD;
     Widget              widget;
-
-   /* Parts associated with the label field. */
 
    /* private resources. */
     GC                  inverse_gc;	/* reverse color gc. */
     GC                  norm_gc;	/* normal color gc. */
-
     RadioGroup         *radio_group;	/* Pointer to other members of this group */
-
-   /* Shadow info */
-    _XpmThreeDFrame     threeD;
 
 } PmeSelectPart;
 
-/****************************************************************
- *
- * Full instance record declaration
- *
- ****************************************************************/
-
+/* Full instance record declaration */
 typedef struct _PmeSelectRec {
     ObjectPart          object;
     RectObjPart         rectangle;
     PmeSelectPart       pme_select;
 } PmeSelectRec;
-
-/************************************************************
- *
- * Private declarations.
- *
- ************************************************************/
 
 #endif /* _PmeSelectP_h */

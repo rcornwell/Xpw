@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id$
+ * $Id: ArrowP.h,v 1.1 1997/10/04 18:59:34 rich Exp rich $
  *
- * $Log:$
+ * $Log: ArrowP.h,v $
+ * Revision 1.1  1997/10/04 18:59:34  rich
+ * Initial revision
+ *
  *
  */
 
@@ -40,17 +43,25 @@
 #include "Arrow.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * Arrow Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the Arrow widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } ArrowClassPart;
 
+/* Full class record declaration */
 typedef struct _ArrowClassRec {
     CoreClassPart       core_class;
     ArrowClassPart      arrow_class;
 } ArrowClassRec;
 
+/* New fields for the Arrow widget Record */
 typedef struct {
    /* Resources */
    
@@ -73,6 +84,7 @@ typedef struct {
     _XpmThreeDFrame	threeD;
 } ArrowPart;
 
+/* Full instance record declaration */
 typedef struct _ArrowRec {
     CorePart            core;
     ArrowPart           arrow;

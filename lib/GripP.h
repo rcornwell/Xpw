@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: GripP.h,v 1.1 1997/10/12 05:18:35 rich Exp rich $
  *
- * $Log: $
+ * $Log: GripP.h,v $
+ * Revision 1.1  1997/10/12 05:18:35  rich
+ * Initial revision
+ *
  *
  */
 
@@ -39,19 +42,27 @@
 #include "Grip.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * Grip Widget Private Data
+ *
+ *********************************************************************/
+
 #define DEFAULT_GRIP_SIZE	4
 
+/* New fields for the Grip widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } GripClassPart;
 
+/* Full class record declaration */
 typedef struct _GripClassRec {
     CoreClassPart       core_class;
     GripClassPart       grip_class;
 } GripClassRec;
 
+/* New fields for the Grip widget Record */
 typedef struct {
    /* resources */
     XtCallbackList	grip_action;
@@ -61,6 +72,7 @@ typedef struct {
 
 } GripPart;
 
+/* Full instance record declaration */
 typedef struct _GripRec {
     CorePart            core;
     GripPart            grip;

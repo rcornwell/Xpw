@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: ListP.h,v 1.1 1997/10/09 02:40:35 rich Exp rich $
  *
- * $Log:$
+ * $Log: ListP.h,v $
+ * Revision 1.1  1997/10/09 02:40:35  rich
+ * Initial revision
+ *
  *
  */
 
@@ -39,12 +42,19 @@
 #include "List.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * List Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the List widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } ListClassPart;
 
+/* Full class record declaration */
 typedef struct _ListClassRec {
     CoreClassPart       core_class;
     CompositeClassPart  composite_class;
@@ -64,17 +74,17 @@ typedef struct {
 } _XpwList_attr;
 	
 
-/* Main list object resources */
+/* New fields for the List widget Record */
 typedef struct {
     /* resources */
     Boolean             international;
-    Boolean		use_v_scroll;
-    Boolean		use_h_scroll;
-    Boolean		v_scroll_ontop;
-    Boolean		h_scroll_onleft;
-    Boolean		do_redisplay;
-    Boolean		only_one;
-    Boolean		always_notify;
+    Boolean		use_v_scroll;	/* Force vertical scrollbar on */
+    Boolean		use_h_scroll;	/* Force horizontal scrollbar on */
+    Boolean		v_scroll_ontop;	/* Horizontal on top/bot */
+    Boolean		h_scroll_onleft;/* Vertical on right/left */
+    Boolean		do_redisplay;	/* Redisplay on any change */
+    Boolean		only_one;	/* Allow for only one item */
+    Boolean		always_notify;	/* Notify on any change or only sets */
 
     String		*list;		/* List of strings */
     _XpwList_attr	*list_attr;	/* List of attributes */
@@ -90,27 +100,27 @@ typedef struct {
     int			yoff;
 
     Boolean		forcedcols;	/* Force number of columns */
-    int			rowspace;
-    int			colspace;
-    int			scrollborder;
+    int			rowspace;	/* Space between rows */
+    int			colspace;	/* Space between cols */
+    int			scrollborder;	/* Border space between scrollbars */
     Pixel               foreground;
     Pixel               topcolor;
     Pixel		color[8];
     XFontStruct        *font[4];	/* The font to show label in. */
     XFontSet            fontset[4];	/* or fontset */
     String              clue;
-    ShapeType		markShape;
+    ShapeType		markShape;	/* Marker for items */
     Dimension		markSize;
     Pixel		markColor;
     XtCallbackList      callbacks;	/* Single item callback */
     XtCallbackList      multicallbacks; /* Multi item Callback */
 
+   /* Shadow info */
+    _XpmThreeDFrame	threeD;
 
-
-/* private resources. */
+   /* private resources. */
 
     Dimension		fh, fw;		/* Font hieght/width */
-
     GC                  norm_gc;	/* normal color gc. */
     GC                  rev_gc;		/* Reversed fg/bg color gc. */
     GC                  gray_gc;	/* Normal color (grayed out) gc. */
@@ -124,11 +134,9 @@ typedef struct {
     Widget		h_scrollbar;	/* Horizontal Scrollbar */
     Widget		v_scrollbar;	/* Vertical Scrollbar */
 
-   /* Shadow info */
-    _XpmThreeDFrame	threeD;
-
 } ListPart;
 
+/* Full instance record declaration */
 typedef struct _ListRec {
     CorePart            core;
     CompositePart       composite;

@@ -1,5 +1,5 @@
 /*
- * Paned.c - Paned Composite Widget.
+ * Paned.c - Paned Widget.
  *
  * Paned arranges it's children in rows or columns, and provides a grip to allow
  * the user to resize individual panes.
@@ -30,15 +30,17 @@
  */
 
 /*
- * $Id: $
+ * $Id: PanedP.h,v 1.1 1997/10/12 05:18:12 rich Exp rich $
  *
- * $Log: $
+ * $Log: PanedP.h,v $
+ * Revision 1.1  1997/10/12 05:18:12  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef _PanedP_h
 #define _PanedP_h
-
 #include "Paned.h"
 
 /*********************************************************************
@@ -63,7 +65,7 @@ typedef struct _PanedClassRec {
 
 extern PanedClassRec panedClassRec;
 
-/* Paned constraint record */
+/* Paned children constraint record */
 typedef struct _PanedConstraintsPart {
    /* Resources. */
     Boolean             allow_resize;	/* Child resize requests are ok */
@@ -71,15 +73,14 @@ typedef struct _PanedConstraintsPart {
     Boolean		auto_grip;	/* Automatictly determine if we need a
 					 * grip */
     Boolean		show_grip;	/* Put a grip on child */
-    Dimension		min;		/* Min size for this Child */
-    Dimension		max;		/* Min size for this Child */
-
-   /* changed without explicit user action. */
     Boolean             resize_to_pref;	/* resize this child to its preferred
 					 * size on a resize or change managed
 					 * after realize. */
-    Boolean		user_adjusted;	/* User changed size */
+    Dimension		min;		/* Min size for this Child */
+    Dimension		max;		/* Min size for this Child */
+
    /* Private state. */
+    Boolean		user_adjusted;	/* User changed size */
     Position            location;	/* Desired Location */
     Position            new_location;	/* New location, set during grip moves */
     Dimension           wp_size;	/* widget's preferred size */
@@ -114,21 +115,16 @@ typedef struct {
     Cursor		h_adjust_this_cursor;
 
     XtTranslations	grip_translations;
-    Dimension		mouse_base;
 
    /* private */
     Boolean             recursively_called;	/* for ChangeManaged */
     int                 num_children;	/* count of managed children */
     int			num_resize;	/* Number resizable panes */
+    Dimension		mouse_base;	/* Original location of mouse */
     GC			grip_gc;	/* Move draw gc. */
 } PanedPart;
 
-/**************************************************************************
- *
- * Full instance record declaration
- *
- **************************************************************************/
-
+/* Full instance record declaration */
 typedef struct _PanedRec {
     CorePart            core;
     CompositePart       composite;

@@ -29,16 +29,18 @@
  */
 
 /*
- * $Id: $
+ * $Id: StackP.h,v 1.1 1997/10/12 05:17:36 rich Exp rich $
  *
- * $Log: $
+ * $Log: StackP.h,v $
+ * Revision 1.1  1997/10/12 05:17:36  rich
+ * Initial revision
+ *
  *
  *
  */
 
 #ifndef _StackP_h
 #define _StackP_h
-
 #include "Stack.h"
 
 /*********************************************************************
@@ -65,8 +67,6 @@ extern StackClassRec stackClassRec;
 
 /* Stack constraint record */
 typedef struct _StackConstraintsPart {
-
-   /* changed without explicit user action. */
     Dimension		pref_h;		/* Prefered h */
     Dimension		pref_w;		/* Prefered w */
 
@@ -84,12 +84,7 @@ typedef struct {
     int                 num_children;	/* count of managed children */
 } StackPart;
 
-/**************************************************************************
- *
- * Full instance record declaration
- *
- **************************************************************************/
-
+/* Full instance record declaration */
 typedef struct _StackRec {
     CorePart            core;
     CompositePart       composite;

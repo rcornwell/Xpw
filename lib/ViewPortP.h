@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: ViewPortP.h,v 1.1 1997/10/19 01:42:08 rich Exp rich $
  *
- * $Log: $
+ * $Log: ViewPortP.h,v $
+ * Revision 1.1  1997/10/19 01:42:08  rich
+ * Initial revision
+ *
  *
  */
 
@@ -39,46 +42,50 @@
 #include "ViewPort.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * ViewPort Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the ViewPort widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } ViewPortClassPart;
 
+/* Full class record declaration */
 typedef struct _ViewPortClassRec {
     CoreClassPart       core_class;
     CompositeClassPart  composite_class;
     ViewPortClassPart   viewport_class;
 } ViewPortClassRec;
 
-/* Main viewport object resources */
+/* New fields for the ViewPort widget Record */
 typedef struct {
-    /* resources */
-    Boolean		use_v_scroll;
-    Boolean		use_h_scroll;
-    Boolean		v_scroll_ontop;
-    Boolean		h_scroll_onleft;
-    Dimension		scrollborder;
+   /* resources */
+    Boolean		use_v_scroll;   /* Force vertical scrollbar on */
+    Boolean		use_h_scroll;   /* Force horizontal scrollbar on */
+    Boolean		v_scroll_ontop; /* Horizontal on top/bot */
+    Boolean		h_scroll_onleft;/* Vertical on right/left */
+    Dimension		scrollborder;   /* Border space between scrollbars */
     Pixel               foreground;
     Pixel               topcolor;
+   /* Shadow info */
+    _XpmThreeDFrame	threeD;
 
-/* private resources. */
+   /* private resources. */
     Boolean		setup;
     GC			top_gc;		/* Top Color gc */
-
     Widget		h_scrollbar;	/* Horizontal Scrollbar */
     Widget		v_scrollbar;	/* Vertical Scrollbar */
     Widget		child;		/* Child window */
     Widget		clip;		/* Clip window */
-
     Position		xoff;		/* Where screen starts */
     Position		yoff;
-
-   /* Shadow info */
-    _XpmThreeDFrame	threeD;
-
 } ViewPortPart;
 
+/* Full instance record declaration */
 typedef struct _ViewPortRec {
     CorePart            core;
     CompositePart       composite;

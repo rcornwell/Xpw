@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: threeDdrawP.h,v 1.1 1997/10/26 04:22:04 rich Exp rich $
  *
- * $Log: $
+ * $Log: threeDdrawP.h,v $
+ * Revision 1.1  1997/10/26 04:22:04  rich
+ * Initial revision
+ *
  *
  */
 
@@ -38,6 +41,12 @@
 #define _threeDdrawP_H_
 
 #include "threeDdraw.h"
+
+/*********************************************************************
+ *
+ * threeD psuedoWidget Private Data
+ *
+ *********************************************************************/
 
 typedef struct {
    /* Shadow info */

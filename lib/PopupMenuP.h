@@ -26,24 +26,35 @@
  */
 
 /*
- * $Id$
+ * $Id: PopupMenuP.h,v 1.1 1997/10/04 05:08:42 rich Exp rich $
  *
- * $Log:$
+ * $Log: PopupMenuP.h,v $
+ * Revision 1.1  1997/10/04 05:08:42  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef _PopupMenuP_h
 #define _PopupMenuP_h
-
 #include "PopupMenu.h"
 #include "PmeEntryP.h"
 #include "threeDdrawP.h"
 #include <X11/ShellP.h>
 
+/*********************************************************************
+ *
+ * PopupMenu Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the PopupMenu widget class record */
+
 typedef struct {
     XtPointer           extension;	/* For future needs. */
 } PopupMenuClassPart;
 
+/* Full class record declaration */
 typedef struct _PopupMenuClassRec {
     CoreClassPart       core_class;
     CompositeClassPart  composite_class;
@@ -54,42 +65,43 @@ typedef struct _PopupMenuClassRec {
 
 extern PopupMenuClassRec popupMenuClassRec;
 
+/* New fields for the PopupMenu widget Record */
 typedef struct _PopupMenuPart {
 
    /* resources */
-
     String              label_string;	/* The string for the label or NULL. */
-    PmeEntryObject      label;	/* If label_string is non-NULL then this is
-				 * the label widget. */
+    PmeEntryObject      label;		/* If label_string is non-NULL then
+					 * this is the label widget. */
     WidgetClass         label_class;	/* Widget Class of the menu label object. */
-
     Dimension           top_margin;	/* Top and bottom margins. */
     Dimension           bottom_margin;
     Dimension           row_height;	/* height of each row (menu entry) */
-
-    Cursor              cursor;	/* The menu's cursor. */
-    PmeEntryObject      popup_entry;	/* The entry to position the cursor on for
-					 * when using XawPositionPopupMenu. */
-    Boolean             menu_on_screen;		/* Force the menus to be fully on the screen. */
+    Cursor              cursor;		/* The menu's cursor. */
+    PmeEntryObject      popup_entry;	/* The entry to position the cursor on
+					 * for when using XpwPositionPopupMenu. */
+    Boolean             menu_on_screen;	/* Force the menus to be fully on the
+					 * screen. */
     int                 backing_store;	/* What type of backing store to use. */
 
    _XpmThreeDFrame	threeD;
    /* private state */
 
-    Boolean             recursive_set_values;	/* contain a possible infinite loop. */
-
+    Boolean             recursive_set_values;	/* contain a possible infinite
+					 * loop. */
     Boolean             menu_width;	/* If true then force width to remain 
 					 * core.width */
-    Boolean             menu_height;	/* Just like menu_width, but for height. */
-
+    Boolean             menu_height;	/* Just like menu_width, but for
+					 * height. */
     PmeEntryObject      entry_set;	/* The entry that is currently set or
 					 * highlighted. */
-    XtIntervalId        entry_timer;	/* Start a timeout when a cascade menu is
-					 * selected, popup when timer runs out */
+    XtIntervalId        entry_timer;	/* Start a timeout when a cascade menu
+					 * is selected, popup when timer runs
+					 * out */
     Widget              current_popup;	/* Currently popped up cascade menu */
 
 } PopupMenuPart;
 
+/* Full instance record declaration */
 typedef struct _PopupMenuRec {
     CorePart            core;
     CompositePart       composite;

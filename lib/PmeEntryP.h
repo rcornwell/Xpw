@@ -25,9 +25,12 @@
  */
 
 /*
- * $Id: PmeEntryP.h,v 1.1 1997/10/04 05:07:44 rich Exp rich $
+ * $Id: PmeEntryP.h,v 1.2 1997/10/05 02:17:28 rich Exp rich $
  *
  * $Log: PmeEntryP.h,v $
+ * Revision 1.2  1997/10/05 02:17:28  rich
+ * Added callbacks into class for retrieving menu_name and doing clue handling.
+ *
  * Revision 1.1  1997/10/04 05:07:44  rich
  * Initial revision
  *
@@ -36,22 +39,16 @@
 
 #ifndef _PmeEntryP_h
 #define _PmeEntryP_h
-
-/***********************************************************************
- *
- * Pme Entry Private Data
- *
- ***********************************************************************/
-
 #include "labelP.h"
 #include "PmeEntry.h"
 
-/************************************************************
+/***********************************************************************
  *
- * New fields for the Pme Entry class record.
+ * PmeEntry object Private Data
  *
- ************************************************************/
+ ***********************************************************************/
 
+/* New fields for the PmeEntry widget class record */
 typedef struct _PmeEntryClassPart {
     void                (*notify) ();
     void                (*highlight) ();
@@ -68,33 +65,21 @@ typedef struct _PmeEntryClassRec {
 
 extern PmeEntryClassRec pmeEntryClassRec;
 
-/* New fields for the Pme Entry record */
+/* New fields for the PmeEntry object record */
 typedef struct {
    /* resources */
-    XtCallbackList      callbacks;	/* The callback list */
     _XpwLabel		label;
-
     String              menu_name;	/* Cascade Menu Name */
     String		clue;		/* Pop up clue */
+    XtCallbackList      callbacks;	/* The callback list */
 
 } PmeEntryPart;
 
-/****************************************************************
- *
- * Full instance record declaration
- *
- ****************************************************************/
-
+/* Full instance record declaration */
 typedef struct _PmeEntryRec {
     ObjectPart          object;
     RectObjPart         rectangle;
     PmeEntryPart        pme_entry;
 } PmeEntryRec;
-
-/************************************************************
- *
- * Private declarations.
- *
- ************************************************************/
 
 #endif /* _PmeEntryP_h */

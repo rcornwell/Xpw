@@ -1,5 +1,5 @@
 /*
- * Menu Bar button widget.
+ * Bar Button Widget.
  *
  * This is the menu bar button widget. It is a Command widget without any
  * 3D info. But it has a spot to hold a popup menu name. It's purpose is to
@@ -31,29 +31,29 @@
 /* 
  * BarButtonP.h - Private definitions for BarButton object
  *
- * $Id$
+ * $Id: BarButtonP.h,v 1.1 1997/10/04 05:00:59 rich Exp rich $
  *
- * $Log:$
+ * $Log: BarButtonP.h,v $
+ * Revision 1.1  1997/10/04 05:00:59  rich
+ * Initial revision
+ *
  * 
  */
 
 #ifndef _BarButtonP_h
 #define _BarButtonP_h
-
-/***********************************************************************
- *
- * Private Data
- *
- ***********************************************************************/
-
 #include "labelP.h"
 #include "BarButton.h"
 
-/************************************************************
+/***********************************************************************
  *
- * New fields for the BarButton Object class record.
+ * Bar Button Widget Private Data
  *
- ************************************************************/
+ ***********************************************************************/
+
+
+/* New fields for the BarButton widget class record.  */
+
 typedef struct _BarButtonClassPart {
     void                (*highlight) ();
     void                (*unhighlight) ();
@@ -69,7 +69,7 @@ typedef struct _BarButtonClassRec {
 
 extern BarButtonClassRec barbuttonClassRec;
 
-/* New fields for the BarButton Object record */
+/* New fields for the BarButton widget record */
 typedef struct {
    /* resources */
     XtCallbackList      callbacks;	/* The callback list */
@@ -79,21 +79,10 @@ typedef struct {
     _XpwLabel		label;
 } BarButtonPart;
 
-/****************************************************************
- *
- * Full instance record declaration
- *
- ****************************************************************/
-
+/* Full instance record declaration */
 typedef struct _BarButtonRec {
     CorePart            core;
     BarButtonPart       bar_button;
 } BarButtonRec;
-
-/************************************************************
- *
- * Private declarations.
- *
- ************************************************************/
 
 #endif /* _BarButtonP_h */

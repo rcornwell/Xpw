@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: TextLineP.h,v 1.1 1997/10/25 22:15:47 rich Exp rich $
  *
- * $Log: $
+ * $Log: TextLineP.h,v $
+ * Revision 1.1  1997/10/25 22:15:47  rich
+ * Initial revision
+ *
  *
  */
 
@@ -38,17 +41,25 @@
 #include "TextLine.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * TextLine Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the TextLine widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } TextLineClassPart;
 
+/* Full class record declaration */
 typedef struct _TextLineClassRec {
     CoreClassPart       core_class;
     TextLineClassPart   textline_class;
 } TextLineClassRec;
 
+/* New fields for the TextLine widget Record */
 typedef struct {
    /* resources */
     Boolean             international;
@@ -75,7 +86,10 @@ typedef struct {
 
     XtCallbackList	callbacks;
 
-    /* private resources. */
+   /* Shadow info */
+    _XpmThreeDFrame	threeD;
+
+   /* private resources. */
     GC                  norm_gc;	/* Normal color gc. */
     GC                  norm_gray_gc;	/* Normal color (grayed out) gc. */
     GC                  rev_gc;		/* Reverse color gc. */
@@ -101,11 +115,9 @@ typedef struct {
     int			select_start;
     int			select_end;
 
-   /* Shadow info */
-    _XpmThreeDFrame	threeD;
-
 } TextLinePart;
 
+/* Full instance record declaration */
 typedef struct _TextLineRec {
     CorePart            core;
     TextLinePart        text;

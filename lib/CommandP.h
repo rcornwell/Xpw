@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: CommandP.h,v 1.1 1997/10/04 05:03:47 rich Exp rich $
  *
- * $Log:$
+ * $Log: CommandP.h,v $
+ * Revision 1.1  1997/10/04 05:03:47  rich
+ * Initial revision
+ *
  *
  */
 
@@ -39,6 +42,12 @@
 #include "Command.h"
 #include "labelP.h"
 #include "threeDdrawP.h"
+
+/*********************************************************************
+ *
+ * Command Widget Private Data
+ *
+ *********************************************************************/
 
 typedef enum {
   HighlightNone,                /* Do not highlight. */
@@ -49,28 +58,28 @@ typedef enum {
                                    and other subclasses do the right thing. */
 } XtCommandHighlight;
 
+/* New fields for the Command widget class record */
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } CommandClassPart;
 
+/* Full class record declaration */
 typedef struct _CommandClassRec {
     CoreClassPart       core_class;
-    CompositeClassPart  composite_class;
-    CommandClassPart      command_class;
+    CommandClassPart    command_class;
 } CommandClassRec;
 
+/* New fields for the Command widget Record */
 typedef struct {
    /* resources */
-    _XpwLabel		label;	/* Label to display */
+    Dimension           highlight_thickness;	/* Highlight thickness */
+    _XpwLabel		label;			/* Label to display */
+    String		clue;
+
+    XtCallbackList callbacks;
 
    /* Shadow info */
-    _XpmThreeDFrame	threeD; /* ThreeD highlight part */
-
-   /* Command Stuff */
-    Dimension   highlight_thickness; /* Highlight thickness */
-    XtCallbackList callbacks;
+    _XpmThreeDFrame	threeD;			/* ThreeD highlight part */
 
     /* private state */
     Pixmap              gray_pixmap;
@@ -78,9 +87,9 @@ typedef struct {
     GC                  inverse_GC;
     Boolean             set;
     XtCommandHighlight  highlighted;
-    String		clue;
 } CommandPart;
 
+/* Full instance record declaration */
 typedef struct _CommandRec {
     CorePart            core;
     CommandPart         command;

@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: PercentP.h,v 1.1 1997/10/08 04:03:06 rich Exp rich $
  *
- * $Log: $
+ * $Log: PercentP.h,v $
+ * Revision 1.1  1997/10/08 04:03:06  rich
+ * Initial revision
+ *
  *
  */
 
@@ -39,52 +42,61 @@
 #include "Percent.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * Percent Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the Percent widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } PercentClassPart;
 
+
+/* Full class record declaration */
 typedef struct _PercentClassRec {
     CoreClassPart       core_class;
     PercentClassPart    percent_class;
 } PercentClassRec;
 
+/* New fields for the Percent widget Record */
 typedef struct {
    /* resources */
     XtOrientation       orientation;
     Boolean             international;
     Boolean             showValue;
     Boolean		state;
-    int                 vert_space;     /* extra vert space to leave, as a
-                                         * percentage of the font height of the
-                                         * label. */
-    int			thickness;	/* Size of thumb */
     Pixel               foreground;     /* foreground color. */
     Pixel               thumb; 		/* thumb color. */
     XFontStruct        *font;           /* The font to show label in. */
     XFontSet            fontset;        /* or fontset */
     XtJustify           justify;        /* Justification for the label. */
+    int			thickness;	/* Size of thumb */
+    int                 vert_space;     /* extra vert space to leave, as a
+                                         * percentage of the font height of the
+                                         * label. */
     int			min;		/* Min value */
     int			max;		/* Max value */
     int			position;	/* Position */
+    String		clue;
 
-/* private resources. */
+   /* Shadow info */
+    _XpmThreeDFrame	threeD;
 
+   /* private resources. */
     GC                  norm_gc;        /* Noral color gc. */
     GC                  norm_gray_gc;   /* Normal color (grayed out) gc. */
     GC                  thumb_gc;       /* Marker color gc. */
     GC                  thumb_gray_gc;  /* Marker color (grayed out) gc. */
 
-   /* Shadow info */
-    _XpmThreeDFrame	threeD;
-
-   String		clue;
 } PercentPart;
 
+/* Full instance record declaration */
 typedef struct _PercentRec {
     CorePart            core;
-    PercentPart           percent;
+    PercentPart         percent;
 } PercentRec;
 
 extern PercentClassRec percentClassRec;

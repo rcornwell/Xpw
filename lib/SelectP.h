@@ -31,30 +31,21 @@
 /* 
  * SelectP.h - Private definitions for Selection object
  *
- * $Id$
+ * $Id: SelectP.h,v 1.1 1997/10/04 22:13:23 rich Exp rich $
  *
- * $Log:$
+ * $Log: SelectP.h,v $
+ * Revision 1.1  1997/10/04 22:13:23  rich
+ * Initial revision
+ *
  * 
  */
 
 #ifndef _SelectP_h
 #define _SelectP_h
-
-/***********************************************************************
- *
- * Private Data
- *
- ***********************************************************************/
-
 #include "Select.h"
 #include "labelP.h"
 #include "threeDdrawP.h"
 
-/************************************************************
- *
- * New fields for the Select Object class record.
- *
- ************************************************************/
 typedef struct _SelectClassPart {
     void                (*Set) ();
     void                (*Unset) ();
@@ -80,7 +71,7 @@ typedef struct _RadioGroup {
 typedef struct {
    /* resources */
     XtCallbackList      callbacks;	/* The callback list */
-
+    _XpwLabel           label;
     ShapeType		switchShape;
     Dimension		switchSize;
     Dimension		switchShadow;
@@ -92,37 +83,21 @@ typedef struct {
 					 * selected */
     Widget              widget;
     String		clue;		/* Help Clue */
-
-   /* Parts associated with the label field. */
-    _XpwLabel           label;
-
-   /* private resources. */
-    GC                  inverse_gc;	/* reverse color gc. */
-    GC                  norm_gc;	/* normal color gc. */
-
-    RadioGroup         *radio_group;	/* Pointer to other members of this group */
-
    /* Shadow info */
     _XpmThreeDFrame     threeS;
     _XpmThreeDFrame     threeD;
 
+   /* private resources. */
+    GC                  inverse_gc;	/* reverse color gc. */
+    GC                  norm_gc;	/* normal color gc. */
+    RadioGroup         *radio_group;	/* Pointer to other members of this group */
+
 } SelectPart;
 
-/****************************************************************
- *
- * Full instance record declaration
- *
- ****************************************************************/
-
+/* Full instance record declaration */
 typedef struct _SelectRec {
     CorePart            core;
     SelectPart          select;
 } SelectRec;
-
-/************************************************************
- *
- * Private declarations.
- *
- ************************************************************/
 
 #endif /* _SelectP_h */

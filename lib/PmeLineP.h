@@ -25,9 +25,12 @@
  */
 
 /*
- * $Id: PmeLineP.h,v 1.1 1997/10/04 05:08:13 rich Exp rich $
+ * $Id: PmeLineP.h,v 1.2 1997/10/05 02:17:29 rich Exp rich $
  *
  * $Log: PmeLineP.h,v $
+ * Revision 1.2  1997/10/05 02:17:29  rich
+ * Make class extensions to make PmeEntry.
+ *
  * Revision 1.1  1997/10/04 05:08:13  rich
  * Initial revision
  *
@@ -36,20 +39,15 @@
 
 #ifndef _PmeLineP_h
 #define _PmeLineP_h
+#include "PmeLine.h"
 
 /***********************************************************************
  *
- * PmeLine Widget Private Data
+ * PmeLine Object Private Data
  *
  ***********************************************************************/
 
-#include "PmeLine.h"
-
-/************************************************************
- *
- * New fields for the PmeLine widget class record.
- *
- ************************************************************/
+/* New fields for the PmeLine object class record */
 
 typedef struct _PmeLinePart {
     void                (*notify) ();
@@ -67,7 +65,7 @@ typedef struct _PmeLineClassRec {
 
 extern PmeLineClassRec pmeLineClassRec;
 
-/* New fields for the PmeLine widget record */
+/* New fields for the PmeLine object record */
 typedef struct {
    /* resources */
     Pixel               foreground;	/* Foreground color. */
@@ -75,26 +73,14 @@ typedef struct {
     Dimension           line_width;	/* Width of the line. */
 
    /* private data.  */
-
     GC                  gc;	/* Graphics context for drawing line. */
 } PmeLinePart;
 
-/****************************************************************
- *
- * Full instance record declaration
- *
- ****************************************************************/
-
+/* Full instance record declaration */
 typedef struct _PmeLineRec {
     ObjectPart          object;
     RectObjPart         rectangle;
     PmeLinePart         pme_line;
 } PmeLineRec;
-
-/************************************************************
- *
- * Private declarations.
- *
- ************************************************************/
 
 #endif /* _PmeLineP_h */

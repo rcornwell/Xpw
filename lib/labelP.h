@@ -26,22 +26,30 @@
  */
 
 /*
- * $Id$
+ * $Id: labelP.h,v 1.1 1997/10/12 05:20:34 rich Exp rich $
  *
- * $Log:$
+ * $Log: labelP.h,v $
+ * Revision 1.1  1997/10/12 05:20:34  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef _XpwlabelP_H
 #define _XpwlabelP_H
-
 #include  "label.h"
+
+/*********************************************************************
+ *
+ * label psuedoWidget Private Data
+ *
+ *********************************************************************/
 
 /* New fields for the label entries */
 typedef struct {
    /* resources */
     Boolean             international;
-    String              label;	/* The entry label. */
+    String              label;		/* The entry label. */
     int                 vert_space;	/* extra vert space to leave, as a
 					 * percentage of the font height of the
 					 * label. */
@@ -53,7 +61,7 @@ typedef struct {
     XFontSet            fontset;	/* or fontset */
     XtJustify           justify;	/* Justification for the label. */
 
-/* private resources. */
+   /* private resources. */
 
     GC                  norm_gc;	/* noral color gc. */
     GC                  norm_gray_gc;	/* Normal color (grayed out) gc. */

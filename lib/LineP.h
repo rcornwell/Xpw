@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: LineP.h,v 1.1 1997/10/04 05:05:03 rich Exp rich $
  *
- * $Log:$
+ * $Log: LineP.h,v $
+ * Revision 1.1  1997/10/04 05:05:03  rich
+ * Initial revision
+ *
  *
  */
 
@@ -39,22 +42,31 @@
 #include "Line.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * Line Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the Line widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } LineClassPart;
 
+/* Full class record declaration */
 typedef struct _LineClassRec {
     CoreClassPart       core_class;
     LineClassPart       line_class;
 } LineClassRec;
 
+/* New fields for the Line widget Record */
 typedef struct {
    /* Shadow info */
     _XpmThreeDFrame	threeD;
 } LinePart;
 
+/* Full instance record declaration */
 typedef struct _LineRec {
     CorePart            core;
     LinePart            line;

@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: ScrollerP.h,v 1.1 1997/10/04 05:09:08 rich Exp rich $
+ * $Id: ScrollerP.h,v 1.2 1997/10/08 04:11:50 rich Exp rich $
  *
  * $Log: ScrollerP.h,v $
+ * Revision 1.2  1997/10/08 04:11:50  rich
+ * Added cursors and clue.
+ *
  * Revision 1.1  1997/10/04 05:09:08  rich
  * Initial revision
  *
@@ -42,20 +45,28 @@
 #include "Scroller.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * Scroller Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the Scroller widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } ScrollerClassPart;
 
+/* Full class record declaration */
 typedef struct _ScrollerClassRec {
     CoreClassPart       core_class;
     CompositeClassPart  composite_class;
     ScrollerClassPart   scroller_class;
 } ScrollerClassRec;
 
+/* New fields for the Scroller widget Record */
 typedef struct {
-    /* resources */
+   /* resources */
     XtOrientation	orientation;
     Boolean		usearrows;
     int		    	tlenght;	/* Total units high */
@@ -64,30 +75,26 @@ typedef struct {
     Dimension		thickness;	/* How wide to make thumb */
     int			delayTime;	/* Delay time for arrows */
     int			repeatTime;	/* Repeat time for arrows */
-
     Cursor              horCursor;
     Cursor              verCursor;
     Pixel               foreground;
-    Pixel		thumb;
     XtCallbackList	callbacks;
     String              clue;
+   /* Shadow info */
+    _XpmThreeDFrame	threeD;
 
-/* private resources. */
+   /* private resources. */
     Widget		tr_arrow;
     Widget		bl_arrow;
     int			t_top;		/* Top of thumb */
     int			t_bottom;	/* Bottom of thumb */
     int			position;	/* Current position */
     GC                  norm_gc;	/* normal color gc. */
-    GC                  thumb_gc;	/* Thumb GC */
     GC                  gray_gc;	/* Normal color (grayed out) gc. */
-    GC                  gray_thumb_gc;	/* Gray Thumb GC */
-
-   /* Shadow info */
-    _XpmThreeDFrame	threeD;
 
 } ScrollerPart;
 
+/* Full instance record declaration */
 typedef struct _ScrollerRec {
     CorePart            core;
     CompositePart       composite;

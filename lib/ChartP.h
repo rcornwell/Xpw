@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: ChartP.h,v 1.1 1997/10/15 04:57:46 rich Exp rich $
  *
- * $Log: $
+ * $Log: ChartP.h,v $
+ * Revision 1.1  1997/10/15 04:57:46  rich
+ * Initial revision
+ *
  *
  */
 
@@ -40,17 +43,25 @@
 #include "labelP.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * Chart Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the Chart widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } ChartClassPart;
 
+/* Full class record declaration */
 typedef struct _ChartClassRec {
     CoreClassPart       core_class;
     ChartClassPart      chart_class;
 } ChartClassRec;
 
+/* New fields for the Chart widget Record */
 typedef struct {
    /* resources */
    int			interval;	/* How often to collect new samples. */
@@ -77,6 +88,7 @@ typedef struct {
 
 } ChartPart;
 
+/* Full instance record declaration */
 typedef struct _ChartRec {
     CorePart            core;
     ChartPart           chart;

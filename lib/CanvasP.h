@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: CanvasP.h,v 1.1 1997/10/19 01:41:37 rich Exp rich $
+ * $Id: CanvasP.h,v 1.2 1997/10/21 18:50:30 rich Exp rich $
  *
  * $Log: CanvasP.h,v $
+ * Revision 1.2  1997/10/21 18:50:30  rich
+ * Removed reference to 3D library.
+ *
  * Revision 1.1  1997/10/19 01:41:37  rich
  * Initial revision
  *
@@ -42,17 +45,25 @@
 #define _CanvasP_H_
 #include "Canvas.h"
 
+/*********************************************************************
+ *
+ * Canvas Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the Canvas widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } CanvasClassPart;
 
+/* Full class record declaration */
 typedef struct _CanvasClassRec {
     CoreClassPart       core_class;
     CanvasClassPart     canvas_class;
 } CanvasClassRec;
 
+/* New fields for the Canvas widget Record */
 typedef struct {
    /* resources */
     XtCallbackList	canvas_action;
@@ -62,6 +73,7 @@ typedef struct {
     String		clue;
 } CanvasPart;
 
+/* Full instance record declaration */
 typedef struct _CanvasRec {
     CorePart            core;
     CanvasPart          canvas;

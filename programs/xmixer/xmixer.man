@@ -1,0 +1,114 @@
+.TH XMixer 1 "28 Nov 1997"
+.UC 4
+.SH NAME
+xmixer \- X based volume and mixer control program
+.SH SYNOPSIS
+.B xmixer
+[
+.B -toolkitoption ... 
+] [
+.BI -device \<device\>
+] [
+.BI -poll \<pollrate\>
+] [
+.B -show
+] [
+.B -noshow
+]
+.SH DESCRIPTION
+.I XMixer
+is used to control your soundcard volume settings. It runs with Linux
+sound drivers V2.0 and above.
+This document describes all the features of
+.I XMixer.
+Your soundcard may or may not support everything of it, please read be
+sure to read your hardware manual.
+
+.SH USAGE
+.PP
+The program has several sliders to control the volume of your supported sound
+hardware. In addition, you have a 'loudness', a 'stereo wide' and a 'mute'
+button above the sliders. Below the sliders are buttons to select the
+recording source.
+
+Options offered by
+.I XMixer
+are the following:
+.TP 0.6i
+.BI -device \<device\>
+Sets device name to use as mixer device.
+.TP 0.6i
+.BI -poll \<pollrate\>
+Sets the pollrate for changes in milliseconds.
+.TP 0.6i
+.B -show
+Shows all supported controls. Those which can't be changed are set insensitve.
+.TP 0.6i
+.B -noshow
+Shows only controls which will function with current hardware.
+.SH WIDGETS
+.PP
+In  order to specify resources, it is useful to know the hierarchy of the widgets
+which compose \fIxmixer\fR.
+In the  notation  below, indentation  indicates  hierarchical structure. The
+widget class name is given first, followed by the widget instance name.
+.PP
+.sp
+.nf
+.TA .5i 1.0i 1.5i 2.0i 2.5i
+.ta .5i 1.0i 1.5i 2.0i 2.5i
+XMixer  xmixer
+	RowCol  manager
+		RowCol  topbar
+			Command  power
+			Command  iconify
+			Select  loud
+			Select  seperate
+			Select  mute
+			Frame  frame
+				RowCol  manager
+					Label  left
+					Slider  balence
+					Label  right
+		RowCol  botbar
+			Frame  vol
+				RowCol  manager
+					Slider  slider
+					Select  holder
+			Frame  bass
+				\fIsame as above\fR
+			Frame  treble
+			Frame  synth
+			Frame  pcm
+			Frame  speaker
+			Frame  line
+			Frame  mic
+			Frame  cd
+			Frame  mix
+			Frame  pcm2
+			Frame  rec
+			Frame  igain
+			Frame  ogain
+			Frame  line1
+			Frame  line2
+			Frame  line3
+	Clue  CluePopup
+.fi
+.sp
+.SH RESOURCES
+.PP
+.B Xmixer
+supports the following local resources.
+.TP 0.6i
+.B mixerDevice
+Sets the mixer device.
+.TP 0.6i
+.B pollRate
+Sets the rate of updates in milliseconds.
+.TP 0.6i
+.B showAll
+If set True will show all devices. If set False will only show devices which
+the current hardware supports.
+
+.SH AUTHOR
+Richard Cornwell (skyvis@best.com)

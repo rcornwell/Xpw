@@ -1,0 +1,17 @@
+XCOMM $Id: $
+
+DEPLIBS = $(DEPXPWLIB) $(DEPXPMLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXLIB)
+LOCAL_LIBRARIES = -lXpw $(XMULIB) $(XTOOLLIB)
+SRCS1=  xmixer.c
+OBJS1= xmixer.o 
+SRCS1=  setmixer.c
+OBJS2= setmixer.o
+
+PROGRAMS = xmixer setmixer
+
+ComplexProgramTarget_1(xmixer, $(LOCAL_LIBRARIES), NullParameter)
+ComplexProgramTarget_2(setmixer, NullParameter, NullParameter)
+
+InstallAppDefaults(XMixer)
+
+DependTarget()

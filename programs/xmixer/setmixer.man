@@ -1,0 +1,52 @@
+.TH Setmixer 1 "28 Nov 1997"
+.UC 4
+.SH NAME
+setmixer \- Command line interface to mixer device.
+.SH SYNOPSIS
+.B setmixer
+[
+.BI -device \<device\>
+] [
+.BI -show [+|-]\<channel\>
+] [
+.BI -rec \<channel\>
+] [
+.BI -\<channel\> \<volume\>
+] [
+.B -help
+]
+.SH DESCRIPTION
+.I Setmixer
+is used to control your soundcard volume settings. It runs with Linux
+sound drivers V2.0 and above.
+This document describes all the features of
+.I setmixer.
+Your soundcard may or may not support everything of it, please read be
+sure to read your hardware manual.
+
+.SH USAGE
+.PP
+
+Options offered by
+.I setmixer
+are the following:
+.TP 0.6i
+.BI -device \<device\>
+Sets device name to use as mixer device.
+.TP 0.6i
+.BI -show \<channel\>
+Shows the value of channel. \fBAll\fR displays all devices.
+.TP 0.6i
+.BI -rec \<channel\>
+\fI+channel\fR enables recording for channel. \fI-channel\fR disable recording
+for channel.
+.TP 0.6i
+.BI -\<channel\> \<volume\>
+Sets \fIchannel\fR to volume. Volume can be either a single number or a
+number, number. In which case the first specifices the left volume and the 
+second specifices right volume.
+.TP 0.6i
+.B -help
+Displays a short help message and a list of supported channels.
+.SH AUTHOR
+Richard Cornwell (skyvis@best.com)

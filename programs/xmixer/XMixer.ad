@@ -1,0 +1,43 @@
+! $Id$
+!
+! XMixer Applications default file.
+!
+
+!
+! Private resources.
+!
+!XMixer.mixerDevice:		   /dev/mixer
+!XMixer.showALL:		   false
+!XMixer.pollRate:		   5000
+!
+! Global Stuff 
+!
+XMixer*Font:                 	   -*-lucidabright-demibold-r-normal-*-14-*
+XMixer*background:          	   grey
+XMixer*CluePopup.background:	   yellow
+XMixer*Slider.background:	   grey60
+XMixer*Slider.thumb:	 	   grey
+XMixer*Frame.frameWidth:	   2
+XMixer*Frame.outline:		   false
+XMixer*Frame.usePreferedSize:	   true
+XMixer*Frame.justify:              center
+XMixer*RowCol.borderWidth:	   0
+XMixer*Label.shadowWidth:	   0
+!
+! Labels
+!
+XMixer*iconName:           	   Mixer
+XMixer*power.foreground:	   green
+XMixer*power.clue:		   Quits Mixer Application
+XMixer*iconify.foreground:	   yellow
+XMixer*iconify.clue:		   Iconifies Mixer Application
+XMixer*botbar*Slider.width:	   15
+XMixer*left.label: 		   Left
+XMixer*right.label:		   Right
+XMixer*loud.label:		   Loudness
+XMixer*switch.shadowWidth:	   0
+XMixer*holder.shadowWidth:	   0
+XMixer*switch.switchColor:	   red
+XMixer*switch.switchShape:	   square
+XMixer*switch.switchSize:          20
+XMixer*switch.clue:		   Use as record source

@@ -26,6 +26,9 @@
  *
  *
  * $Log: TextLine.c,v $
+ * Revision 1.2  1997/11/01 06:39:09  rich
+ * Removed unused variables.
+ *
  * Revision 1.1  1997/10/25 22:15:47  rich
  * Initial revision
  *
@@ -33,7 +36,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: TextLine.c,v 1.1 1997/10/25 22:15:47 rich Exp rich $";
+static char        *rcsid = "$Id: TextLine.c,v 1.2 1997/11/01 06:39:09 rich Beta rich $";
 
 #endif
 
@@ -501,7 +504,8 @@ Redisplay(wid, event, reg)
 {
     TextLineWidget      self = (TextLineWidget) wid;
     GC                  gc, rgc, dgc, arrow;
-    int                 font_ascent = 0, font_descent = 0, x_loc, y_loc;
+    int                 font_ascent = 0, font_descent = 0;
+    Position		x_loc, y_loc;
     XFontSetExtents    *ext = XExtentsOfFontSet(self->text.fontset);
     Display            *dpy = XtDisplayOfObject(wid);
     Window              win = XtWindowOfObject(wid);
@@ -567,6 +571,8 @@ Redisplay(wid, event, reg)
 	cliparea.width -= h;
     }
     XSetClipRectangles(dpy, gc, 0, 0, &cliparea, 1, YXBanded);
+    XSetClipRectangles(dpy, rgc, 0, 0, &cliparea, 1, YXBanded);
+    XSetClipRectangles(dpy, dgc, 0, 0, &cliparea, 1, YXBanded);
 
     tstart = self->text.textstart;
     str = &self->text.string[tstart];

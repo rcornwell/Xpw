@@ -29,6 +29,11 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Clue.c,v $
+ * Revision 1.2  1997/10/05 02:17:28  rich
+ * Don't pop up clue unless we realy have one.
+ * Make sure that if a clue is disarmed nothing will get shown.
+ * Popup clue a bit below the widget.
+ *
  * Revision 1.1  1997/10/04 05:02:12  rich
  * Initial revision
  *
@@ -36,7 +41,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Clue.c,v 1.1 1997/10/04 05:02:12 rich Exp rich $";
+static char        *rcsid = "$Id: Clue.c,v 1.2 1997/10/05 02:17:28 rich Exp rich $";
 #endif
 
 #include <stdio.h>
@@ -103,7 +108,7 @@ ClueClassRec        clueClassRec =
 	XtInheritAcceptFocus,		/* accept_focus          */
 	XtVersion,			/* version               */
 	NULL,				/* callback_private      */
-	XtInheritTranslations,		/* tm_table              */
+	NULL,				/* tm_table              */
 	XtInheritQueryGeometry,		/* query_geometry        */
 	XtInheritDisplayAccelerator,	/* display_acceleator    */
 	NULL				/* extension             */
@@ -207,12 +212,10 @@ SetValues(current, request, new, args, num_args)
 {
     ClueWidget          self = (ClueWidget) new;
     ClueWidget          old_self = (ClueWidget) current;
-    Boolean             ret_val = FALSE;
 
-    _XpwLabelSetValues(current, new, &(old_self->clue.label),
+    return (_XpwLabelSetValues(current, new, &(old_self->clue.label),
 		       &(self->clue.label), new->core.background_pixel,
-		       new->core.depth);
-    return (FALSE);
+		       new->core.depth));
 }
 
 /*
@@ -223,7 +226,6 @@ Destroy(w)
 	Widget              w;
 {
     ClueWidget          self = (ClueWidget) w;
-    XtAppContext        context = XtWidgetToApplicationContext(w);
     struct clue_list   *cp, *lcp;
 
    /* Clean up label part first */
@@ -269,7 +271,7 @@ PopupClue(client_data, timerid)
     Position            loc_x, loc_y;
     Widget              wid = self->clue.active;
     Arg                 arglist[1];
-    Dimension           h, w, cw, ch;
+    Dimension           h, cw, ch;
 
     self->clue.timer = (XtIntervalId) NULL;
    /* If no widget active, then do nothing */

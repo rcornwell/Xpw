@@ -26,6 +26,10 @@
  *
  *
  * $Log: Arrow.c,v $
+ * Revision 1.2  1997/10/08 04:10:03  rich
+ * Make sure we don't clear a unset timer.
+ * When not pressed display foreground.
+ *
  * Revision 1.1  1997/10/04 18:59:34  rich
  * Initial revision
  *
@@ -33,13 +37,14 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Arrow.c,v 1.1 1997/10/04 18:59:34 rich Exp rich $";
+static char        *rcsid = "$Id: Arrow.c,v 1.2 1997/10/08 04:10:03 rich Exp rich $";
 #endif
 
 #include <stdio.h>
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
 #include <X11/Xmu/Misc.h>
+#include <X11/Xmu/Drawing.h>
 #include <X11/Shell.h>
 #include "XpwInit.h"
 #include <X11/CoreP.h>
@@ -49,7 +54,6 @@ static char        *rcsid = "$Id: Arrow.c,v 1.1 1997/10/04 18:59:34 rich Exp ric
 static XtGeometryResult QueryGeometry(Widget /*w */,
 				 XtWidgetGeometry * /*intended */,
 				 XtWidgetGeometry * /*return_val */);
-static void         ClassInitialize(void);
 static void         Initialize(Widget /*request */, Widget /*new */,
 				 ArgList /*args */, Cardinal */*num_args */ );
 static Boolean      SetValues(Widget /*current */, Widget /*request */ ,

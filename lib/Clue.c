@@ -28,12 +28,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: Clue.c,v $
+ * Revision 1.1  1997/10/04 05:02:12  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id$";
+static char        *rcsid = "$Id: Clue.c,v 1.1 1997/10/04 05:02:12 rich Exp rich $";
 #endif
 
 #include <stdio.h>
@@ -230,7 +233,7 @@ Destroy(w)
     if (self->clue.showing)
 	XtPopdown((Widget) self);
    /* Look down the list to find ourselfs and remove us */
-    for (cp = lcp = cluelist; cp != NULL; cp = cp->next)
+    for (cp = lcp = cluelist; cp != NULL; cp = cp->next) {
 	if (cp->clue_widget == w) {
 	   /* Unlink it */
 	    if (lcp == cluelist && cp->next == NULL)
@@ -240,6 +243,7 @@ Destroy(w)
 	    XtFree((XtPointer) cp);
 	} else
 	    lcp = cp;
+    }
    /* Not found, something wrong.
     * But don't worry about it for the moment, can't do anything about
     * it anyway.
@@ -269,13 +273,13 @@ PopupClue(client_data, timerid)
 
     self->clue.timer = (XtIntervalId) NULL;
    /* If no widget active, then do nothing */
-    if (wid == NULL)
+    if (wid == NULL || self->clue.label.label == NULL)
 	return;
    /* Get widget size */
     XtSetArg(arglist[0], XtNheight, &h);
     XtGetValues(wid, arglist, 1);
    /* Translate point to screen coords */
-    XtTranslateCoords(wid, 0, h, &loc_x, &loc_y);
+    XtTranslateCoords(wid, 10, h+10, &loc_x, &loc_y);
 
    /* Compute required size */
     _XpwLabelDefaultSize(wid, &(self->clue.label), &cw, &ch);
@@ -361,6 +365,7 @@ _XpwDisArmClue(w)
 	self->clue.showing = FALSE;
 	self->clue.timer = (XtIntervalId) NULL;
 	self->clue.active = (Widget) NULL;
+	self->clue.label.label = NULL;
     }
 }
 

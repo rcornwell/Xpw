@@ -1,9 +1,9 @@
-XCOMM $Id: Imakefile,v 1.1 1997/10/29 05:39:56 rich Exp rich $
+XCOMM $Id: Imakefile,v 1.2 1997/11/01 22:45:43 rich Rel rich $
 
 DEPLIBS = $(DEPXPWLIB) $(DEPXPMLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXLIB)
-LOCAL_LIBRARIES = -lXpw $(XMULIB) $(XTOOLLIB)
-INCLUDES = -I$(TOP)/exports/include
-EXTRA_LDOPTIONS = -L$(TOP)/exports/lib
+LOCAL_LIBRARIES = -lXpw $(XMULIB) $(XTOOLLIB) $(XLIB)
+INCLUDES = -I$(BUILDINCDIR)
+EXTRA_LDOPTIONS = -L$(BUILDLIBDIR)
 
 SRCS1=  xmixer.c
 OBJS1= xmixer.o 

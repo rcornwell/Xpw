@@ -26,12 +26,15 @@
  * library in commercial applications, or for commercial software distribution.
  *
  *
- * $Log: $
+ * $Log: MenuArrow.c,v $
+ * Revision 1.1  1997/10/15 05:42:22  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: MenuArrow.c,v 1.1 1997/10/15 05:42:22 rich Exp rich $";
 
 #endif
 
@@ -55,8 +58,8 @@ static XtResource   resources[] =
 {
     {XtNmenuName, XtCMenuName, XtRString, sizeof(String),
      offset(menu_name), XtRString, (XtPointer) NULL},
-    {XtNjustify, XtCJustify, XtRJustify, sizeof(XtJustify),
-     offset(justify), XtRImmediate, (XtPointer) XtJustifyRight}, 
+    {XtNmenuJustify, XtCJustify, XtRJustify, sizeof(XtJustify),
+     offset(menu_justify), XtRImmediate, (XtPointer) XtJustifyRight}, 
 
 };
 
@@ -250,7 +253,7 @@ Popup(w, event, params, num_params)
 
     XtTranslateCoords(w, 0, 0, &arrow_x, &arrow_y);
     menu_x = arrow_x;
-    switch (self->menuarrow.justify) {
+    switch (self->menuarrow.menu_justify) {
     case XtJustifyCenter:
         menu_x += (self->core.width - menu_width) / 2;
         break;

@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id: MenuButton.h,v 1.1 1997/10/04 05:06:55 rich Exp rich $
+ * $Id: MenuButton.h,v 1.2 1997/10/15 05:42:56 rich Exp rich $
  *
  * $Log: MenuButton.h,v $
+ * Revision 1.2  1997/10/15 05:42:56  rich
+ * Added justification to pulldown menus.
+ *
  * Revision 1.1  1997/10/04 05:06:55  rich
  * Initial revision
  *
@@ -55,7 +58,7 @@
  * Name              Class              RepType         Default Value
  * ----              -----              -------         -------------
  * menuName          MenuName           String          NULL
- * justify           Justify            Justify         right
+ * menuJustify       Justify            Justify         right
  *
  * label Resources:
  * 
@@ -109,7 +112,13 @@ typedef struct _MenuButtonRec *MenuButton;
 
 extern WidgetClass  menubuttonWidgetClass;
 
+#ifndef XtNmenuName
 #define XtNmenuName "menuName"
 #define XtCMenuName "MenuName"
+#endif
+
+#ifndef XtNmenuJustify
+#define XtNmenuJustify "menuJustify"
+#endif
 
 #endif /* _MenuButton_h */

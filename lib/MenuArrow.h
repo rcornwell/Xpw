@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: MenuArrow.h,v 1.1 1997/10/15 05:42:22 rich Exp rich $
  *
- * $Log: $
+ * $Log: MenuArrow.h,v $
+ * Revision 1.1  1997/10/15 05:42:22  rich
+ * Initial revision
+ *
  *
  */
 
@@ -51,6 +54,7 @@
  * Name              Class              RepType         Default Value
  * ----              -----              -------         -------------
  * menuName          MenuName           String          NULL
+ * menuJustify	     Justify		XtJustify	left
  *
  * Name                Class              RepType         Default Value
  * ----                -----              -------         -------------
@@ -95,7 +99,13 @@ typedef struct _MenuArrowRec *MenuArrow;
 
 extern WidgetClass  menuarrowWidgetClass;
 
+#ifndef XtNmenuName
 #define XtNmenuName "menuName"
 #define XtCMenuName "MenuName"
+#endif
+
+#ifndef XtNmenuJustify
+#define XtNmenuJustify "menuJustify"
+#endif
 
 #endif /* _MenuArrow_h */

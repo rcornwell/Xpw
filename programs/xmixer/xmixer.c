@@ -2,6 +2,10 @@
  * Xmixer: Control sound card volume settings.
  *
  * $Log: xmixer.c,v $
+ * Revision 1.2  1997/11/01 22:44:36  rich
+ * Removed extra fallbacks.
+ * Removed unused code.
+ *
  * Revision 1.1  1997/10/29 05:41:32  rich
  * Initial revision
  *
@@ -9,7 +13,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: xmixer.c,v 1.1 1997/10/29 05:41:32 rich Exp rich $";
+static char        *rcsid = "$Id: xmixer.c,v 1.2 1997/11/01 22:44:36 rich Exp rich $";
 #endif
 
 /* System stuff */
@@ -41,20 +45,15 @@ static char        *rcsid = "$Id: xmixer.c,v 1.1 1997/10/29 05:41:32 rich Exp ri
 #include "bitmaps/bass.xbm"
 #include "bitmaps/cd.xbm"
 #include "bitmaps/headphone.xbm"
-#include "bitmaps/hook.xbm"
 #include "bitmaps/huh.xbm"
 #include "bitmaps/iconify.xbm"
 #include "bitmaps/mic.xbm"
-#include "bitmaps/mix_play.xbm"
-#include "bitmaps/mix_rec.xbm"
 #include "bitmaps/mixicon.xbm"
 #include "bitmaps/mute.xbm"
 #include "bitmaps/pcm.xbm"
 #include "bitmaps/pcm2.xbm"
 #include "bitmaps/pcsp.xbm"
 #include "bitmaps/power.xbm"
-#include "bitmaps/record.xbm"
-#include "bitmaps/speaker.xbm"
 #include "bitmaps/synth.xbm"
 #include "bitmaps/tape.xbm"
 #include "bitmaps/treble.xbm"

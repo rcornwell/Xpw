@@ -30,31 +30,30 @@
 /* 
  * MenuArrowP.h - Private definitions for MenuArrow.
  *
- * $Id: $
+ * $Id: MenuArrowP.h,v 1.1 1997/10/15 05:42:22 rich Exp rich $
  *
- * $Log: $
+ * $Log: MenuArrowP.h,v $
+ * Revision 1.1  1997/10/15 05:42:22  rich
+ * Initial revision
+ *
  * 
  */
 
 #ifndef _MenuArrowP_h
 #define _MenuArrowP_h
-
-/***********************************************************************
- *
- * Private Data
- *
- ***********************************************************************/
-
 #include "ArrowP.h"
 #include "MenuArrow.h"
 
-/************************************************************
+/*********************************************************************
  *
- * New fields for the MenuArrow class record.
+ * MenuArrow Widget Private Data
  *
- ************************************************************/
+ *********************************************************************/
+
+/* New fields for the MenuArrow widget class record */
+
 typedef struct _MenuArrowClassPart {
-    int           foo;
+    int           	foo;	/* Null record entry */
 } MenuArrowClassPart;
 
 /* Full class record declaration */
@@ -70,15 +69,10 @@ extern MenuArrowClassRec menuarrowClassRec;
 typedef struct {
    /* resources */
     String              menu_name;	
-    XtJustify           justify;        /* Justification for the popup. */
+    XtJustify           menu_justify;        /* Justification for the popup. */
 } MenuArrowPart;
 
-/****************************************************************
- *
- * Full instance record declaration
- *
- ****************************************************************/
-
+/* Full instance record declaration */
 typedef struct _MenuArrowRec {
     CorePart            core;
     ArrowPart		arrow;

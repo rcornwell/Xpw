@@ -30,9 +30,12 @@
 /* 
  * MenuButtonP.h - Private definitions for MenuButton object
  *
- * $Id: MenuButtonP.h,v 1.1 1997/10/04 05:06:55 rich Exp rich $
+ * $Id: MenuButtonP.h,v 1.2 1997/10/15 05:42:56 rich Exp rich $
  *
  * $Log: MenuButtonP.h,v $
+ * Revision 1.2  1997/10/15 05:42:56  rich
+ * Added justification to pulldown menus.
+ *
  * Revision 1.1  1997/10/04 05:06:55  rich
  * Initial revision
  *
@@ -41,23 +44,18 @@
 
 #ifndef _MenuButtonP_h
 #define _MenuButtonP_h
-
-/***********************************************************************
- *
- * Private Data
- *
- ***********************************************************************/
-
 #include "CommandP.h"
 #include "MenuButton.h"
 
-/************************************************************
+/*********************************************************************
  *
- * New fields for the MenuButton class record.
+ * MenuButton Widget Private Data
  *
- ************************************************************/
+ *********************************************************************/
+
+/* New fields for the MenuButton widget class record */
 typedef struct _MenuButtonClassPart {
-    int                foo;
+    int                foo;	/* Null record entry */
 } MenuButtonClassPart;
 
 /* Full class record declaration */
@@ -69,19 +67,14 @@ typedef struct _MenuButtonClassRec {
 
 extern MenuButtonClassRec menubuttonClassRec;
 
-/* New fields for the MenuButton Object record */
+/* New fields for the MenuButton widget record */
 typedef struct {
    /* resources */
     String              menu_name;	/* Sub Menu... */
-    XtJustify           justify;        /* Justification for the popup. */
+    XtJustify           menu_justify;   /* Justification for the popup. */
 } MenuButtonPart;
 
-/****************************************************************
- *
- * Full instance record declaration
- *
- ****************************************************************/
-
+/* Full instance record declaration */
 typedef struct _MenuButtonRec {
     CorePart            core;
     CommandPart		command;

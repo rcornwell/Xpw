@@ -28,6 +28,11 @@
  *
  *
  * $Log: ComboBox.c,v $
+ * Revision 1.2  1997/12/06 04:14:49  rich
+ * Don't Free Children since they are already gone.
+ * When freeing list, make sure item count it correct.
+ * Make sure to move trailing NULL.
+ *
  * Revision 1.1  1997/11/28 19:55:48  rich
  * Initial revision
  *
@@ -35,7 +40,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: ComboBox.c,v 1.1 1997/11/28 19:55:48 rich Exp rich $";
+static char        *rcsid = "$Id: ComboBox.c,v 1.2 1997/12/06 04:14:49 rich Exp rich $";
 
 #endif
 
@@ -250,6 +255,7 @@ SetValues(current, request, new, args, num_args)
     	new_self->combobox.select = 0;
     	new_self->combobox.label.label = new_self->combobox.list[0];
 	MakePulldowns(new_self);
+	ret_val = TRUE;
     }
     if (_XpwLabelSetValues(current, new, &(old_self->combobox.label),
 		 &(new_self->combobox.label), new->core.background_pixel,
@@ -558,13 +564,15 @@ SelectItem(w, client_data, call_data)
 	XtPointer           client_data;
 	XtPointer           call_data;
 {
-    ComboBoxWidget            self = (ComboBoxWidget) XtParent(XtParent(w));
-    int                 sel = (int) client_data;
+    ComboBoxWidget          self = (ComboBoxWidget) XtParent(XtParent(w));
+    int                     sel = (int) client_data;
+    Arg			    arg[1];
     XpwComboBoxReturnStruct rs;
 
     if (sel >= 0 && sel < self->combobox.nitems) {
         self->combobox.select = sel;
-    	self->combobox.label.label = self->combobox.list[sel];
+	XtSetArg(arg[0], XtNlabel, self->combobox.list[sel]);
+	XtSetValues((Widget)self, arg, 1);
     }
     Redisplay((Widget)self, NULL, NULL);
 
@@ -609,6 +617,7 @@ XpwComboBoxNew(w)
 	Widget              w;
 {
     ComboBoxWidget            self = (ComboBoxWidget) w;
+    Arg			      arg[1];
 
    /* Free all elements from old combobox */
     if (self->combobox.list != NULL)
@@ -618,7 +627,8 @@ XpwComboBoxNew(w)
     self->combobox.list[0] = NULL;
     self->combobox.wlist = (Widget *) XtMalloc(sizeof(Widget *));
     self->combobox.wlist[0] = NULL;
-    self->combobox.label.label = "";
+    XtSetArg(arg[0], XtNlabel, " ");
+    XtSetValues((Widget)self, arg, 1);
     self->combobox.select = -1;
 }
 
@@ -768,13 +778,15 @@ XpwComboBoxSetItem(w, index)
 	int                 index;
 {
     ComboBoxWidget            self = (ComboBoxWidget) w;
+    Arg			      arg[1];
 
    /* Make sure there is space */
     if (index < 0 || index > self->combobox.nitems)
 	return;
     if (self->combobox.select != index) {
 	self->combobox.select = index;
-	self->combobox.label.label = self->combobox.list[index];
+        XtSetArg(arg[0], XtNlabel, self->combobox.list[index]);
+        XtSetValues((Widget)self, arg, 1);
 	Redisplay(w, NULL, NULL);
     }
 }

@@ -1,12 +1,15 @@
 /*
  * XCdplay: Plays a cd.
  *
- * $Log: $
+ * $Log: bitmaps.cc,v $
+ * Revision 1.1  1997/12/16 05:48:46  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: bitmaps.cc,v 1.1 1997/12/16 05:48:46 rich Exp rich $";
 #endif
 
 /* System stuff */
@@ -46,6 +49,8 @@ static char        *rcsid = "$Id: $";
 #include "bitmaps/toolIntro.xpm"
 #include "bitmaps/toolNormal.xbm"
 #include "bitmaps/toolNormal.xpm"
+#include "bitmaps/toolShuffle.xbm"
+#include "bitmaps/toolShuffle.xpm"
 #include "bitmaps/toolRandom.xbm"
 #include "bitmaps/toolRandom.xpm"
 #include "bitmaps/toolRepeat.xbm"
@@ -65,8 +70,8 @@ static char        *rcsid = "$Id: $";
 #include "bitmaps/down.xbm"
 #include "bitmaps/bot.xbm"
 
-Pixmap	Bitmaps[26];
-Pixmap  Bitmask[26];
+Pixmap	Bitmaps[27];
+Pixmap  Bitmask[27];
 
 #define entry(name, image, xpm) { name, image##_bits, xpm,  \
 			        image##_height, image##_width },
@@ -93,6 +98,7 @@ struct {
  	entry(toolNormal, toolNormal, toolNormal_xpm)
  	entry(toolRepeat, toolRepeat, toolRepeat_xpm)
  	entry(toolRandom, toolRandom, toolRandom_xpm) 
+ 	entry(toolShuffle, toolShuffle, toolShuffle_xpm) 
  	entry(toolPlay, toolPlay, toolPlay_xpm) 
  	entry(toolStop, toolStop, toolStop_xpm) 
  	entry(toolDisc, toolDisc, toolDisc_xpm)

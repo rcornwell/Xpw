@@ -2,6 +2,9 @@
  * Xmixer: Control sound card volume settings.
  *
  * $Log: xmixer.c,v $
+ * Revision 1.4  1997/11/28 21:46:33  rich
+ * Added Dialog boxes.
+ *
  * Revision 1.3  1997/11/01 22:47:01  rich
  * Removed unsed bitmaps
  *
@@ -16,7 +19,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: xmixer.c,v 1.3 1997/11/01 22:47:01 rich Rel rich $";
+static char        *rcsid = "$Id: xmixer.c,v 1.4 1997/11/28 21:46:33 rich Rel rich $";
 #endif
 
 /* System stuff */
@@ -49,7 +52,6 @@ static char        *rcsid = "$Id: xmixer.c,v 1.3 1997/11/01 22:47:01 rich Rel ri
 #include "bitmaps/bass.xbm"
 #include "bitmaps/cd.xbm"
 #include "bitmaps/headphone.xbm"
-#include "bitmaps/huh.xbm"
 #include "bitmaps/iconify.xbm"
 #include "bitmaps/mic.xbm"
 #include "bitmaps/mixicon.xbm"
@@ -66,6 +68,21 @@ static char        *rcsid = "$Id: xmixer.c,v 1.3 1997/11/01 22:47:01 rich Rel ri
 #include "bitmaps/volume.xbm"
 #include "bitmaps/wide.xbm"
 #include "bitmaps/wideoff.xbm"
+
+#include "bitmaps/aux.xpm"
+#include "bitmaps/bass.xpm"
+#include "bitmaps/cd.xpm"
+#include "bitmaps/headphone.xpm"
+#include "bitmaps/mic.xpm"
+#include "bitmaps/mixicon.xpm"
+#include "bitmaps/pcm.xpm"
+#include "bitmaps/pcm2.xpm"
+#include "bitmaps/pcsp.xpm"
+#include "bitmaps/synth.xpm"
+#include "bitmaps/tape.xpm"
+#include "bitmaps/treble.xpm"
+#include "bitmaps/vol.xpm"
+
 
 typedef struct _XMixerResources {
     String              mixer_device;
@@ -99,6 +116,8 @@ static XMixerResources resources;
 
 static void         usage(void);
 void                main(int /*argc */ , char ** /*argv */ );
+static Pixmap	    MakePixmap(char **/*data*/, char */*data_bit*/,
+			 int /*width*/, int /*height*/, Pixmap */*mask*/);
 static void         quit(Widget /*w */ , XEvent * /*event */ ,
 			 String * /*params */ , Cardinal * /*num_params */ );
 static void         app_quit(Widget /*w */ , XtPointer /*client_data */ ,
@@ -169,28 +188,29 @@ static struct _mixarray {
     int                 width;
     int                 height;
     char               *bits;
+    char               **xpm;
     Widget              slide;
     Widget              rec;
     int                 value;
 } Mixdata[] = {
 
-    { SOUND_MIXER_VOLUME, vol_width, vol_height, vol_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_BASS, bass_width, bass_height, bass_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_TREBLE, treble_width, treble_height, treble_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_SYNTH, synth_width, synth_height, synth_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_PCM, pcm_width, pcm_height, pcm_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_SPEAKER, pcsp_width, pcsp_height, pcsp_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_LINE, aux_width, aux_height, aux_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_MIC, mic_width, mic_height, mic_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_CD, cd_width, cd_height, cd_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_IMIX, tweeter_width, tweeter_height, tweeter_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_ALTPCM, pcm2_width, pcm2_height, pcm2_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_RECLEV, aux_width, aux_height, aux_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_IGAIN, tape_width, tape_height, tape_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_OGAIN, headphone_width, headphone_height, headphone_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_LINE1, aux_width, aux_height, aux_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_LINE2, aux_width, aux_height, aux_bits, NULL, NULL, 0 },
-    { SOUND_MIXER_LINE3, aux_width, aux_height, aux_bits, NULL, NULL, 0 },
+    { SOUND_MIXER_VOLUME, vol_width, vol_height, vol_bits, vol_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_BASS, bass_width, bass_height, bass_bits, bass_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_TREBLE, treble_width, treble_height, treble_bits, treble_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_SYNTH, synth_width, synth_height, synth_bits, synth_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_PCM, pcm_width, pcm_height, pcm_bits, pcm_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_SPEAKER, pcsp_width, pcsp_height, pcsp_bits, pcsp_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_LINE, aux_width, aux_height, aux_bits, aux_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_MIC, mic_width, mic_height, mic_bits, mic_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_CD, cd_width, cd_height, cd_bits, cd_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_IMIX, tweeter_width, tweeter_height, tweeter_bits, pcsp_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_ALTPCM, pcm2_width, pcm2_height, pcm2_bits, pcm2_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_RECLEV, aux_width, aux_height, aux_bits, aux_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_IGAIN, tape_width, tape_height, tape_bits, tape_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_OGAIN, headphone_width, headphone_height, headphone_bits, headphone_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_LINE1, aux_width, aux_height, aux_bits, aux_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_LINE2, aux_width, aux_height, aux_bits, aux_xpm, NULL, NULL, 0 },
+    { SOUND_MIXER_LINE3, aux_width, aux_height, aux_bits, aux_xpm, NULL, NULL, 0 },
 };
 
 
@@ -225,9 +245,9 @@ main(argc, argv)
 	int                 argc;
 	char              **argv;
 {
-    Widget              topbar, botbar, w;
+    Widget              topbar, botbar, w, w1;
     Arg                 args[5];
-    Pixmap              image;
+    Pixmap              image, mask;
     int                 i;
     char		ebuffer[200];
 
@@ -251,53 +271,26 @@ main(argc, argv)
     XtSetArg(args[1], XtNiconic, &iconic);
     XtGetValues(toplevel, args, 2);
     if (image == None) {
-	image = XCreateBitmapFromData(dpy,
-				  win,
-		   (char *) mixicon_bits, mixicon_width, mixicon_height);
+	image = MakePixmap(mixicon_xpm, mixicon_bits,
+		   mixicon_width, mixicon_height, &mask);
 	XtSetArg(args[0], XtNiconPixmap, image);
-	XtSetValues(toplevel, args, 1);
+	i = 1;
+	if (mask != (Pixmap)NULL) {
+ 	    XtSetArg(args[i], XtNiconMask, mask);
+	    i++;
+	}
+ 	XtSetValues(toplevel, args, i);
     }
 
    /* Add Clue widget */
     XtCreatePopupShell("CluePopup", clueWidgetClass, toplevel, NULL, 0);
 
-   /* Open mixer */
-    if ((mixdev = open(resources.mixer_device, O_RDWR)) < 0) {
-	sprintf(ebuffer, "%s: Unable to open mixer device %s\n",
-		ProgramName, resources.mixer_device);
-	error_dialog(ebuffer);
-	mixmask = 0xffffff;
-	recmask = 0;
-	steriomask = mixmask;
-    } else {
-   /* Get device masks */
-    if (ioctl(mixdev, SOUND_MIXER_READ_DEVMASK, &mixmask) < 0) {
-	sprintf(ebuffer, "%s: Unable get list of devices\n",
-		ProgramName);
-	notice_dialog(ebuffer);
-	mixmask = 0xffffff;
-    }
-    if (ioctl(mixdev, SOUND_MIXER_READ_RECMASK, &recmask) < 0) {
-	sprintf(ebuffer, "%s: Unable get list of record devices\n",
-		ProgramName);
-	notice_dialog(ebuffer);
-	recmask = 0;
-    }
-    if (ioctl(mixdev, SOUND_MIXER_READ_STEREODEVS, &steriomask) < 0) {
-	sprintf(ebuffer, "%s: Unable get list of sterio devices\n",
-		ProgramName);
-       /* Assume all sterio */
-	notice_dialog(ebuffer);
-	steriomask = mixmask;
-    }
-    }
-
-   /* Build widget tree. */
-    w = XtCreateManagedWidget("manager", rowColWidgetClass, toplevel, NULL, 0);
+   /* Build widgets. */
+    w1 = XtCreateManagedWidget("manager", rowColWidgetClass, toplevel, NULL, 0);
 
     XtSetArg(args[0], XtNorientation, XtorientHorizontal);
-    topbar = XtCreateManagedWidget("topbar", rowColWidgetClass, w, args, 1);
-    botbar = XtCreateManagedWidget("botbar", rowColWidgetClass, w, args, 1);
+    topbar = XtCreateManagedWidget("topbar", rowColWidgetClass, w1, args, 1);
+    botbar = XtCreateManagedWidget("botbar", rowColWidgetClass, w1, args, 1);
 
     image = XCreateBitmapFromData(dpy, win,
 			 (char *) power_bits, power_width, power_height);
@@ -310,6 +303,39 @@ main(argc, argv)
     XtSetArg(args[1], XtNbitmap, image);
     w = XtCreateManagedWidget("iconify", commandWidgetClass, topbar, args, 2);
     XtAddCallback(w, XtNcallback, app_iconify, toplevel);
+
+    /* Open mixer */
+    if ((mixdev = open(resources.mixer_device, O_RDWR)) < 0) {
+	sprintf(ebuffer, "%s: Unable to open mixer device %s\n",
+		ProgramName, resources.mixer_device);
+	error_dialog(ebuffer);
+	mixmask = 0xffffff;
+	recmask = 0;
+	steriomask = mixmask;
+    } else {
+   /* Get device masks */
+        if (ioctl(mixdev, SOUND_MIXER_READ_DEVMASK, &mixmask) < 0) {
+	    sprintf(ebuffer, "%s: Unable get list of devices\n",
+		    ProgramName);
+	    notice_dialog(ebuffer);
+	    mixmask = 0xffffff;
+        }
+        if (ioctl(mixdev, SOUND_MIXER_READ_RECMASK, &recmask) < 0) {
+	    sprintf(ebuffer, "%s: Unable get list of record devices\n",
+		    ProgramName);
+	    notice_dialog(ebuffer);
+	    recmask = 0;
+        }
+        if (ioctl(mixdev, SOUND_MIXER_READ_STEREODEVS, &steriomask) < 0) {
+	    sprintf(ebuffer, "%s: Unable get list of sterio devices\n",
+		    ProgramName);
+           /* Assume all sterio */
+	    notice_dialog(ebuffer);
+	    steriomask = mixmask;
+        }
+    }
+
+   /* Build mixer widgets. */
     if (mixmask & SOUND_MASK_LOUD || resources.show_all) {
         XtSetArg(args[0], XtNswitchSize, 0);
 	w = XtCreateManagedWidget("loud", selectWidgetClass, topbar, args, 1);
@@ -362,16 +388,14 @@ main(argc, argv)
 	    continue;
 	if (i == SOUND_MIXER_VOLUME)
 	    XtAddCallback(bal_slide, XtNcallback, balence_call, (XtPointer) i);
-	/* Install image if one */
-	image = None;
-	if (Mixdata[i].bits != NULL) 
-	    image = XCreateBitmapFromData(dpy, win, (char *) Mixdata[i].bits,
-				    Mixdata[i].width, Mixdata[i].height);
-
+	/* Install image */
+        image = MakePixmap(Mixdata[i].xpm, Mixdata[i].bits,
+				 Mixdata[i].width, Mixdata[i].height, &mask);
 	XtSetArg(args[0], XtNlabel, "");
 	XtSetArg(args[1], XtNbitmap, image);
+	XtSetArg(args[2], XtNbitmapMask, mask);
 	frame = XtCreateManagedWidget(devnames[i], frameWidgetClass, botbar, 
-							 args, 2);
+							 args, 3);
 	w = XtCreateManagedWidget("manager", rowColWidgetClass, frame, NULL, 0);
 	XtSetArg(args[0], XtNmin, 0);
 	XtSetArg(args[1], XtNmax, 100);
@@ -406,6 +430,120 @@ main(argc, argv)
          timer = XtAppAddTimeOut(app_con, 10, Update, NULL);
 
     XtAppMainLoop(app_con);
+}
+
+/*
+ * Make a Pixmap from asascii representation.
+ */
+static              Pixmap
+MakePixmap(data, data_bit, width, height, mask)
+        char              **data;
+        char               *data_bit;
+        int                 width;
+        int                 height;
+        Pixmap             *mask;
+{
+    Display            *dpy = XtDisplay(toplevel);
+    Window              win = XtWindow(toplevel);
+    int                 scn = DefaultScreen(dpy);
+    Visual             *visual = XDefaultVisual(dpy, scn);
+    Colormap            cmap = DefaultColormap(dpy, scn);
+    unsigned int        depth = XDefaultDepth(dpy, scn);
+    XColor		*clist;
+    char		*map;
+    XImage             *img;
+    Pixmap              result;
+    char               *mask_data, *p;
+    int                 i, j, dp, maskcell;
+    int                 bitmap_pad;
+    GC                  gc;
+    XGCValues           values;
+
+    if (depth == 1 || data == NULL) {
+        if (mask != NULL)
+            *mask = (Pixmap) NULL;
+        return XCreateBitmapFromData(dpy, DefaultRootWindow(dpy),
+                         (char *) data_bit, width, height);
+    }
+    if (depth > 16)
+        bitmap_pad = 32;
+    else if (depth > 8)
+        bitmap_pad = 16;
+    else
+        bitmap_pad = 8;
+
+   /* Parse geometry in first line */
+    i = 2;		/* Default Cmap */
+    width = atoi(data[0]);
+    if ((p = strchr(data[0], ' ')) != NULL) {
+	height = atoi(p+1);
+	if ((p = strchr(p+1, ' ')) != NULL) {
+	   i = atoi(p);
+	}
+    }
+
+   /* Now read the color map */
+    map = XtMalloc(i);
+    map[i] = '\0';
+    clist = (XColor *)XtMalloc(i * sizeof(XColor));
+    for(dp = 1, i--; i >=0; i--) {
+	map[i] = *data[dp];
+	if ((p = strchr(data[dp++], 'c')) == NULL)
+		continue;
+	for(p++; *p == ' '; p++);
+	if (strncasecmp(p, "None", 4) == 0)
+	    maskcell = i;
+	else {
+	    if (XParseColor(dpy, cmap, p, &clist[i]) == 0)
+		fprintf(stderr, "Unable to parse color %s\n", p);
+	    XAllocColor(dpy, cmap, &clist[i]);
+	}
+    }	
+	
+   /* Make mask bitmap */
+    mask_data = XtMalloc(i = ((width / 8) * height));
+    for (; i >= 0; mask_data[--i] = 0) ;
+   /* Make image */
+    img = XCreateImage(dpy, visual, depth, ZPixmap, 0, 0,
+                       width, height, bitmap_pad, 0);
+    img->data = (char *)XtMalloc(img->bytes_per_line * height);
+
+   /* Make image and mask */
+    for (i = 0; i < height; i++) {
+        char               *line = data[dp++];
+        for (j = 0; j < width; j++) {
+            int                 pix;
+
+	    if((p = strchr(map, line[j])) == NULL)
+		continue;
+	    pix = p - map;
+            if (pix != maskcell) 
+                mask_data[((i * width) + j) / 8] |= 1 << (j & 0x7);
+            XPutPixel(img, j, i, clist[pix].pixel);
+        }
+    }
+
+   /* Build mask if one was requested */
+    if (mask != NULL)
+        *mask = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy),
+                         (char *) mask_data, width, height);
+
+   /* Make the Pixmap */
+    result = XCreatePixmap(dpy, DefaultRootWindow(dpy), width, height, depth);
+
+    values.foreground = 1;
+    values.background = 0;
+    gc = XCreateGC(dpy, result, GCForeground | GCBackground, &values);
+
+    XPutImage(dpy, result, gc, img, 0, 0, 0, 0, width, height);
+
+   /* Free stuff we don't need */
+    XFreeGC(dpy, gc);
+    XDestroyImage(img);
+    XtFree(mask_data);
+    XtFree(map);
+    XtFree((XtPointer)clist);
+    return result;
 }
 
 /*
@@ -690,7 +828,6 @@ notice_dialog(message)
 
 	if (dialog != NULL)	/* Don't flood user with dialogs */
 		return;
-   
         XtSetArg(arg[0], XtNmessage, message);
         dialog = XpwDialogCreateNotice(toplevel, "Xmixer", arg, 1);
         XtUnmanageChild(XpwDialogGetChild(dialog, XpwDialog_Cancel_Button));

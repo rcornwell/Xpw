@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: ClueP.h,v 1.1 1997/10/04 05:02:12 rich Exp rich $
+ * $Id: ClueP.h,v 1.2 1997/11/01 06:39:02 rich Beta rich $
  *
  * $Log: ClueP.h,v $
+ * Revision 1.2  1997/11/01 06:39:02  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/04 05:02:12  rich
  * Initial revision
  *
@@ -68,8 +71,9 @@ typedef struct _ClueClassRec {
 typedef struct {
    /* resources */
     _XpwLabel		label;		/* Label gadget to display clues in */
-    XtIntervalId	timer;		/* Timer for popup's */
     int			timeout;	/* How long to wait before showing popup */
+    Boolean		showclue;	/* Is it currently popped up? */
+    XtIntervalId	timer;		/* Timer for popup's */
     Widget		active;		/* Widget to popup for */
     Boolean		showing;	/* Is it currently popped up? */
 } CluePart;

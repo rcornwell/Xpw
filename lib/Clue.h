@@ -35,9 +35,12 @@
  */
 
 /*
- * $Id$
+ * $Id: Clue.h,v 1.1 1997/10/04 05:02:12 rich Beta rich $
  *
- * $Log:$
+ * $Log: Clue.h,v $
+ * Revision 1.1  1997/10/04 05:02:12  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _Clue_H_
@@ -51,6 +54,7 @@
  * Name                Class              RepType         Default Value
  * ----                -----              -------         -------------
  * timeOut             TimeOut            Int             500
+ * showClue            ShowClue           Boolean         True
  *
  * label Resources:
  * 
@@ -89,7 +93,9 @@ typedef struct _ClueRec *ClueWidget;
 extern WidgetClass  clueWidgetClass;
 
 #define XtNtimeOut        "timeOut"
-#define XtCtimeOut        "timeOut"
+#define XtCTimeOut        "TimeOut"
+#define XtNshowClue       "showClue"
+#define XtCShowClue       "ShowClue"
 #define XtNclue		  "clue"
 
 _XFUNCPROTOBEGIN

@@ -29,6 +29,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Clue.c,v $
+ * Revision 1.3  1997/11/01 06:39:01  rich
+ * Removed unused definition.
+ *
  * Revision 1.2  1997/10/05 02:17:28  rich
  * Don't pop up clue unless we realy have one.
  * Make sure that if a clue is disarmed nothing will get shown.
@@ -41,7 +44,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Clue.c,v 1.2 1997/10/05 02:17:28 rich Exp rich $";
+static char        *rcsid = "$Id: Clue.c,v 1.3 1997/11/01 06:39:01 rich Beta rich $";
 #endif
 
 #include <stdio.h>
@@ -71,8 +74,10 @@ static XtResource   resources[] =
     /* Label resources */
     LabelResources
     /* Popup resources */
-    {XtNtimeOut, XtCtimeOut, XtRInt, sizeof(int),
+    {XtNtimeOut, XtCTimeOut, XtRInt, sizeof(int),
      offset(timeout), XtRImmediate, (XtPointer) 500},
+    {XtNshowClue, XtCShowClue, XtRBoolean, sizeof(Boolean),
+     offset(showclue), XtRImmediate, (XtPointer) TRUE},
 };
 
 #define SuperClass ((WidgetClass) &overrideShellClassRec)
@@ -275,7 +280,8 @@ PopupClue(client_data, timerid)
 
     self->clue.timer = (XtIntervalId) NULL;
    /* If no widget active, then do nothing */
-    if (wid == NULL || self->clue.label.label == NULL)
+    if (wid == NULL || self->clue.label.label == NULL ||
+	self->clue.showclue == FALSE)
 	return;
    /* Get widget size */
     XtSetArg(arglist[0], XtNheight, &h);
@@ -333,6 +339,8 @@ _XpwArmClue(w, clue)
     if (!XtIsSensitive(w))
 	return;
     if ((self = FindClueWidgetFor(w)) != (ClueWidget) NULL) {
+	if (self->clue.showclue == FALSE)
+	   return;
 	if (self->clue.timer != (XtIntervalId) NULL)
 	    XtRemoveTimeOut(self->clue.timer);
 	self->clue.timer = (XtIntervalId) NULL;

@@ -1,4 +1,4 @@
-! $Id: XMixer.ad,v 1.2 1997/11/01 22:45:10 rich Rel rich $
+! $Id: XMixer.ad,v 1.3 1997/11/28 21:46:33 rich Rel rich $
 !
 ! XMixer Applications default file.
 !
@@ -44,4 +44,25 @@ XMixer*holder.shadowWidth:	   0
 XMixer*switch.switchColor:	   red
 XMixer*switch.switchShape:	   square
 XMixer*switch.switchSize:          20
-XMixer*switch.clue:		   Use as record source
+!
+! Clues
+!
+XMixer*switch.clue:		  Use as record source.
+XMixer*balence.clue:       Controls balence setting.
+XMixer*vol*slider.clue:           Controls main volume.
+XMixer*bass*slider.clue:          Controls amount of bass.
+XMixer*treble*slider.clue:        Controls amount of trebble.
+XMixer*synth*slider.clue:         Controls volume of FM synthizer.
+XMixer*pcm*slider.clue:           Controls volume of DSP synthizer.
+XMixer*speaker*slider.clue:       Controls volume of PC speaker.
+XMixer*line*slider.clue:          Controls volume of line input.
+XMixer*mic*slider.clue:           Controls volume of mic input.
+XMixer*cd*slider.clue:            Controls volume of CD player.
+XMixer*mix*slider.clue:           Controls record level.
+XMixer*pcm2*slider.clue:          Controls volume.of second FM synthizer.
+XMixer*rec*slider.clue:           Controls record monitor volume.
+XMixer*igain*slider.clue:         Controls input gain level.
+XMixer*ogain*slider.clue:         Controls output gain level.
+XMixer*line1*slider.clue:         Controls volume second line source.
+XMixer*line2*slider.clue:         Controls volume third line source.
+XMixer*line3*slider.clue:         Controls volume fourth line source.

@@ -27,6 +27,11 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Frame.c,v $
+ * Revision 1.2  1997/10/12 05:13:48  rich
+ * Removed calling child expose.
+ * Ask the child what size it wants to be.
+ * Don't bother to make subwindows.
+ *
  * Revision 1.1  1997/10/04 05:04:15  rich
  * Initial revision
  *
@@ -34,7 +39,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Frame.c,v 1.1 1997/10/04 05:04:15 rich Exp rich $";
+static char        *rcsid = "$Id: Frame.c,v 1.2 1997/10/12 05:13:48 rich Exp rich $";
 
 #endif
 
@@ -54,7 +59,7 @@ static char        *rcsid = "$Id: Frame.c,v 1.1 1997/10/04 05:04:15 rich Exp ric
 static void         DoLayout(FrameWidget /*self */ , int /*width */ ,
 			 int /*height */ , Dimension * /*reply_width */ ,
 		     Dimension * /*reply_height */ , int /*position */ );
-static XtGeometryResult QueryGeometry(Widget /*widget */ ,
+static XtGeometryResult QueryGeometry(Widget /*w */ ,
 				      XtWidgetGeometry * /*constraint */ ,
 				      XtWidgetGeometry * /*preferred */ );
 static void         Resize(Widget /*w */ );
@@ -98,6 +103,8 @@ static XtResource   resources[] =
      offset(threeO.frameType), XtRImmediate, (XtPointer) XfGrooved},
     {XtNoutlineRaised, XtCOutlineRaised, XtRBoolean, sizeof(Boolean),
      offset(threeO.raised), XtRImmediate, (XtPointer) FALSE},
+    {XtNusePreferedSize, XtCUsePreferedSize, XtRBoolean, sizeof(Boolean),
+     offset(usePrefered), XtRImmediate, (XtPointer) FALSE},
 
     /* Label resources */
     LabelResources
@@ -168,7 +175,6 @@ ClassPartInitialize(class)
 	WidgetClass         class;
 {
     FrameWidgetClass    c = (FrameWidgetClass) class;
-    FrameWidgetClass    super;
     CompositeClassExtensionRec *ext;
 
     ext = (XtPointer) XtMalloc(sizeof(*ext));
@@ -195,7 +201,7 @@ Initialize(request, new, args, num_args)
 	   sizeof(_XpmThreeDFrame));
     newself->frame.threeO.frameType = outtype;
     newself->frame.threeO.raised = outraise;
-}				/* Initialize */
+}	
 
 /*
  * SetValues: Figure out if we need to redisplay becuase of the changes,
@@ -215,8 +221,13 @@ SetValues(current, request, new, args, num_args)
 
     if (_XpwLabelSetValues(current, new, &(old_self->frame.label),
 			&(self->frame.label), new->core.background_pixel,
-			   new->core.depth))
+			   new->core.depth)) {
+	Dimension	w, h;
+	w = h = 0;
+    	_XpwLabelDefaultSize((Widget) self, &(self->frame.label), &w, &h);
+    	self->frame.label_height = h;
 	ret_val = TRUE;
+    }
 
     if ((self->frame.frame_width != old_self->frame.frame_width) ||
 	(self->frame.threeD.shadow_width != old_self->frame.threeD.shadow_width))
@@ -252,22 +263,22 @@ SetValues(current, request, new, args, num_args)
  */
 
 static              XtGeometryResult
-QueryGeometry(widget, constraint, preferred)
-	Widget              widget;
+QueryGeometry(w, constraint, preferred)
+	Widget              w;
 	XtWidgetGeometry   *constraint, *preferred;
 {
-    FrameWidget         self = (FrameWidget) widget;
-    Dimension           preferred_width, preferred_height;
+    FrameWidget         self = (FrameWidget) w;
+    Dimension           width, height;
 
-    DoLayout(self, 0, 0, &preferred_width, &preferred_height, FALSE);
+    DoLayout(self, 0, 0, &width, &height, FALSE);
 
     preferred->request_mode = CWWidth | CWHeight;
-    preferred->width = preferred_width;
-    preferred->height = preferred_height;
+    preferred->width = width;
+    preferred->height = height;
 
     if (constraint->request_mode == (CWWidth | CWHeight)
-	&& constraint->width == preferred_width
-	&& constraint->height == preferred_height)
+	&& constraint->width == width
+	&& constraint->height == height)
 	return XtGeometryYes;
     else
 	return XtGeometryAlmost;
@@ -300,7 +311,7 @@ GeometryManager(w, request, reply)
 
 {
     Dimension           width, height, borderWidth;
-    FrameWidget         self;
+    FrameWidget         self = (FrameWidget)XtParent(w);
 
    /* Position request always denied */
     if ((request->request_mode & CWX && request->x != w->core.x) ||
@@ -330,11 +341,10 @@ GeometryManager(w, request, reply)
         * (2) new widget fits in existing Box, (3) Box can be
         * expanded to allow new widget to fit */
 
-	self = (FrameWidget) w->core.parent;
-
 	if (TryNewLayout(self)) {
+	    Dimension           junk;
 	   /* Fits in existing or new space, relayout */
-	    (*XtClass((Widget) self)->core_class.resize) ((Widget) self);
+	    DoLayout(self, self->core.width, self->core.height, &junk, &junk, TRUE);
 	    return (XtGeometryYes);
 	} else {
 	   /* Cannot satisfy request, change back to original geometry */
@@ -369,8 +379,6 @@ Redisplay(wid, event, region)
 	Region              region;
 {
     FrameWidget         self = (FrameWidget) wid;
-    Widget              child;
-    WidgetClass         class;
     Display            *dpy = XtDisplayOfObject(wid);
     Window              win = XtWindowOfObject(wid);
     Dimension           s = self->frame.threeD.shadow_width;
@@ -378,11 +386,17 @@ Redisplay(wid, event, region)
     Dimension           f2 = f / 2;
     Dimension           h = self->core.height;
     Dimension           w = self->core.width;
+    Dimension		lh = self->frame.label_height;
     Dimension           x_loc, y_loc;
 
     if (region == NULL)
 	XClearWindow(dpy, win);
 
+    x_loc = s + f + 2;
+    y_loc = (self->frame.labelontop) ? (s + f) : (h - lh - s - s);
+   /* Draw the label */
+    _XpwLabelDraw(wid, &(self->frame.label), event, region, x_loc, y_loc,
+		  w - 2 * (s + f), lh, TRUE);
    /* Draw shadows around main window */
     _XpwThreeDDrawShadow(wid, event, region, &(self->frame.threeD), 0, 0, w, h, 0);
 
@@ -390,11 +404,6 @@ Redisplay(wid, event, region)
 	_XpwThreeDDrawShadow(wid, event, region, &(self->frame.threeO),
 			     f2, f2, w - f, h - f, 0);
     }
-    x_loc = s + f + 2;
-    y_loc = (self->frame.labelontop) ? (s + f2) : (h - f - s - s);
-   /* Draw the label */
-    _XpwLabelDraw(wid, &(self->frame.label), event, region, x_loc, y_loc,
-		  w - 2 * (s + f), f, TRUE);
 }
 
 /*
@@ -429,60 +438,68 @@ DoLayout(self, width, height, reply_width, reply_height, position)
 	Dimension          *reply_width, *reply_height;		/* bounding box */
 	Boolean             position;	/* actually reposition the windows? */
 {
-    Dimension           w, h, ch;	/* Width and height needed for widgit */
-    Position            cx, cy;	/* X and y needed for child */
-    Widget              widget;	/* Current widget */
-    Widget              child;
-    Dimension           s = self->frame.threeD.shadow_width;
-    Dimension           f = self->frame.frame_width;
+    Dimension           w, h;	/* Width and height needed for widgit */
+    Dimension           bw, fw;
+    Position            cx, cy;
+    Dimension		cw, ch;	/* X and y needed for child */
+    Dimension           s = self->frame.threeD.shadow_width + self->frame.frame_width;
     XtWidgetGeometry    request, reply;
 
-    w = 0;
-    h = 0;
     _XpwLabelDefaultSize((Widget) self, &(self->frame.label), &w, &h);
-    h += f;
+    self->frame.label_height = h;
     if (self->composite.num_children != 0) {
-	int                 bw;
+        Widget              child;
 
 	child = self->composite.children[0];
 	bw = child->core.border_width;
+	cw = child->core.width;
 	ch = child->core.height;
        /* If we are not positioning ask child how big it needs */
 	if (!position) {
 	    request.request_mode = CWHeight | CWWidth;
-	    request.width = child->core.width;
+	    request.width = cw;
 	    request.height = ch;
 	    if (XtQueryGeometry(child, &request, &reply) == XtGeometryAlmost) {
-		if ((reply.request_mode & CWWidth) && reply.width > w)
-		    w = reply.width;
-		if ((reply.request_mode & CWHeight) && reply.height > ch)
+		if (reply.request_mode & CWWidth)
+		    cw = reply.width;
+		if (reply.request_mode & CWHeight)
 		    ch = reply.height;
 	    }
-	} else {
-
-	   /* Make child as big as we are */
-	    if (width != 0)
-		w = width - 2 * f - 2 * s - 2 * bw;
-	    if (height != 0)
-		ch = height - h - f - 2 * s - 2 * bw;
 	}
-	cx = s + f + (width - 2 * (s + f) - w) / 2 - bw;
-	if (self->frame.labelontop)
-	    cy = s + h + (height - h - f - (2 * s) - ch) / 2 /* + descent */ ;
-	else
-	    cy = s + (height - f - (2 * s) - ch) / 2;
-	cy -= bw;
-	if (position)
-	    XtConfigureWidget(child, cx, cy, w, ch, bw);
-	h += ch + bw;
+	fw = 2 * (s + bw);
+	if (cw > w)
+	    w = cw;
+       /* Make child as big as we are */
+	if ((self->frame.usePrefered == False || cw == 0) && width != 0) {
+	        cw = width - fw;
+	}
+	if ((self->frame.usePrefered == False || ch == 0) && height != 0) {
+		Dimension hh = h + fw;
+	        ch = height - hh;
+	}
+	if (width == 0)
+		width = w + fw;
+	if (height == 0)
+		height = h + ch + fw;
+	/* Do this long way to get around gcc bug */
+	cx = height - h;
+	cx = cx - fw;
+	cy = s + ((self->frame.labelontop)?h:0) + (cx - ch) / 2;
+	cx = width - fw;
+	cx = s + (cx - cw) / 2;
+	if (position) 
+	    XtConfigureWidget(child, (Position)cx, (Position)cy, 
+			(Dimension)cw, (Dimension)ch, bw);
+        w += fw;
+        h += fw + ch;
     } else {
+	w += 2 * s;
+	h += 2 * s;
 	if (width != 0)		/* Make child as big as we are */
-	    w = width - 2 * f - 2 * s;
+	    w = width;
 	if (height != 0)
-	    h = height - f - 2 * s;
+	    h = height;
     }
-    w += 2 * (f + s);
-    h += (2 * s) + f;
     if (width > w)
 	w = width;
     if (height > h)
@@ -506,75 +523,58 @@ TryNewLayout(self)
 {
     Dimension           preferred_width, preferred_height;
     Dimension           proposed_width, proposed_height;
-    int                 iterations;
+    int			iterations;
 
     DoLayout(self, 0, 0, &preferred_width, &preferred_height, FALSE);
 
-   /* at this point, preferred_width is guaranteed to not be greater
-    * than mbw->core.width unless some child is larger, so there's no
-    * point in re-computing another layout */
-
     if ((self->core.width == preferred_width) &&
-	(self->core.height == preferred_height)) {
-       /* Same size */
+	(self->core.height == preferred_height)) 
 	return (TRUE);
-    }
+    
    /* let's see if our parent will go for a new size. */
-    iterations = 0;
     proposed_width = preferred_width;
     proposed_height = preferred_height;
-    do {
-	switch (XtMakeResizeRequest((Widget) self, proposed_width, proposed_height,
+    for(iterations=0; iterations < 10; iterations++) {
+        switch (XtMakeResizeRequest((Widget) self,
+				     proposed_width, proposed_height,
 				    &proposed_width, &proposed_height)) {
-	case XtGeometryYes:
+        case XtGeometryYes:
 	    return (TRUE);
 
-	case XtGeometryNo:
-	    if (iterations > 0)
-	       /* protect from malicious parents who change their minds */
-		DoLayout(self, self->core.width, self->core.height,
-			 &preferred_width, &preferred_height, FALSE);
+        case XtGeometryNo:
+           /* protect from malicious parents who change their minds */
+            if (iterations > 0)
+	    DoLayout(self, self->core.width, self->core.height,
+		     &preferred_width, &preferred_height, FALSE);
 	    if ((preferred_width <= self->core.width) &&
-		(preferred_height <= self->core.height))
-		return (TRUE);
+	        (preferred_height <= self->core.height))
+	        return (TRUE);
 	    else
-		return (FALSE);
+	        return (FALSE);
 
-	case XtGeometryAlmost:
+        case XtGeometryAlmost:
 	    if (proposed_height >= preferred_height &&
-		proposed_width >= preferred_width) {
+	        proposed_width >= preferred_width) {
+    
+           /*
+            * Take it, and assume the parent knows what it is doing.
+            *
+            * The parent must accept this since it was returned in
+            * almost.
+            *
+            */
+	        (void) XtMakeResizeRequest((Widget) self,
+				     proposed_width, proposed_height,
+			          &proposed_width, &proposed_height);
+	        return (TRUE);
+            }
 
-	       /*
-	        * Take it, and assume the parent knows what it is doing.
-	        *
-	        * The parent must accept this since it was returned in
-	        * almost.
-	        *
-	        */
-		(void) XtMakeResizeRequest((Widget) self,
-					 proposed_width, proposed_height,
-				      &proposed_width, &proposed_height);
-		return (TRUE);
-	    } else if (proposed_width != preferred_width) {
-	       /* recalc bounding box; height might change */
-		DoLayout(self, proposed_width, 0,
-			 &preferred_width, &preferred_height, FALSE);
-		proposed_height = preferred_height;
-	    } else {		/* proposed_height != preferred_height */
-		XtWidgetGeometry    constraints, reply;
-
-		constraints.request_mode = CWHeight;
-		constraints.height = proposed_height;
-		(void) QueryGeometry((Widget) self, &constraints, &reply);
-		proposed_width = preferred_width;
-	    }
 	    break;
 
-	case XtGeometryDone:	/* ??? */
-	default:
+        case XtGeometryDone:
+        default:
 	    break;
-	}
-	iterations++;
-    } while (iterations < 10);
+        }
+    }
     return (FALSE);
 }

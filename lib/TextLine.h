@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: TextLine.h,v 1.1 1997/10/25 22:15:47 rich Exp rich $
  *
- * $Log: $
+ * $Log: TextLine.h,v $
+ * Revision 1.1  1997/10/25 22:15:47  rich
+ * Initial revision
+ *
  *
  */
 
@@ -43,7 +46,6 @@
  * ----              -----              -------         -------------
  * clue              Clue               String          NULL
  * centerAmount      HorizontalMargins  Dimension       75
- * gapSize           GapSize            Int             32
  * editable          Editable           Boolean         True
  * doArrows          DoArrows           Boolean         True
  * callback          Callback           Callback        Null
@@ -95,16 +97,14 @@ typedef struct _TextLineClassRec *TextLineWidgetClass;
 typedef struct _TextLineRec *TextLineWidget;
 
 extern WidgetClass  textLineWidgetClass;
-#define XtNgapSize	"gapSize"
-#define XtCGapSize	"gapSize"
 
 #define XtNeditable	"editable"
-#define XtCEditable	"editable"
+#define XtCEditable	"Editable"
 #define XtNcenterAmount "centerAmount"
 #define XtNcforeground  "cforeground"
 #define XtNaforeground  "aforeground"
 #define XtNdoArrows	"doArrows"
-#define XtCdoArrows	"doArrows"
+#define XtCDoArrows	"DoArrows"
 
 #define XtNpassMode     "passMode"
 #define XtCPassMode	"PassMode"

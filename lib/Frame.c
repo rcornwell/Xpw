@@ -26,12 +26,16 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: Frame.c,v $
+ * Revision 1.1  1997/10/04 05:04:15  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id$";
+static char        *rcsid = "$Id: Frame.c,v 1.1 1997/10/04 05:04:15 rich Exp rich $";
+
 #endif
 
 #include <stdio.h>
@@ -47,36 +51,36 @@ static char        *rcsid = "$Id$";
 /* Semi Public Functions */
 
 /* Frame.c */
-static void         DoLayout(FrameWidget /*self */, int /*width */,
-				 int /*height */, Dimension * /*reply_width */,
-				 Dimension * /*reply_height */, int /*position */ );
-static XtGeometryResult QueryGeometry(Widget /*widget */,
-				 XtWidgetGeometry * /*constraint */,
-				 XtWidgetGeometry * /*preferred */ );
+static void         DoLayout(FrameWidget /*self */ , int /*width */ ,
+			 int /*height */ , Dimension * /*reply_width */ ,
+		     Dimension * /*reply_height */ , int /*position */ );
+static XtGeometryResult QueryGeometry(Widget /*widget */ ,
+				      XtWidgetGeometry * /*constraint */ ,
+				      XtWidgetGeometry * /*preferred */ );
 static void         Resize(Widget /*w */ );
 static Boolean      TryNewLayout(FrameWidget /*self */ );
 static void         ClassPartInitialize(WidgetClass /*class */ );
-static void         Initialize(Widget /*request */, Widget /*new */,
-				 ArgList /*args */, Cardinal * /*num_args */ );
-static XtGeometryResult GeometryManager(Widget /*w */,
-				 XtWidgetGeometry * /*request */,
-				 XtWidgetGeometry * /*reply */ );
+static void         Initialize(Widget /*request */ , Widget /*new */ ,
+			  ArgList /*args */ , Cardinal * /*num_args */ );
+static XtGeometryResult GeometryManager(Widget /*w */ ,
+					XtWidgetGeometry * /*request */ ,
+					XtWidgetGeometry * /*reply */ );
 static void         ChangeManaged(Widget /*w */ );
-static Boolean      SetValues(Widget /*current */, Widget /*request */,
-				 Widget /*new */, ArgList /*args */,
-				 Cardinal * /*num_args */ );
+static Boolean      SetValues(Widget /*current */ , Widget /*request */ ,
+			      Widget /*new */ , ArgList /*args */ ,
+			      Cardinal * /*num_args */ );
 static void         Destroy(Widget /*w */ );
-static void         Redisplay(Widget /*wid */, XEvent * /*event */,
-				 Region /*region */ );
+static void         Redisplay(Widget /*wid */ , XEvent * /*event */ ,
+			      Region /*region */ );
 
 /* Composite class extension record */
 static CompositeClassExtensionRec extension_rec =
 {
-    NULL,				/* Next_extension */
-    NULLQUARK,				/* record_type */
+    NULL,			/* Next_extension */
+    NULLQUARK,			/* record_type */
     XtCompositeExtensionVersion,	/* Version */
-    sizeof(CompositeClassExtensionRec),	/* record_size */
-    TRUE,				/* accepts_objects */
+    sizeof(CompositeClassExtensionRec),		/* record_size */
+    TRUE,			/* accepts_objects */
 };
 
 /* Our resources */
@@ -215,17 +219,17 @@ SetValues(current, request, new, args, num_args)
 	ret_val = TRUE;
 
     if ((self->frame.frame_width != old_self->frame.frame_width) ||
-        (self->frame.threeD.shadow_width != old_self->frame.threeD.shadow_width))
+	(self->frame.threeD.shadow_width != old_self->frame.threeD.shadow_width))
 	ret_val = TRUE;
 
-    if (ret_val) 
+    if (ret_val)
 	Resize(new);
-    
+
     if ((self->core.sensitive != old_self->core.sensitive) ||
-        (self->frame.labelontop != old_self->frame.labelontop) ||
-        (self->frame.outline != old_self->frame.outline) ||
-        (self->frame.threeO.frameType != old_self->frame.threeO.frameType) ||
-        (self->frame.threeO.raised != old_self->frame.threeO.raised))
+	(self->frame.labelontop != old_self->frame.labelontop) ||
+	(self->frame.outline != old_self->frame.outline) ||
+    (self->frame.threeO.frameType != old_self->frame.threeO.frameType) ||
+	(self->frame.threeO.raised != old_self->frame.threeO.raised))
 	ret_val = TRUE;
     if (_XpmThreeDSetValues(new, &old_self->frame.threeD,
 		      &self->frame.threeD, new->core.background_pixel)) {
@@ -242,7 +246,6 @@ SetValues(current, request, new, args, num_args)
     }
     return (ret_val);
 }
-
 
 /*
  * Calculate preferred size, given constraining box, caching it in the widget.
@@ -392,13 +395,6 @@ Redisplay(wid, event, region)
    /* Draw the label */
     _XpwLabelDraw(wid, &(self->frame.label), event, region, x_loc, y_loc,
 		  w - 2 * (s + f), f, TRUE);
-   /* Repaint each child */
-    if (self->composite.num_children != 0) {
-	child = self->composite.children[0];
-	class = XtClass(child);
-	if (class->core_class.expose != NULL)
-	    (class->core_class.expose) (child, event, region);
-    }
 }
 
 /*
@@ -420,7 +416,6 @@ Destroy(w)
  *
  ************************************************************/
 
-
 /*
  * Private Geometry management functions.
  *
@@ -440,6 +435,7 @@ DoLayout(self, width, height, reply_width, reply_height, position)
     Widget              child;
     Dimension           s = self->frame.threeD.shadow_width;
     Dimension           f = self->frame.frame_width;
+    XtWidgetGeometry    request, reply;
 
     w = 0;
     h = 0;
@@ -450,14 +446,26 @@ DoLayout(self, width, height, reply_width, reply_height, position)
 
 	child = self->composite.children[0];
 	bw = child->core.border_width;
-	if (child->core.width > w)	/* Make as wide as child */
-	    w = child->core.width;
-	if (width != 0)		/* Make child as big as we are */
-	    w = width - 2 * f - 2 * s - 2 * bw;
-	if (height != 0)
-	    ch = height - h - f - 2 * s - 2 * bw;
-	else
-	    ch = child->core.height;
+	ch = child->core.height;
+       /* If we are not positioning ask child how big it needs */
+	if (!position) {
+	    request.request_mode = CWHeight | CWWidth;
+	    request.width = child->core.width;
+	    request.height = ch;
+	    if (XtQueryGeometry(child, &request, &reply) == XtGeometryAlmost) {
+		if ((reply.request_mode & CWWidth) && reply.width > w)
+		    w = reply.width;
+		if ((reply.request_mode & CWHeight) && reply.height > ch)
+		    ch = reply.height;
+	    }
+	} else {
+
+	   /* Make child as big as we are */
+	    if (width != 0)
+		w = width - 2 * f - 2 * s - 2 * bw;
+	    if (height != 0)
+		ch = height - h - f - 2 * s - 2 * bw;
+	}
 	cx = s + f + (width - 2 * (s + f) - w) / 2 - bw;
 	if (self->frame.labelontop)
 	    cy = s + h + (height - h - f - (2 * s) - ch) / 2 /* + descent */ ;
@@ -472,9 +480,6 @@ DoLayout(self, width, height, reply_width, reply_height, position)
 	    w = width - 2 * f - 2 * s;
 	if (height != 0)
 	    h = height - f - 2 * s;
-    }
-    if (position && XtIsRealized((Widget) self)) {
-	XMapSubwindows(XtDisplay((Widget) self), XtWindow((Widget) self));
     }
     w += 2 * (f + s);
     h += (2 * s) + f;
@@ -573,4 +578,3 @@ TryNewLayout(self)
     } while (iterations < 10);
     return (FALSE);
 }
-

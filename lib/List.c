@@ -25,6 +25,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: List.c,v $
+ * Revision 1.3  1997/11/01 06:39:03  rich
+ * Removed unused variables.
+ *
  * Revision 1.2  1997/10/15 05:52:03  rich
  * Don't need to destroy scrollbars, composite does it for us.
  *
@@ -35,7 +38,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: List.c,v 1.2 1997/10/15 05:52:03 rich Exp rich $";
+static char        *rcsid = "$Id: List.c,v 1.3 1997/11/01 06:39:03 rich Beta rich $";
 
 #endif
 
@@ -987,7 +990,8 @@ Layout(self, width, height, set)
 
 		XtAddCallback(self->list.h_scrollbar,
 			      XtNcallback, HandleScroll, self);
-		XtRealizeWidget(self->list.h_scrollbar);
+		if (XtIsRealized((Widget)self))
+		    XtRealizeWidget(self->list.h_scrollbar);
 	    }
 	    lsize = self->list.h_scrollbar->core.width;
 	} else {
@@ -1004,7 +1008,8 @@ Layout(self, width, height, set)
 			       XtNorientation, XtorientHorizontal, NULL);
 		XtAddCallback(self->list.v_scrollbar,
 			      XtNcallback, HandleScroll, self);
-		XtRealizeWidget(self->list.v_scrollbar);
+		if (XtIsRealized((Widget)self))
+		    XtRealizeWidget(self->list.v_scrollbar);
 	    }
 	    tsize = self->list.v_scrollbar->core.height;
 	} else {
@@ -2176,7 +2181,7 @@ XpwListDeleteItems(w, from, to)
 	int                 to;
 {
     ListWidget          self = (ListWidget) w;
-    int                 size;
+    int                 i;
 
     if (from < 0 || from > self->list.nitems)
 	return;
@@ -2184,16 +2189,17 @@ XpwListDeleteItems(w, from, to)
 	return;
     if (to < from)
 	return;
-    size = self->list.nitems - to + 1;
-   /* Move old items to make space */
-    for (; size >= 0; size--) {
-	if (self->list.list[from] != NULL)
-	    XtFree(self->list.list[from]);
+   /* Remove old items */
+    for (i = from; i < to; i++)
+	if (self->list.list[i] != NULL)
+	    XtFree(self->list.list[i]);
+    while (to < self->list.nitems) {
 	self->list.list[from] = self->list.list[to];
 	self->list.list_attr[from] = self->list.list_attr[to];
 	from++;
 	to++;
     }
+    self->list.nitems = from;
     if ((self->list.freedoms & LK_LONGEST) == 0)
 	CalculateLongest(self);
     if (self->list.do_redisplay && XtIsRealized(w)) {
@@ -2201,6 +2207,7 @@ XpwListDeleteItems(w, from, to)
 	Dimension           height = self->core.height;
 
 	Layout(self, &width, &height, TRUE);
+	CenterItem(w, to);
 	Redisplay(w, NULL, NULL);
     }
 }
@@ -2225,9 +2232,11 @@ XpwListReplaceItem(w, item, index, font, attr, color)
 	return;
     la = &self->list.list_attr[index];
     lp = &self->list.list[index];
-    if (*lp != NULL)
-	XtFree(*lp);
-    *lp = XtNewString(item);
+    if (item != *lp) {
+        if (*lp != NULL)
+	    XtFree(*lp);
+        *lp = XtNewString(item);
+    }
     la->selected = FALSE;
     la->oldstate = FALSE;
     la->outline = (attr & XpwListOutline) ? 1 : 0;
@@ -2279,9 +2288,11 @@ XpwListReplaceItems(w, items, index, font, attr, color)
     la = &self->list.list_attr[index];
     lp = &self->list.list[index];
     for (i = 0; i < size; i++, la++, lp++) {
-	if (*lp != NULL)
-	    XtFree(*lp);
-	*lp = XtNewString(items[i]);
+	if (*lp != items[i]) {
+	    if (*lp != NULL)
+	        XtFree(*lp);
+	    *lp = XtNewString(items[i]);
+	}
 	la->selected = FALSE;
 	la->oldstate = FALSE;
 	la->outline = (attr & XpwListOutline) ? 1 : 0;
@@ -2339,15 +2350,26 @@ XpwListSetItem(w, index, adjust)
  * Returns FALSE or the current state of requested item.
  */
 Boolean
-XpwListGetItem(w, index)
+XpwListGetItem(w, index, rs)
 	Widget              w;
 	int                 index;
+        XpwListReturnStruct *rs;
 {
     ListWidget          self = (ListWidget) w;
 
    /* Make sure there is space */
-    if (index < 0 || index > self->list.nitems)
+    if (index < 0 || index > self->list.nitems) {
+	if (rs != NULL) {
+	    rs->index = -1;
+	    rs->string = NULL;
+        }
 	return False;
+    }
+
+    if (rs != NULL) {
+    	rs->index = index;
+	rs->string = self->list.list[index];
+    }
 
     return self->list.list_attr[index].selected;
 }

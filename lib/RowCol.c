@@ -26,6 +26,11 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: RowCol.c,v $
+ * Revision 1.2  1997/10/12 05:14:01  rich
+ * Removed some extra pointer references.
+ * Added QueryGeometry.
+ * SetChildrenSizes now returns desired width.
+ *
  * Revision 1.1  1997/10/07 05:35:41  rich
  * Initial revision
  *
@@ -33,7 +38,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: RowCol.c,v 1.1 1997/10/07 05:35:41 rich Exp rich $";
+static char        *rcsid = "$Id: RowCol.c,v 1.2 1997/10/12 05:14:01 rich Exp rich $";
 
 #endif
 
@@ -42,6 +47,7 @@ static char        *rcsid = "$Id: RowCol.c,v 1.1 1997/10/07 05:35:41 rich Exp ri
 #include <X11/StringDefs.h>
 
 #include <X11/Xmu/Misc.h>
+#include <X11/Xmu/CharSet.h>
 #include <X11/Xmu/Converters.h>
 
 #include "XpwInit.h"
@@ -76,6 +82,8 @@ static XtResource   resources[] =
      offset(orientation), XtRImmediate, (XtPointer) XtorientVertical},
     {XtNpacking, XtCPackingType, XtRPackingType, sizeof(XpwPackingType),
      offset(packing), XtRImmediate, (XtPointer) XpwFill},
+    {XtNjustify, XtCJustify, XtRJustify, sizeof(XtJustify),
+     offset(justify), XtRImmediate, (XtPointer) XtJustifyLeft},
     {XtNspacing, XtCSpacing, XtRDimension, sizeof(Dimension),
      offset(spacing), XtRImmediate, (XtPointer) 2}
 };
@@ -107,9 +115,6 @@ static void         Initialize(Widget /*request */ , Widget /*new */ ,
 static Boolean      SetValues(Widget /*old */ , Widget	/*request */
 			      ,Widget /*new */ , ArgList /*args */ ,
 			      Cardinal * /*num_args */ );
-static Boolean      ChildSetValues(Widget /*old */ , Widget /*request */ ,
-				   Widget /*new */ , ArgList /*args */ ,
-				   Cardinal * /*num_args */ );
 static void         Realize(Widget /*w */ , Mask * /*valueMask */ ,
 			    XSetWindowAttributes * /*attributes */ );
 static XtGeometryResult QueryGeometry(Widget /*w */ ,
@@ -220,6 +225,8 @@ ClassInitialize()
     XpwInitializeWidgetSet();
     XtAddConverter(XtRString, XtROrientation, XmuCvtStringToOrientation,
 		   (XtConvertArgList) NULL, (Cardinal) 0);
+    XtAddConverter(XtRString, XtRJustify, XmuCvtStringToJustify,
+                   (XtConvertArgList) NULL, (Cardinal) 0);
     XtSetTypeConverter(XtRString, XtRPackingType, cvtStringToPackingType,
 		       NULL, 0, XtCacheNone, NULL);
     XtSetTypeConverter(XtRPackingType, XtRString, cvtPackingTypeToString,
@@ -267,7 +274,9 @@ SetValues(old, request, new, args, num_args)
        /* Force a redraw */
 	return TRUE;
     }
-    if (old_self->rowcol.packing != new_self->rowcol.packing) {
+    if ((old_self->rowcol.packing != new_self->rowcol.packing) ||
+        (old_self->rowcol.justify != new_self->rowcol.justify) ||
+        (old_self->rowcol.spacing != new_self->rowcol.spacing)) {
 	ChangeManaged(new);
        /* Force a redraw */
 	return TRUE;
@@ -655,6 +664,24 @@ PositionChildren(self)
 
     gap += self->rowcol.spacing;
     loc = 0;
+    switch(self->rowcol.justify) {
+    case XtJustifyCenter:
+	if (self->rowcol.packing == XpwEven && self->rowcol.num_children > 0)
+	    gap = self->rowcol.spacing +
+		  (ChildSize((Widget) self, vert) - size) /
+		  (self->rowcol.num_children);
+        loc = (ChildSize((Widget) self, vert) - (size +
+		gap * (self->rowcol.num_children - 1))) / 2;
+        break;
+    case XtJustifyRight:
+	if (self->rowcol.packing != XpwEven)
+            loc = ChildSize((Widget) self, vert) - (size +
+			 gap * (self->rowcol.num_children - 1));
+        break;
+    case XtJustifyLeft:
+    default:
+        break;
+    }
    /* Now set there location */
     ForAllChildren(self, childP) {
 	if (!XtIsManaged(*childP))

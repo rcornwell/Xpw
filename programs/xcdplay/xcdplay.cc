@@ -1,19 +1,25 @@
 /*
  * XCdplay: Plays a cd.
  *
- * $Log: $
+ * $Log: xcdplay.cc,v $
+ * Revision 1.1  1997/12/16 05:48:46  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: xcdplay.cc,v 1.1 1997/12/16 05:48:46 rich Exp rich $";
 #endif
 
 /* System stuff */
 #include <stdio.h>
+#include <sys/types.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <fcntl.h>
 #include <errno.h>
+#include <unistd.h>
 
 /* Include all the widget stuff we need */
 #include <X11/Xos.h>
@@ -85,6 +91,8 @@ static XtResource   my_resources[] =
      Offset(skip_time), XtRImmediate, (XtPointer) 20},
     {"introTime", "IntroTime", XtRInt, sizeof(int),
      Offset(intro_time), XtRImmediate, (XtPointer) 30},
+    {"showClues", "ShowClues", XtRBoolean, sizeof(Boolean),
+     Offset(show_clues), XtRImmediate, (XtPointer) TRUE},
 };
 
 #undef Offset
@@ -98,6 +106,8 @@ static void         quit(Widget w, XEvent *event ,
 			 String *params , Cardinal *num_params );
 static Boolean      Quit_Proc(XtPointer client_data);
 static void	    MkDefault();
+static void	    removechild(Widget, XtPointer, XtPointer);
+static void 	    mkcddb(Widget, XtPointer, XtPointer);
 static Boolean      CvtBooleanToString(Display *dpy, XrmValue *args,
 	    		 Cardinal *num_args, XrmValue *from, XrmValue *to,
 			 XtPointer *convert_data);
@@ -589,6 +599,33 @@ removechild(Widget w, XtPointer client_data, XtPointer call_data)
     XtDestroyWidget(w);
 }
 
+
+/*
+ * Check if cddb directory exists.
+ * popup dialog if it does not exist.
+ */
+void
+checkdb()
+{
+    char		*nstr = new char [strlen(resources.cddb_path) + 100];
+    Arg			arg[1];
+    Widget		dialog;
+
+    if (access(resources.cddb_path, F_OK) == 0) 
+	return;
+    strcpy(nstr, resources.cddb_path);
+    strcat(nstr, "\nDoes not exist, create it?");
+    XtSetArg(arg[0], XtNmessage, nstr);
+    dialog = XpwDialogCreateQuestion(toplevel, "Question", arg, 1);
+    XtUnmanageChild(XpwDialogGetChild(dialog, XpwDialog_Help_Button));
+    XtAddCallback(XpwDialogGetChild(dialog, XpwDialog_Ok_Button), XtNcallback,
+		 mkcddb, NULL);
+    XtAddCallback(XpwDialogGetChild(dialog, XpwDialog_Ok_Button), XtNcallback,
+		 removechild, NULL);
+    XtAddCallback(XpwDialogGetChild(dialog, XpwDialog_Cancel_Button), XtNcallback,
+		 removechild, NULL);
+    XtManageChild(dialog);
+}
 /*
  * Error popup.
  */
@@ -607,7 +644,8 @@ app_error(char *msg)
     dialog = XpwDialogCreateNotice(toplevel, "Notice", arg, 1);
     XtUnmanageChild(XpwDialogGetChild(dialog, XpwDialog_Help_Button));
     XtUnmanageChild(XpwDialogGetChild(dialog, XpwDialog_Cancel_Button));
-    XtAddCallback(dialog, XtNpopdownCallback, removechild, NULL);
+    XtAddCallback(XpwDialogGetChild(dialog, XpwDialog_Ok_Button), XtNcallback,
+		 removechild, NULL);
     XtManageChild(dialog);
 }
 
@@ -631,7 +669,16 @@ app_fatal(char *msg)
        app_quit(NULL, NULL, NULL);
     XtDestroyWidget(dialog);
 }
-    
+   
+/*
+ * Make cddb directory.
+ */
+static void
+mkcddb(Widget w, XtPointer client_data, XtPointer call_data)
+{
+	mkdir(resources.cddb_path, 0700);
+}
+
 /*
  * A few basic type converters.
  */

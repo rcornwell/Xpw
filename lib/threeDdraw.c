@@ -26,12 +26,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log: $
+ * $Log: threeDdraw.c,v $
+ * Revision 1.1  1997/10/26 04:22:04  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: threeDdraw.c,v 1.1 1997/10/26 04:22:04 rich Exp rich $";
 
 #endif
 
@@ -39,6 +42,7 @@ static char        *rcsid = "$Id: $";
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
 #include <X11/Xmu/Misc.h>
+#include <X11/Xmu/CharSet.h>
 #include <X11/Shell.h>
 #include <X11/CoreP.h>
 #include "XpwInit.h"
@@ -306,6 +310,8 @@ _XpwThreeDDrawShadow(wid, event, region, threeD, x, y, w, h, comp)
 	pt[3].x = x + w;	    pt[3].y = y + h;
 	XDrawLines(dpy, win, top, pt, 4, CoordModeOrigin);
 	break;
+    case XfNone:
+	break;
     }
 }
 
@@ -324,7 +330,6 @@ _XpwThreeDEraseShadow(wid, event, region, threeD, x, y, w, h)
 	Dimension           h;
 {
     Dimension           s = threeD->shadow_width;
-    Dimension           f = s / 2;
     XPoint              pt[6];
     Display            *dpy = XtDisplayOfObject(wid);
     Window              win = XtWindowOfObject(wid);
@@ -363,6 +368,8 @@ _XpwThreeDEraseShadow(wid, event, region, threeD, x, y, w, h)
 	pt[2].x = x + w;	    pt[2].y = y;
 	pt[3].x = x + w;	    pt[3].y = y + h;
 	XDrawLines(dpy, win, gc, pt, 4, CoordModeOrigin);
+	break;
+    case XfNone:
 	break;
     }
 }
@@ -898,10 +905,10 @@ AllocTopShadowPixmap(new, threeD, bg)
     * pixmap cacheing.
     */
 
+    pm_data = mtshadowpm_bits;
     if (DefaultDepthOfScreen(scn) == 1) {
 	top_fg_pixel = BlackPixelOfScreen(scn);
 	top_bg_pixel = WhitePixelOfScreen(scn);
-	pm_data = mtshadowpm_bits;
 	create_pixmap = TRUE;
     } else if (threeD->be_nice_to_cmap) {
 	if (bg == WhitePixelOfScreen(scn)) {
@@ -914,9 +921,7 @@ AllocTopShadowPixmap(new, threeD, bg)
 	    top_fg_pixel = bg;
 	    top_bg_pixel = WhitePixelOfScreen(scn);
 	}
-	if (bg == WhitePixelOfScreen(scn) || bg == BlackPixelOfScreen(scn))
-	    pm_data = mtshadowpm_bits;
-	else
+	if (bg != WhitePixelOfScreen(scn) && bg != BlackPixelOfScreen(scn))
 	    pm_data = shadowpm_bits;
 	create_pixmap = TRUE;
     }
@@ -944,10 +949,10 @@ AllocBotShadowPixmap(new, threeD, bg)
     char               *pm_data;
     Boolean             create_pixmap = FALSE;
 
+    pm_data = mbshadowpm_bits;
     if (DefaultDepthOfScreen(scn) == 1) {
 	bot_fg_pixel = BlackPixelOfScreen(scn);
 	bot_bg_pixel = WhitePixelOfScreen(scn);
-	pm_data = mbshadowpm_bits;
 	create_pixmap = TRUE;
     } else if (threeD->be_nice_to_cmap) {
 	if (bg == WhitePixelOfScreen(scn)) {
@@ -960,10 +965,7 @@ AllocBotShadowPixmap(new, threeD, bg)
 	    bot_fg_pixel = bg;
 	    bot_bg_pixel = BlackPixelOfScreen(scn);
 	}
-	if (bg == WhitePixelOfScreen(scn) ||
-	    bg == BlackPixelOfScreen(scn))
-	    pm_data = mbshadowpm_bits;
-	else
+	if (bg != WhitePixelOfScreen(scn) && bg != BlackPixelOfScreen(scn))
 	    pm_data = shadowpm_bits;
 	create_pixmap = TRUE;
     }

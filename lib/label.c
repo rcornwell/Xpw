@@ -24,6 +24,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: label.c,v $
+ * Revision 1.4  1997/12/06 04:14:51  rich
+ * Added support for color images.
+ *
  * Revision 1.3  1997/11/28 19:31:07  rich
  * Make sure we allocate a copy of the string before we use it.
  * Make sure text is centered in window.
@@ -38,7 +41,7 @@
  */
 
 #ifndef lint
-static char         rcsid[] = "$Id: label.c,v 1.3 1997/11/28 19:31:07 rich Beta rich $";
+static char         rcsid[] = "$Id: label.c,v 1.4 1997/12/06 04:14:51 rich Exp rich $";
 
 #endif
 
@@ -242,7 +245,7 @@ _XpwLabelDraw(w, label, event, region, x, y, wi, hi, dobg)
 	}
 	y_loc = y + (int) (hi - label->bitmap_height) / 2;
 
-	if (region == NULL || XRectInRegion(region, (int) x_loc, (int) y_loc,
+	if (region == NULL || XRectInRegion(region, x_loc, y_loc,
 				      (unsigned int) label->bitmap_width,
 				     (unsigned int) label->bitmap_height)
 	    != RectangleOut) {
@@ -306,8 +309,7 @@ _XpwLabelDraw(w, label, event, region, x, y, wi, hi, dobg)
 		if (*p != '\n' && *p != '\0')
 		    continue;
 		len--;
-		if (region == NULL || XRectInRegion(region,
-			       (int) x_loc, (int) y_loc,
+		if (region == NULL || XRectInRegion(region, x_loc, y_loc - th,
 			       (unsigned int) t_width, (unsigned int) th)
 		    != RectangleOut) {
 		    if (dobg)

@@ -26,6 +26,16 @@
  *
  * 
  * $Log: Scroller.c,v $
+ * Revision 1.2  1997/10/08 04:09:32  rich
+ * Make sure the thumb is never bigger then window.
+ * Fixed return information for arrows. Should not be possible to pass end of
+ *  scrolled item.
+ * When setting scroller externaly, callback results should be same.
+ * Make sure we copy the background and foreground colors to the arrows.
+ * General code cleanup.
+ * Added cursors.
+ * Added Clue support.
+ *
  * Revision 1.1  1997/10/04 05:09:08  rich
  * Initial revision
  *
@@ -33,7 +43,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Scroller.c,v 1.1 1997/10/04 05:09:08 rich Exp rich $";
+static char        *rcsid = "$Id: Scroller.c,v 1.2 1997/10/08 04:09:32 rich Exp rich $";
 
 #endif
 
@@ -561,11 +571,13 @@ Destroy(w)
 {
     ScrollerWidget      self = (ScrollerWidget) w;
 
+#if 0
    /* Free Arrow's if we have them */
     if (self->scroller.tr_arrow)
 	XtDestroyWidget(self->scroller.tr_arrow);
     if (self->scroller.bl_arrow)
 	XtDestroyWidget(self->scroller.bl_arrow);
+#endif
     DestroyGCs(w);
     _XpwThreeDDestroyShadow(w, &(self->scroller.threeD));
 }

@@ -1,4 +1,4 @@
-! $Id: XMixer.ad,v 1.1 1997/10/29 05:42:29 rich Exp rich $
+! $Id: XMixer.ad,v 1.2 1997/11/01 22:45:10 rich Rel rich $
 !
 ! XMixer Applications default file.
 !
@@ -25,6 +25,7 @@ XMixer*RowCol.borderWidth:	   0
 XMixer*Select.borderWidth:	   0
 XMixer*Select.leftMargin:	   0
 XMixer*Select.rightMargin:	   0
+XMixer*Dialog.justify:		   Center
 XMixer*Label.shadowWidth:	   0
 !
 ! Labels

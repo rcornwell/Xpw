@@ -24,6 +24,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: label.c,v $
+ * Revision 1.2  1997/11/01 06:39:10  rich
+ * Fixed sensitivity logic.
+ *
  * Revision 1.1  1997/10/12 05:20:24  rich
  * Initial revision
  *
@@ -31,7 +34,7 @@
  */
 
 #ifndef lint
-static char         rcsid[] = "$Id: label.c,v 1.1 1997/10/12 05:20:24 rich Exp rich $";
+static char         rcsid[] = "$Id: label.c,v 1.2 1997/11/01 06:39:10 rich Beta rich $";
 
 #endif
 
@@ -81,7 +84,7 @@ _XpwLabelInit(new, label, bg, depth)
 	int                 depth;
 {
     if (label->label == NULL)
-        label->label = XtName(new);
+        label->label = XtNewString(XtName(new));
     else
         label->label = XtNewString(label->label);
 
@@ -112,11 +115,10 @@ _XpwLabelSetValues(current, new, old_label, label, bg, depth)
     Boolean             ret_val = FALSE;
 
     if (old_label->label != label->label) {
-	if (old_label->label != XtName(new))
+	if (old_label->label != NULL)
 	    XtFree((char *) old_label->label);
 
-	if (label->label != XtName(new))
-	    label->label = XtNewString(label->label);
+	label->label = XtNewString(label->label);
 
 	GetTextInfo(new, label);
 	ret_val = True;
@@ -279,6 +281,7 @@ _XpwLabelDraw(w, label, event, region, x, y, wi, hi, dobg)
 
 	   /* this will center the text in the gadget top-to-bottom */
 
+	    y_loc += (hi - label->label_height)/2; 
 	    y_loc += th + 2;
 	    p1 = p = label->label;
 	    len = 0;
@@ -301,9 +304,9 @@ _XpwLabelDraw(w, label, event, region, x, y, wi, hi, dobg)
 			XDrawString(dpy, win, gc, x_loc, y_loc, p1, len);
 		}
 		len = 0;
-	      p1 = p;
-	      p1++;
-	      y_loc += th + 2;
+	        p1 = p;
+	        p1++;
+	        y_loc += th + 2;
 	    } while (*p++ != '\0');
 	}
     }

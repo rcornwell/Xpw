@@ -27,12 +27,15 @@
  * library in commercial applications, or for commercial software distribution.
  *
  *
- * $Log: $
+ * $Log: ComboBox.c,v $
+ * Revision 1.1  1997/11/28 19:55:48  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: ComboBox.c,v 1.1 1997/11/28 19:55:48 rich Exp rich $";
 
 #endif
 
@@ -190,8 +193,9 @@ Initialize(request, new, args, num_args)
 
    /* Build list */
     if (nself->combobox.list == NULL) {
-	nself->combobox.list = (String *) XtMalloc(sizeof(String *));
+	nself->combobox.list = (String *) XtMalloc(2 * sizeof(String *));
 	nself->combobox.list[0] = XtNewString(XtName(new));
+	nself->combobox.list[1] = NULL;
 	nself->combobox.nitems = 1;
     } else
 	CopyList(nself);
@@ -377,8 +381,14 @@ Destroy(w)
 	Widget              w;
 {
     ComboBoxWidget            self = (ComboBoxWidget) w;
+    int			      i;
 
-    FreeList(self);
+   /* Can't call FreeLists since the children are already gone */
+    for (i = self->combobox.nitems; i >= 0; i--) {
+	if (self->combobox.list != NULL &&
+	    self->combobox.list[i] != NULL)
+	    XtFree(self->combobox.list[i]);
+    }
     _XpwLabelDestroy(w, &(self->combobox.label));
     _XpwThreeDDestroyShadow(w, &(self->combobox.threeD));
 }
@@ -438,10 +448,11 @@ FreeList(self)
     }
     if (self->combobox.list != NULL)
 	XtFree((XtPointer) self->combobox.list);
+    self->combobox.list = NULL;
     if (self->combobox.wlist != NULL)
 	XtFree((XtPointer) self->combobox.wlist);
-    self->combobox.list = NULL;
     self->combobox.wlist = NULL;
+    self->combobox.nitems = 0;
 }
 
 /*
@@ -457,9 +468,9 @@ CalculateLongest(self)
 
     longest = 0;
 
-   /* Scan list elements computing lenght of each */
     lp = self->combobox.list;
-    for (i = 0; i < self->combobox.nitems; i++, lp++) {
+   /* Scan list elements computing lenght of each */
+    for (i = 0; i < self->combobox.nitems; i++) {
         len = strlen(*lp);
         if (self->combobox.label.international)
             len = XmbTextEscapement(self->combobox.label.fontset, *lp, len);
@@ -487,7 +498,7 @@ MakePulldowns(self)
     if (self->combobox.wlist == NULL) {
 	self->combobox.wlist = (Widget *) XtMalloc(sizeof(Widget) *
 					    (self->combobox.nitems + 1));
-	for (i = 0; i < self->combobox.nitems; i++)
+	for (i = 0; i <= self->combobox.nitems; i++)
 	    self->combobox.wlist[i] = NULL;
     }
    /* Now create menu popups. */
@@ -605,7 +616,10 @@ XpwComboBoxNew(w)
 
     self->combobox.list = (String *) XtMalloc(sizeof(String *));
     self->combobox.list[0] = NULL;
+    self->combobox.wlist = (Widget *) XtMalloc(sizeof(Widget *));
+    self->combobox.wlist[0] = NULL;
     self->combobox.label.label = "";
+    self->combobox.select = -1;
 }
 
 /*

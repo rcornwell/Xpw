@@ -25,12 +25,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log: $
+ * $Log: Canvas.c,v $
+ * Revision 1.1  1997/10/19 01:41:37  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: Canvas.c,v 1.1 1997/10/19 01:41:37 rich Exp rich $";
 
 #endif
 
@@ -38,6 +41,7 @@ static char        *rcsid = "$Id: $";
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
 #include <X11/Xmu/Misc.h>
+#include <X11/Xmu/CharSet.h>
 #include <X11/Shell.h>
 #include <X11/CoreP.h>
 #include "XpwInit.h"
@@ -125,8 +129,8 @@ CanvasClassRec      canvasClassRec =
 	resources,			/* resources             */
 	XtNumber(resources),		/* num_resources         */
 	NULLQUARK,			/* xrm_class             */
-	TRUE,				/* compres_motion        */
-	TRUE,				/* compress_exposure     */
+	FALSE,				/* compres_motion        */
+	FALSE,				/* compress_exposure     */
 	TRUE,				/* compress_enterleave   */
 	TRUE,				/* visible_interest      */
 	NULL,				/* destroy               */
@@ -242,7 +246,6 @@ static void
 Resize(w)
 	Widget              w;
 {
-    CanvasWidget        self = (CanvasWidget) w;
     XpwCanvasCallbackDataRec call_data;
 
     call_data.reason = XpwCanvasResize;
@@ -263,10 +266,9 @@ Redisplay(w, event, region)
 	XEvent             *event;
 	Region              region;
 {
-    CanvasWidget        self = (CanvasWidget) w;
     XpwCanvasCallbackDataRec call_data;
 
-    call_data.reason = XpwCanvasExpore;
+    call_data.reason = XpwCanvasExpose;
     call_data.event = event;
     call_data.window = XtWindowOfObject(w);
 
@@ -378,7 +380,6 @@ CanvasAction(w, event, params, num_params)
 	String             *params;	/* unused */
 	Cardinal           *num_params;		/* unused */
 {
-    CanvasWidget        self = (CanvasWidget) w;
     XpwCanvasCallbackDataRec call_data;
 
     call_data.reason = XpwCanvasAction;

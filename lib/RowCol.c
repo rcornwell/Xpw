@@ -26,6 +26,10 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: RowCol.c,v $
+ * Revision 1.4  1997/11/28 19:31:07  rich
+ * Insert (void) to make compiler happy.
+ * Added Class initializer for RowColClass.
+ *
  * Revision 1.3  1997/11/01 06:39:07  rich
  * Removed unused definition.
  * Added Justify for unfull windows.
@@ -42,7 +46,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: RowCol.c,v 1.3 1997/11/01 06:39:07 rich Beta rich $";
+static char        *rcsid = "$Id: RowCol.c,v 1.4 1997/11/28 19:31:07 rich Exp rich $";
 
 #endif
 
@@ -514,7 +518,7 @@ ChangeManaged(w)
 {
     RowColWidget        self = (RowColWidget) w;
     Boolean             vert = IsVert(self);
-    Dimension           size;
+    Dimension           size, nsize;
     Widget             *childP;
 
    /* Don't allow us to be called recursivly */
@@ -536,7 +540,10 @@ ChangeManaged(w)
     }
 
    /* Set children to prefered sizes */
-    (void) SetChildrenSizes(self, size);
+    nsize = SetChildrenSizes(self, 0);
+    if (nsize != size && nsize != 0)
+	size = nsize;
+
    /* See if we will fit, but don't request parent to resize */
     ResizeRowCol(self, size, (XtGeometryResult *) NULL, (Dimension *) NULL,
 		 (Dimension *) NULL);
@@ -576,19 +583,25 @@ SetChildrenSizes(self, off_size)
 	if (vert) {
 	    request.request_mode = CWWidth;
 	    request.width = off_size;
+	    request.height = 0;
 	} else {
 	    request.request_mode = CWHeight;
 	    request.height = off_size;
+	    request.width = 0;
 	}
 	if (off_size == 0)
             request.request_mode = CWHeight | CWWidth;
-	if (XtQueryGeometry(*childP, &request, &reply) == XtGeometryAlmost &&
-	    (reply.request_mode = (vert ? CWHeight : CWWidth))) {
-	    child->wp_size = GetRequestInfo(&reply, vert);
-	    if (off_size == 0 && GetRequestInfo(&reply, !vert) < n_off_size)
+	if (XtQueryGeometry(*childP, &request, &reply) == XtGeometryAlmost) {
+	    if (reply.request_mode & (vert ? CWHeight : CWWidth)) 
+	        child->wp_size = GetRequestInfo(&reply, vert);
+	    if ((reply.request_mode & (vert ? CWWidth: CWHeight))
+		&& GetRequestInfo(&reply, !vert) > n_off_size)
 		n_off_size = GetRequestInfo(&reply, !vert);
-	} else
+	} else {
 	    child->wp_size = ChildSize(*childP, vert);
+	    if (ChildSize(*childP, !vert) > n_off_size)
+		n_off_size = ChildSize(*childP, !vert);
+	}
 	if (child->resize_to_pref)
 	    child->size = child->wp_size;
 	else
@@ -996,10 +1009,10 @@ XpwRowColGetNumSub(w)
  */
 
 void
-XpwRowColAllowResize(widget, allow_resize)
-	Widget              widget;
+XpwRowColAllowResize(w, allow_resize)
+	Widget              w;
 	Boolean             allow_resize;
 
 {
-    ChildInfo(widget)->allow_resize = allow_resize;
+    ChildInfo(w)->allow_resize = allow_resize;
 }

@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Paned.c,v $
+ * Revision 1.2  1997/11/01 06:39:05  rich
+ * Removed unused variables.
+ *
  * Revision 1.1  1997/10/12 05:18:12  rich
  * Initial revision
  *
@@ -34,7 +37,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Paned.c,v 1.1 1997/10/12 05:18:12 rich Exp rich $";
+static char        *rcsid = "$Id: Paned.c,v 1.2 1997/11/01 06:39:05 rich Beta rich $";
 
 #endif
 
@@ -599,7 +602,7 @@ ChangeManaged(w)
 {
     PanedWidget         self = (PanedWidget) w;
     Boolean             vert = IsVert(self);
-    Dimension           size;
+    Dimension           size, nsize;
     Widget             *childP;
     int			i;
 
@@ -632,7 +635,9 @@ ChangeManaged(w)
     }
 
    /* Set children to prefered sizes */
-    SetChildrenSizes(self, size);
+    nsize = SetChildrenSizes(self, 0);
+    if (nsize != size && nsize != 0)
+	size = nsize;
     StartUserAdjust(self);
    /* Attempt to resize parent to fit us */
     ResizePaned(self, size, (XtGeometryResult *) NULL, (Dimension *) NULL,
@@ -715,19 +720,25 @@ SetChildrenSizes(self, off_size)
 	if (vert) {
 	    request.request_mode = CWWidth;
 	    request.width = off_size;
+	    request.height = 0;
 	} else {
 	    request.request_mode = CWHeight;
 	    request.height = off_size;
+	    request.width = 0;
 	}
 	if (off_size == 0)
 	    request.request_mode = CWHeight | CWWidth;
-	if (XtQueryGeometry(*childP, &request, &reply) == XtGeometryAlmost &&
-	    (reply.request_mode = (vert ? CWHeight : CWWidth))) {
-	    child->wp_size = GetRequestInfo(&reply, vert);
-	    if (off_size == 0 && GetRequestInfo(&reply, !vert) < n_off_size)
+	if (XtQueryGeometry(*childP, &request, &reply) == XtGeometryAlmost) {
+	    if (reply.request_mode & (vert ? CWHeight : CWWidth))
+	        child->wp_size = GetRequestInfo(&reply, vert);
+	    if ((reply.request_mode & (vert ? CWWidth: CWHeight))
+		&& GetRequestInfo(&reply, !vert) > n_off_size)
 		n_off_size = GetRequestInfo(&reply, !vert);
-	} else
+	} else {
 	    child->wp_size = ChildSize(*childP, vert);
+	    if (ChildSize(*childP, !vert) > n_off_size)
+		n_off_size = ChildSize(*childP, !vert);
+	}
 	if (child->resize_to_pref)
 	    child->size = child->wp_size;
 	else
@@ -1256,10 +1267,10 @@ XpwPanedGetNumSub(w)
  */
 
 void
-XpwPanedAllowResize(widget, allow_resize)
-	Widget              widget;
+XpwPanedAllowResize(w, allow_resize)
+	Widget              w;
 	Boolean             allow_resize;
 
 {
-    ChildInfo(widget)->allow_resize = allow_resize;
+    ChildInfo(w)->allow_resize = allow_resize;
 }

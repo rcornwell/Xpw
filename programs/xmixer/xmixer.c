@@ -2,6 +2,9 @@
  * Xmixer: Control sound card volume settings.
  *
  * $Log: xmixer.c,v $
+ * Revision 1.3  1997/11/01 22:47:01  rich
+ * Removed unsed bitmaps
+ *
  * Revision 1.2  1997/11/01 22:44:36  rich
  * Removed extra fallbacks.
  * Removed unused code.
@@ -13,7 +16,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: xmixer.c,v 1.2 1997/11/01 22:44:36 rich Exp rich $";
+static char        *rcsid = "$Id: xmixer.c,v 1.3 1997/11/01 22:47:01 rich Rel rich $";
 #endif
 
 /* System stuff */
@@ -40,6 +43,7 @@ static char        *rcsid = "$Id: xmixer.c,v 1.2 1997/11/01 22:44:36 rich Exp ri
 #include <Xpw/Frame.h>
 #include <Xpw/Slider.h>
 #include <Xpw/Select.h>
+#include <Xpw/Dialog.h>
 
 #include "bitmaps/aux.xbm"
 #include "bitmaps/bass.xbm"
@@ -114,6 +118,8 @@ static void         slide_call(Widget /*w */ , XtPointer /*client_data */ ,
 			 XtPointer /*call_data */ );
 static void         rec_call(Widget /*w */ , XtPointer /*client_data */ ,
 			 XtPointer /*call_data */ );
+static void         error_dialog(String /*message */);
+static void         notice_dialog(String /*message */);
 
 /*
  * Define the bare minimum here to make appliation look correct.
@@ -155,6 +161,8 @@ static XtIntervalId        timer = (XtIntervalId)NULL;
 static char	          *devnames[] = SOUND_DEVICE_NAMES;
 static Display            *dpy;
 static Window	           win;
+static Widget		   toplevel;
+static Widget		   dialog = NULL;
 
 static struct _mixarray {
     int                 control;
@@ -217,10 +225,11 @@ main(argc, argv)
 	int                 argc;
 	char              **argv;
 {
-    Widget              toplevel, topbar, botbar, w;
+    Widget              topbar, botbar, w;
     Arg                 args[5];
     Pixmap              image;
     int                 i;
+    char		ebuffer[200];
 
     ProgramName = argv[0];
 
@@ -254,26 +263,33 @@ main(argc, argv)
 
    /* Open mixer */
     if ((mixdev = open(resources.mixer_device, O_RDWR)) < 0) {
-	fprintf(stderr, "%s: Unable to open mixer device %s\n",
+	sprintf(ebuffer, "%s: Unable to open mixer device %s\n",
 		ProgramName, resources.mixer_device);
-	exit(0);
-    }
+	error_dialog(ebuffer);
+	mixmask = 0xffffff;
+	recmask = 0;
+	steriomask = mixmask;
+    } else {
    /* Get device masks */
     if (ioctl(mixdev, SOUND_MIXER_READ_DEVMASK, &mixmask) < 0) {
-	fprintf(stderr, "%s: Unable get list of devices\n",
+	sprintf(ebuffer, "%s: Unable get list of devices\n",
 		ProgramName);
+	notice_dialog(ebuffer);
 	mixmask = 0xffffff;
     }
     if (ioctl(mixdev, SOUND_MIXER_READ_RECMASK, &recmask) < 0) {
-	fprintf(stderr, "%s: Unable get list of record devices\n",
+	sprintf(ebuffer, "%s: Unable get list of record devices\n",
 		ProgramName);
+	notice_dialog(ebuffer);
 	recmask = 0;
     }
     if (ioctl(mixdev, SOUND_MIXER_READ_STEREODEVS, &steriomask) < 0) {
-	fprintf(stderr, "%s: Unable get list of sterio devices\n",
+	sprintf(ebuffer, "%s: Unable get list of sterio devices\n",
 		ProgramName);
        /* Assume all sterio */
+	notice_dialog(ebuffer);
 	steriomask = mixmask;
+    }
     }
 
    /* Build widget tree. */
@@ -282,6 +298,7 @@ main(argc, argv)
     XtSetArg(args[0], XtNorientation, XtorientHorizontal);
     topbar = XtCreateManagedWidget("topbar", rowColWidgetClass, w, args, 1);
     botbar = XtCreateManagedWidget("botbar", rowColWidgetClass, w, args, 1);
+
     image = XCreateBitmapFromData(dpy, win,
 			 (char *) power_bits, power_width, power_height);
     XtSetArg(args[0], XtNlabel, "");
@@ -385,7 +402,8 @@ main(argc, argv)
     XtAddEventHandler(toplevel, StructureNotifyMask, False, iconify, NULL);
 
    /* Make sure sliders are updated */
-    timer = XtAppAddTimeOut(app_con, 10, Update, NULL);
+    if (mixdev >= 0)
+         timer = XtAppAddTimeOut(app_con, 10, Update, NULL);
 
     XtAppMainLoop(app_con);
 }
@@ -466,11 +484,17 @@ Update(client_data, timerid)
 	XtIntervalId       *timerid;
 {
     int                 i, left, right, data, cntl;
+    char		ebuffer[200];
+    static int		warned = 0;
 
    /* Update record source mask */
     if (ioctl(mixdev, SOUND_MIXER_READ_RECSRC, &recsrc) < 0) {
-	fprintf(stderr, "%s: Unable get recording sources\n",
-		ProgramName);
+	if (dialog == NULL && warned == 0) {
+	    sprintf(ebuffer, "%s: Unable get recording sources\n",
+		    ProgramName);
+	    notice_dialog(ebuffer);
+	    warned++;
+        }
 	recsrc = recmask;
     }
    /* Update each of the sliders */
@@ -483,10 +507,14 @@ Update(client_data, timerid)
 	if (ioctl(mixdev, MIXER_READ(Mixdata[i].control), &data) < 0) {
 	    Widget	w = XtParent(XtParent(Mixdata[i].slide));
 
-	    mixmask &= ~cntl;
-	    XtSetSensitive(w, False);
-	    fprintf(stderr, "%s: Unable to read setting for %s\n",
+	    if (dialog == NULL) {
+	        mixmask &= ~cntl;
+	        XtSetSensitive(w, False);
+	        XtSetSensitive(Mixdata[i].slide, False);
+	        sprintf(ebuffer, "%s: Unable to read setting for %s\n",
 		    ProgramName, devnames[i]);
+	        notice_dialog(ebuffer);
+            }
 	    continue;
 	}
 	left = data & 0x7f;
@@ -586,8 +614,13 @@ slide_call(w, client_data, call_data)
 	data += data << 8;
 
     if (ioctl(mixdev, MIXER_WRITE(Mixdata[cntl].control), &data) < 0) {
-	fprintf(stderr, "%s: Unable to write setting for %s\n",
-		ProgramName, devnames[cntl]);
+	if (dialog == NULL) {
+            char		    ebuffer[200];
+	    XtSetSensitive(w, False);
+	    sprintf(ebuffer, "%s: Unable to write setting for %s\n",
+		    ProgramName, devnames[cntl]);
+	    notice_dialog(ebuffer);
+	}
 	XBell(dpy, 0);
     }
 }
@@ -613,4 +646,56 @@ rec_call(w, client_data, call_data)
 	XpwSelectUnsetCurrent(w);
 	XBell(dpy, 0);
     }
+}
+
+/*
+ * Pop up a error dialog, quit on Ok.
+ */
+static void
+error_dialog(message)
+	String		   message;
+{
+        Arg     arg[1];
+   
+        XtSetArg(arg[0], XtNmessage, message);
+        dialog = XpwDialogCreateError(toplevel, "Xmixer", arg, 1);
+        XtUnmanageChild(XpwDialogGetChild(dialog, XpwDialog_Cancel_Button));
+        XtUnmanageChild(XpwDialogGetChild(dialog, XpwDialog_Help_Button));
+        XtAddCallback(XpwDialogGetChild(dialog, XpwDialog_Ok_Button),
+		XtNcallback, app_quit, toplevel);
+        XtManageChild(dialog);
+}
+
+/*
+ * Dialog popdown.
+ */
+static void 
+dialog_done(w, client_data, call_data)
+	Widget              w;
+	XtPointer           client_data;
+	XtPointer           call_data;
+{
+	dialog = NULL;
+}
+
+
+/*
+ * Pop up a error dialog, quit on Ok.
+ */
+static void
+notice_dialog(message)
+	String		   message;
+{
+        Arg     arg[1];
+
+	if (dialog != NULL)	/* Don't flood user with dialogs */
+		return;
+   
+        XtSetArg(arg[0], XtNmessage, message);
+        dialog = XpwDialogCreateNotice(toplevel, "Xmixer", arg, 1);
+        XtUnmanageChild(XpwDialogGetChild(dialog, XpwDialog_Cancel_Button));
+        XtUnmanageChild(XpwDialogGetChild(dialog, XpwDialog_Help_Button));
+        XtAddCallback(XpwDialogGetChild(dialog, XpwDialog_Ok_Button),
+		XtNcallback, dialog_done, toplevel);
+        XtManageChild(dialog);
 }

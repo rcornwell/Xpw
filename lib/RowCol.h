@@ -1,5 +1,5 @@
 /*
- * RowCol.c - RowCol Composite Widget.
+ * RowCol.c - RowCol Widget.
  *
  * RowCol arranges it's children in rows or columns.
  *
@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: RowCol.h,v 1.1 1997/10/07 05:35:41 rich Exp rich $
+ * $Id: RowCol.h,v 1.2 1997/10/12 05:14:16 rich Exp rich $
  *
  * $Log: RowCol.h,v $
+ * Revision 1.2  1997/10/12 05:14:16  rich
+ * Make sure XpwPackingType is not defined more than once.
+ *
  * Revision 1.1  1997/10/07 05:35:41  rich
  * Initial revision
  *
@@ -43,12 +46,6 @@
 #include <X11/Constraint.h>
 #include <X11/Xmu/Converters.h>
 
-/****************************************************************
- *
- * RowCol Widget (SubClass of CompositeClass)
- *
- ****************************************************************/
-
 /* RowCol Widget Resources:
  * 
  * Name                  Class             RepType          Default Value
@@ -56,6 +53,7 @@
  * orientation           Orientation       XtOrientation    XtorientVertical
  * refigureMode          Boolean           Boolean          On
  * packing               PackingType       PackingType      fill
+ * justify               Justify           XtJustify        Left
  * spacing               Spacing           Dimension        2
  * 
  * From Core:
@@ -86,9 +84,6 @@
  * max                Max               Dimension       -1
  * 
  */
-
-#define ROWCOL_ASK_CHILD 0
-
 
 #ifndef XtNpacking
 #define XtNpacking "packing"

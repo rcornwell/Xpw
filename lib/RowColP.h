@@ -1,5 +1,5 @@
 /*
- * RowCol.c - RowCol Composite Widget.
+ * RowCol.c - RowCol Widget.
  *
  * RowCol arranges it's children in rows or columns.
  *
@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: RowColP.h,v 1.1 1997/10/07 05:35:41 rich Exp rich $
+ * $Id: RowColP.h,v 1.2 1997/10/12 05:15:35 rich Exp rich $
  *
  * $Log: RowColP.h,v $
+ * Revision 1.2  1997/10/12 05:15:35  rich
+ * Changed RowColConstraints to be of type RowColConstraintsPart.
+ *
  * Revision 1.1  1997/10/07 05:35:41  rich
  * Initial revision
  *
@@ -39,7 +42,6 @@
 
 #ifndef _RowColP_h
 #define _RowColP_h
-
 #include "RowCol.h"
 
 /*********************************************************************
@@ -95,6 +97,7 @@ typedef struct {
 					 * right now */
     XtOrientation       orientation;	/* Orientation of rowcol widget. */
     XpwPackingType      packing;	/* How to pack unfull windows */
+    XtJustify           justify;        /* Justification for the packing. */
     Dimension		spacing;	/* How much space to leave between */
 
    /* private */
@@ -102,12 +105,7 @@ typedef struct {
     int                 num_children;	/* count of managed children */
 } RowColPart;
 
-/**************************************************************************
- *
- * Full instance record declaration
- *
- **************************************************************************/
-
+/* Full instance record declaration */
 typedef struct _RowColRec {
     CorePart            core;
     CompositePart       composite;

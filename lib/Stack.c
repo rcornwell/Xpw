@@ -26,6 +26,10 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Stack.c,v $
+ * Revision 1.2  1997/11/01 06:39:09  rich
+ * Fixed error in realize code.
+ * Removed unused variable.
+ *
  * Revision 1.1  1997/10/12 05:17:24  rich
  * Initial revision
  *
@@ -34,7 +38,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Stack.c,v 1.1 1997/10/12 05:17:24 rich Exp rich $";
+static char        *rcsid = "$Id: Stack.c,v 1.2 1997/11/01 06:39:09 rich Beta rich $";
 
 #endif
 
@@ -175,8 +179,10 @@ Initialize(request, new, args, num_args)
     self->stack.recursively_called = False;
     self->stack.num_children = 0;
     self->stack.showing = NULL;
-    self->core.width = 10;
-    self->core.height = 10;
+    if (self->core.width == 0)
+        self->core.width = 1;
+    if (self->core.height == 0)
+        self->core.height = 1;
 }
 
 /*
@@ -231,6 +237,11 @@ QueryGeometry(w, intended, return_val)
 
     SetChildrenSizes(self);
     FindBoxSize(self, &width, &height);
+
+    if (width == 0)
+        width = 1;
+    if (height == 0)
+        height = 1;
 
     if (((mode & CWWidth) && (intended->width != width)) ||
 	!(mode & CWWidth)) {

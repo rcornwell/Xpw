@@ -24,12 +24,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log: $
+ * $Log: Tabler.c,v $
+ * Revision 1.1  1997/11/28 19:57:31  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: Tabler.c,v 1.1 1997/11/28 19:57:31 rich Exp rich $";
 
 #endif
 
@@ -230,6 +233,10 @@ Initialize(request, new, args, num_args)
     self->tabler.recursively_called = False;
     self->tabler.num_children = 0;
     self->tabler.next_child = 0;
+    if (self->core.width == 0)
+	self->core.width = 1;
+    if (self->core.height == 0)
+	self->core.height = 1;
 }
 
 /*
@@ -295,7 +302,13 @@ QueryGeometry(w, intended, return_val)
     return_val->request_mode = 0;
 
    /* Compute required size */
+    SetChildrenSizes(self);
     Layout(self, &width, &height, FALSE);
+
+    if (width == 0)
+	width = 1;
+    if (height == 0)
+	height = 1;
 
     if (((mode & CWWidth) && (intended->width != width)) ||
 	!(mode & CWWidth)) {
@@ -601,7 +614,7 @@ Layout(self, width, height, set)
     int                 children;
     int                 i, j, x;
 
-    if (self->tabler.num_children == 0 || !self->tabler.refiguremode)
+    if (!self->tabler.refiguremode)
 	return;
 
     carray = (TablerConstraints *) XtMalloc(sizeof(TablerConstraints) *

@@ -25,12 +25,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: Line.c,v $
+ * Revision 1.1  1997/10/04 05:05:03  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id$";
+static char        *rcsid = "$Id: Line.c,v 1.1 1997/10/04 05:05:03 rich Exp rich $";
 
 #endif
 
@@ -218,7 +221,7 @@ Redisplay(wid, event, region)
 
    /* Draw shadows around main window */
     _XpwThreeDDrawShadow(wid, event, region, &(self->line.threeD), 0, 0, 
-			self->core.width, self->core.height, 0);
+			self->core.width, self->core.height, TRUE);
 }
 
 /*

@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id: MenuBarP.h,v 1.1 1997/10/04 05:06:09 rich Exp rich $
+ * $Id: MenuBarP.h,v 1.2 1997/10/15 05:42:55 rich Exp rich $
  *
  * $Log: MenuBarP.h,v $
+ * Revision 1.2  1997/10/15 05:42:55  rich
+ * Added justification to pulldown menus.
+ *
  * Revision 1.1  1997/10/04 05:06:09  rich
  * Initial revision
  *
@@ -43,24 +46,33 @@
 #include "MenuBar.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * MenuBar Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the MenuBar widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } MenuBarClassPart;
 
+/* Full class record declaration */
 typedef struct _MenuBarClassRec {
     CoreClassPart       core_class;
     CompositeClassPart  composite_class;
     MenuBarClassPart    menubar_class;
 } MenuBarClassRec;
 
+/* New fields for the MenuBar widget Record */
 typedef struct {
    /* resources */
-    GC                  normal_GC;
-    Pixel               foreground;
     Dimension           h_space, v_space;
-    XtJustify           justify;        /* Justification for the popup. */
+    XtJustify           menu_justify;        /* Justification for the popup. */
+
+   /* Shadow info */
+    _XpmThreeDFrame	threeD;
 
    /* private state */
     Dimension           preferred_width, preferred_height;
@@ -69,11 +81,9 @@ typedef struct {
     Widget              current_menu;	/* Current selected button */
     Widget              current_popup;	/* Current popup */
 
-   /* Shadow info */
-    _XpmThreeDFrame	threeD;
-
 } MenuBarPart;
 
+/* Full instance record declaration */
 typedef struct _MenuBarRec {
     CorePart            core;
     CompositePart       composite;
@@ -82,5 +92,4 @@ typedef struct _MenuBarRec {
 
 extern MenuBarClassRec menubarClassRec;
 
-_XFUNCPROTOEND
 #endif /* _MenuBarP_H_ */

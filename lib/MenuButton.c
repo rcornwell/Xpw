@@ -27,6 +27,9 @@
  *
  *
  * $Log: MenuButton.c,v $
+ * Revision 1.4  1997/10/15 05:42:56  rich
+ * Added justification to pulldown menus.
+ *
  * Revision 1.3  1997/10/05 02:25:17  rich
  * Make sure ident line is in object file.
  *
@@ -40,7 +43,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: MenuButton.c,v 1.3 1997/10/05 02:25:17 rich Exp rich $";
+static char        *rcsid = "$Id: MenuButton.c,v 1.4 1997/10/15 05:42:56 rich Exp rich $";
 
 #endif
 
@@ -64,8 +67,8 @@ static XtResource   resources[] =
 {
     {XtNmenuName, XtCMenuName, XtRString, sizeof(String),
      offset(menu_name), XtRString, (XtPointer) NULL},
-    {XtNjustify, XtCJustify, XtRJustify, sizeof(XtJustify),
-     offset(justify), XtRImmediate, (XtPointer) XtJustifyRight},
+    {XtNmenuJustify, XtCJustify, XtRJustify, sizeof(XtJustify),
+     offset(menu_justify), XtRImmediate, (XtPointer) XtJustifyRight},
 };
 
 #undef offset
@@ -259,7 +262,7 @@ Popup(w, event, params, num_params)
 
     XtTranslateCoords(w, 0, 0, &button_x, &button_y);
     menu_x = button_x;
-    switch (self->menubutton.justify) {
+    switch (self->menubutton.menu_justify) {
     case XtJustifyCenter:
         menu_x += (self->core.width - menu_width) / 2;
         break;
@@ -314,9 +317,6 @@ Popdown(w, event, params, num_params)
 {
     MenuButton          self = (MenuButton) w;
     Widget              menu = NULL, temp;
-    Arg                 arglist[2];
-    int                 menu_x, menu_y, menu_width, menu_height;
-    Position            button_x, button_y;
 
     if (self->menubutton.menu_name == NULL) 
 	return;

@@ -1,5 +1,5 @@
 /*
- * Paned.c - Paned Composite Widget.
+ * Paned.c - Paned Widget.
  *
  * Paned arranges it's children in rows or columns, and provides a grip to allow
  * the user to resize individual panes.
@@ -30,9 +30,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: Paned.h,v 1.1 1997/10/12 05:18:12 rich Exp rich $
  *
- * $Log: $
+ * $Log: Paned.h,v $
+ * Revision 1.1  1997/10/12 05:18:12  rich
+ * Initial revision
+ *
  *
  *
  */
@@ -43,12 +46,6 @@
 #include <X11/Constraint.h>
 #include <X11/Xmu/Converters.h>
 
-/****************************************************************
- *
- * Paned Widget (SubClass of CompositeClass)
- *
- ****************************************************************/
-
 /* Paned Widget Resources:
  * 
  * Name                  Class             RepType          Default Value
@@ -57,6 +54,15 @@
  * refigureMode          Boolean           Boolean          On
  * packing               PackingType       PackingType      fill
  * spacing               Spacing           Dimension        2
+ * gripIndent            GripIndent        Position         90
+ * foreground            Foreground        Pixel            XtDefaultForeground
+ * gripCursor            Cursor            Cursor           none
+ * verticalGripCursor    Cursor            Cursor           sb_v_double_arrow
+ * horizontalGripCursor  Cursor            Cursor           sb_h_double_arrow
+ * betweenCursor         Cursor            Cursor           none
+ * verticalBetweenCursor Cursor            Cursor           sb_left_arrow
+ * horizontalBetweenCursor Cursor          Cursor           sb_up_arrow
+ * gripTranslations      Translations      Translations     Default actions
  * 
  * From Core:
  *
@@ -82,6 +88,8 @@
  * allowResize        Boolean           Boolean         False
  * resizeToPreferred  Boolean           Boolean         True
  * skipAdjust         Boolean           Boolean         False
+ * autoGrip           Boolean           Boolean         True
+ * showGrip           Boolean           Boolean         False
  * min                Min               Dimension       1
  * max                Max               Dimension       -1
  * 

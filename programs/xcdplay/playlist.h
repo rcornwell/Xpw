@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: playlist.h,v 1.1 1997/12/16 05:48:46 rich Exp rich $
  *
- * $Log: $
+ * $Log: playlist.h,v $
+ * Revision 1.1  1997/12/16 05:48:46  rich
+ * Initial revision
+ *
  *
  */
 
@@ -37,68 +40,94 @@ class               PlayList
 {
 private:
     int			randplay;
-    int                 ntrcks;
+    int                 ntrcks[MAXDRIVES];
     int                 curtrk;
     int                *playlist;
-    char               *ignorlist;
-    int                *tlenght;
-    Str                 playorder;
+    char               *ignorlist[MAXDRIVES];
+    int                *tlenght[MAXDRIVES];
+    Str                 playorder[MAXDRIVES];
     int			playsize;
 
 public:
                 PlayList();
                 ~PlayList();
 
-    void	simplelist(int);
-    void	restart(int);
-    void        setinfo(int, Str);
-    int         timeplayed(int);
-    void        totaltime(int &, int &);
+    void	simplelist(int, int);
+    void	restart(int, int);
+    void	randomize(int, int, int *, int);
+    void        setinfo(int, int, Str);
+    int         timeplayed();
+    void        totaltime(int, int &, int &);
+    void	rolllist(int);
 
    /* General methods */
-    void        setrandom(int mode, int track) {
+    void        setrandom(int mode, int drive, int track) {
 	if (mode != randplay) {
 	    randplay = mode; 
-	    restart(track);
+	    restart(drive, track);
         }
     }
 
    /* Set a track to ignore */
-    void	setignore(int num) {
-	if (num >= 0 && num < ntrcks) 
-	    ignorlist[num] |= 2;
+    void	setignore(int drive, int num) {
+	if (num >= 0 && num < ntrcks[drive]) 
+	    ignorlist[drive][num] |= 2;
     }
 
    /* Check if track is being ignored */
-    int		getignore(int num) {
-	return (num >= 0 && num < ntrcks) ? ignorlist[num] : 0;
+    int		getignore(int drive, int num) {
+	return (num >= 0 && num < ntrcks[drive]) ? ignorlist[drive][num] : 0;
     }
 
    /* Set length for a given track */
-    void         settracklen(int num, int len) {
-	if (num >= 0 && num < ntrcks)
-	    tlenght[num] = len;
+    void         settracklen(int drive, int num, int len) {
+	if (num >= 0 && num < ntrcks[drive])
+	    tlenght[drive][num] = len;
     }
+
    /* Sets the current track */
-    void	setcurtrk(int num) {
+    void	setcurtrk(int drive, int num) {
+	num = (num*MAXDRIVES)+drive;
 	curtrk = -1;
 	for (int i = 0; i < playsize; i++)
 	    if (playlist[i] == num) {
 		curtrk = i;
 		break;
 	    }
+	if (curtrk >= 0)
+	     rolllist(curtrk);
+	curtrk = -1;
+    }
+
+   /* Sets to the first track on drive. */
+    void	setdrive(int drive) {
+	curtrk = -1;
+	for (int i = 0; i < playsize; i++)
+	    if ((playlist[i]%MAXDRIVES) == drive) {
+		curtrk = i;
+		break;
+	    }
+	if (curtrk >= 0)
+	    rolllist(curtrk);
+	curtrk = -1;
     }
 
    /* Gets the next track in playlist or 0 if list over */
-    int		getnexttrk(void) {
-	return ((curtrk+1) > playsize) ? 0 : playlist[++curtrk];
+    int		getnexttrk(int &drive) {
+	int next = ((curtrk+1) >= playsize) ? 0 : playlist[++curtrk];
+	drive = next % MAXDRIVES;
+	return next / MAXDRIVES;
     }
    /* Returns next track without updating curtrack */
-    int		peeknexttrk(void) {
-	return ((1+curtrk) > playsize) ? 0 : playlist[1+curtrk];
+    int		peeknexttrk(int &drive) {
+	int next = ((1+curtrk) >= playsize) ? 0 : playlist[1+curtrk];
+	drive = next % MAXDRIVES;
+	return next / MAXDRIVES;
     }
    /* Gets the prev track in playlist or 0 if list over */
-    int		getprevtrk(void) {
-	return (curtrk <= 0) ? 0 : playlist[--curtrk];
+    int		getprevtrk(int &drive) {
+	int next = (curtrk <= 0) ? 0 : playlist[--curtrk];
+	drive = next % MAXDRIVES;
+	return next / MAXDRIVES;
     }
 };

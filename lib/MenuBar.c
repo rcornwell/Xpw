@@ -28,6 +28,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: MenuBar.c,v $
+ * Revision 1.3  1997/10/15 05:42:55  rich
+ * Added justification to pulldown menus.
+ *
  * Revision 1.2  1997/10/05 02:25:17  rich
  * Make sure ident line is in object file.
  *
@@ -38,7 +41,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: MenuBar.c,v 1.2 1997/10/05 02:25:17 rich Exp rich $";
+static char        *rcsid = "$Id: MenuBar.c,v 1.3 1997/10/15 05:42:55 rich Exp rich $";
 
 #endif
 
@@ -178,8 +181,8 @@ WidgetClass         menubarWidgetClass = (WidgetClass) & menubarClassRec;
 
 /* This is a handy definition to scan all our children */
 #define ForAllChildren(self, childP) \
-	for( (childP) =  (BarButton *)(self)->composite.children ; \
-	     (childP) <  ((BarButton *) (self)->composite.children + \
+	for( (childP) =  (self)->composite.children ; \
+	     (childP) <  ((self)->composite.children + \
 			 (self)->composite.num_children) ; \
 	     (childP)++ )
 
@@ -446,37 +449,11 @@ Redisplay(w, event, region)
 	Region              region;
 {
     MenuBarWidget       self = (MenuBarWidget) w;
-    MenuBarWidgetClass  selfclass = (MenuBarWidgetClass) XtClass(w);
-    BarButton          *child;
 
     if (region == NULL)
         XClearWindow(XtDisplay(w), XtWindow(w));
     _XpwThreeDDrawShadow(w, event, region, &self->menubar.threeD, 0, 0,
 			 self->core.width, self->core.height, FALSE);
-   /* Repaint each child */
-    ForAllChildren(self, child) {
-	BarButtonClass      class;
-
-	if (!XtIsManaged((Widget) (*child)))
-	    continue;
-
-        if (region != NULL)
-            switch (XRectInRegion(region, (int) (*child)->core.x,
-                                  (int) (*child)->core.y,
-                                (unsigned int) (*child)->core.width,
-                                (unsigned int) (*child)->core.height)) {
-            case RectangleIn:
-            case RectanglePart:
-                break;
-            default:
-                continue;
-            }
-
-	class = (BarButtonClass) XtClass((Widget) * child);
-	if (class->core_class.expose != NULL)
-	    (class->core_class.expose) ((Widget) * child, event, region);
-    }
-
 }
 
 /*
@@ -517,15 +494,15 @@ DoLayout(self, width, height, reply_width, reply_height, position)
     Dimension           h_space;	/* Local copy of self->box.h_space               */
     Widget              widget;	/* Current widget                               */
     int                 num_mapped_children = 0;
-    BarButton          *child;
+    Widget              *child;
 
    /* Box width and height */
     h_space = self->menubar.h_space;
 
     w = 0;
     ForAllChildren(self, child) {
-	if (((Widget) * child)->core.width > w)
-	    w = ((Widget) * child)->core.width;
+	if ((* child)->core.width > w)
+	    w = (* child)->core.width;
     }
     w += h_space;
     if (w > width)
@@ -537,7 +514,7 @@ DoLayout(self, width, height, reply_width, reply_height, position)
     lw = h_space;
 
     ForAllChildren(self, child) {
-	widget = (Widget) * child;
+	widget = *child;
 	if (widget->core.managed) {
 	    if (widget->core.mapped_when_managed)
 		num_mapped_children++;
@@ -700,18 +677,18 @@ Unhighlight(w, event, params, num_params)
 	Cardinal           *num_params;
 {
     MenuBarWidget       self = (MenuBarWidget) w;
-    BarButton           child = (BarButton) self->menubar.current_menu;
-    BarButtonClass      class;
+    Widget              child = self->menubar.current_menu;
+    WidgetClass         class;
 
     if (child == NULL)
 	return;
 
-    _XpwThreeDEraseShadow((Widget) child, event, NULL, &self->menubar.threeD,
+    _XpwThreeDEraseShadow(child, event, NULL, &self->menubar.threeD,
 			  0, 0, child->core.width, child->core.height);
     self->menubar.current_menu = NULL;
 
-    class = (BarButtonClass) XtClass(child) /*child->object.widget_class */ ;
-    (class->bar_class.unhighlight) ((Widget) child);
+    if ((class = XtClass(child)) == barbuttonWidgetClass)
+        (((BarButtonClass)class)->bar_class.unhighlight) ((Widget) child);
 }
 
 
@@ -725,9 +702,8 @@ Highlight(w, event, params, num_params)
 {
     MenuBarWidget       self = (MenuBarWidget) w;
     Position            x_loc = 0, y_loc = 0;
-    BarButton           child = NULL;
-    BarButton          *cp;
-    BarButtonClass      class;
+    Widget              child = NULL, *cp;
+    WidgetClass         class;
 
     if (!XtIsSensitive(w))
 	return;
@@ -756,7 +732,7 @@ Highlight(w, event, params, num_params)
     if ((x_loc >= 0) && (x_loc <= (int) self->core.width) && (y_loc >= 0) &&
 	(y_loc <= (int) self->core.height)) {
         ForAllChildren(self, cp) {
-	    if (!XtIsManaged(*(Widget *) cp))
+	    if (!XtIsManaged(*cp))
 	        continue;
 
 	    if (((*cp)->core.x < x_loc) &&
@@ -767,23 +743,23 @@ Highlight(w, event, params, num_params)
         }
     }
 
-    if (child == (BarButton) self->menubar.current_menu)
+    if (child == self->menubar.current_menu)
 	return;
     Unhighlight(w, event, params, num_params);
 
     if (child == NULL)
 	return;
 
-    if (!XtIsSensitive((Widget) child)) {
+    if (!XtIsSensitive(child)) {
 	self->menubar.current_menu = NULL;
 	return;
     }
     self->menubar.current_menu = (Widget) child;
-    _XpwThreeDDrawShadow((Widget) child, event, NULL, &self->menubar.threeD,
+    _XpwThreeDDrawShadow(child, event, NULL, &self->menubar.threeD,
 		     0, 0, child->core.width, child->core.height, FALSE);
    /* Tell the child he is now up! */
-    class = (BarButtonClass) XtClass(child) /*child->object.widget_class */ ;
-    (class->bar_class.highlight) ((Widget) child);
+    if ((class = XtClass(child)) == barbuttonWidgetClass)
+        (((BarButtonClass)class)->bar_class.highlight) ((Widget) child);
 }
 
 /*
@@ -799,14 +775,14 @@ Notify(w, event, params, num_params)
 	Cardinal           *num_params;
 {
     MenuBarWidget       self = (MenuBarWidget) w;
-    BarButton           child = (BarButton) self->menubar.current_menu;
-    BarButtonClass      class;
+    Widget              child = self->menubar.current_menu;
+    WidgetClass         class;
 
     if (child == NULL)
 	return;
 
-    class = (BarButtonClass) XtClass(child);
-    (class->bar_class.notify) ((Widget) child);
+    if ((class = XtClass(child)) == barbuttonWidgetClass)
+       (((BarButtonClass)class)->bar_class.notify) ((Widget) child);
 }
 
 /*
@@ -858,7 +834,7 @@ _XpwMenuPopupEntry(w, menubutton)
 	Widget              menubutton;
 {
     MenuBarWidget       self = (MenuBarWidget) w;
-    BarButton           child = (BarButton) menubutton;
+    BarButton           child =  (BarButton)menubutton;
     Widget              menu = NULL, temp;
     Arg                 arglist[2];
     int                 menu_x, menu_y, menu_width, menu_height, button_height;

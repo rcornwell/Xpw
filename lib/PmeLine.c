@@ -23,12 +23,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: PmeLine.c,v $
+ * Revision 1.1  1997/10/04 05:08:13  rich
+ * Initial revision
+ *
  *
  */
 
 #ifdef lint
-static char         rcsid[] = "$Id$";
+static char         rcsid[] = "$Id: PmeLine.c,v 1.1 1997/10/04 05:08:13 rich Exp rich $";
 
 #endif
 
@@ -58,6 +61,7 @@ static XtResource   resources[] =
 static void         Initialize(Widget /*request */ , Widget /*new */ ,
 				 ArgList /*args */ , Cardinal * /*num_args */ );
 static void         Notify(Widget /*w */ );
+static char       * GetMenuName(Widget /*w */ );
 static void         CreateGC(Widget /*w */ );
 static void         Destroy(Widget /*w */ );
 static void         Redisplay(Widget /*w */ , XEvent * /*event */ ,
@@ -109,6 +113,9 @@ PmeLineClassRec     pmeLineClassRec =
     },
     { /* PmeLine Fields */
 	Notify,				/* notify                */
+        Notify,                         /* highlight             */
+        Notify,                         /* unhighlight           */
+        GetMenuName,                    /* getmenuname           */
 	NULL				/* extension             */
     }
 };
@@ -255,6 +262,17 @@ Notify(w)
 	Widget              w;
 {
 }
+
+/*
+ * Notify callbacks, this is a place holder for PmeEntry.
+ */
+static char *
+GetMenuName(w)
+	Widget              w;
+{
+	return NULL;
+}
+
 
 /*     
  *   Destroy GC's we allocated.

@@ -25,14 +25,17 @@
  */
 
 /*
- * $Id$
+ * $Id: PmeEntryP.h,v 1.1 1997/10/04 05:07:44 rich Exp rich $
  *
- * $Log:$
+ * $Log: PmeEntryP.h,v $
+ * Revision 1.1  1997/10/04 05:07:44  rich
+ * Initial revision
+ *
  *
  */
 
-#ifndef _XawPmeEntryP_h
-#define _XawPmeEntryP_h
+#ifndef _PmeEntryP_h
+#define _PmeEntryP_h
 
 /***********************************************************************
  *
@@ -51,6 +54,9 @@
 
 typedef struct _PmeEntryClassPart {
     void                (*notify) ();
+    void                (*highlight) ();
+    void                (*unhighlight) ();
+    char	       *(*getmenuname) ();
     XtPointer           extension;
 } PmeEntryClassPart;
 
@@ -60,7 +66,7 @@ typedef struct _PmeEntryClassRec {
     PmeEntryClassPart   pme_entry_class;
 } PmeEntryClassRec;
 
-extern PmeEntryClassRec pmeBSBClassRec;
+extern PmeEntryClassRec pmeEntryClassRec;
 
 /* New fields for the Pme Entry record */
 typedef struct {
@@ -91,4 +97,4 @@ typedef struct _PmeEntryRec {
  *
  ************************************************************/
 
-#endif /* _XawPmeEntryP_h */
+#endif /* _PmeEntryP_h */

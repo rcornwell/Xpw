@@ -22,15 +22,20 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: XpwInit.c,v $
+ * Revision 1.1  1997/10/08 17:11:50  rich
+ * Initial revision
+ *
  */
 
 #include <X11/Intrinsic.h>
 #include <X11/Vendor.h>
 #include "XpwInit.h"
+#include "labelP.h"
+#include "threeDdrawP.h"
 
 #ifndef lint
-char rcsid[] = "$Id:$";
+char rcsid[] = "$Id: XpwInit.c,v 1.1 1997/10/08 17:11:50 rich Exp rich $";
 #endif
 
 void 
@@ -42,8 +47,6 @@ XpwInitializeWidgetSet()
 	firsttime = 0;
 	_XpwLabelClassInit();
 	_XpwThreeDClassInit();
-#if 0
 	XtInitializeWidgetClass(vendorShellWidgetClass);
-#endif
     }
 }

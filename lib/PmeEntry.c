@@ -26,14 +26,18 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: PmeEntry.c,v $
+ * Revision 1.2  1997/10/05 02:17:28  rich
+ * Moved clue handling into widget.
+ * Widget also can return menu_name.
+ *
  * Revision 1.1  1997/10/04 05:07:44  rich
  * Initial revision
  *
  *
  */
 
-#ifdef lint
-static char         rcsid[] = "$Id: PmeEntry.c,v 1.1 1997/10/04 05:07:44 rich Exp rich $";
+#ifndef lint
+static char         rcsid[] = "$Id: PmeEntry.c,v 1.2 1997/10/05 02:17:28 rich Exp rich $";
 
 #endif
 

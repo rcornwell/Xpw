@@ -26,14 +26,17 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: PmeSelect.c,v $
+ * Revision 1.1  1997/10/05 02:16:36  rich
+ * Initial revision
+ *
  * Revision 1.1  1997/10/04 22:13:23  rich
  * Initial revision
  *
  *
  */
 
-#ifdef lint
-static char        *rcsid = "$Id: PmeSelect.c,v 1.1 1997/10/04 22:13:23 rich Exp $";
+#ifndef lint
+static char        *rcsid = "$Id: PmeSelect.c,v 1.1 1997/10/05 02:16:36 rich Exp rich $";
 
 #endif
 

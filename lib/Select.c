@@ -25,12 +25,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: Select.c,v $
+ * Revision 1.1  1997/10/04 22:13:23  rich
+ * Initial revision
+ *
  *
  */
 
-#ifdef lint
-static char        *rcsid = "$Id$";
+#ifndef lint
+static char        *rcsid = "$Id: Select.c,v 1.1 1997/10/04 22:13:23 rich Exp rich $";
 
 #endif
 

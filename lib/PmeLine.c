@@ -24,14 +24,17 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: PmeLine.c,v $
+ * Revision 1.2  1997/10/05 02:17:28  rich
+ * Make class extensions to match PmeEntry.
+ *
  * Revision 1.1  1997/10/04 05:08:13  rich
  * Initial revision
  *
  *
  */
 
-#ifdef lint
-static char         rcsid[] = "$Id: PmeLine.c,v 1.1 1997/10/04 05:08:13 rich Exp rich $";
+#ifndef lint
+static char         rcsid[] = "$Id: PmeLine.c,v 1.2 1997/10/05 02:17:28 rich Exp rich $";
 
 #endif
 

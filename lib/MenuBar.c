@@ -27,12 +27,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: MenuBar.c,v $
+ * Revision 1.1  1997/10/04 05:06:09  rich
+ * Initial revision
+ *
  *
  */
 
-#ifdef lint
-static char        *rcsid = "$Id$";
+#ifndef lint
+static char        *rcsid = "$Id: MenuBar.c,v 1.1 1997/10/04 05:06:09 rich Exp rich $";
 
 #endif
 

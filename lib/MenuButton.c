@@ -27,14 +27,17 @@
  *
  *
  * $Log: MenuButton.c,v $
+ * Revision 1.2  1997/10/05 02:17:28  rich
+ * Fixed translations so clues get poped up.
+ *
  * Revision 1.1  1997/10/04 05:06:55  rich
  * Initial revision
  *
  *
  */
 
-#ifdef lint
-static char        *rcsid = "$Id: MenuButton.c,v 1.1 1997/10/04 05:06:55 rich Exp rich $";
+#ifndef lint
+static char        *rcsid = "$Id: MenuButton.c,v 1.2 1997/10/05 02:17:28 rich Exp rich $";
 
 #endif
 

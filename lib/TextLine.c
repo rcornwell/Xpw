@@ -26,6 +26,9 @@
  *
  *
  * $Log: TextLine.c,v $
+ * Revision 1.4  1997/12/06 04:14:50  rich
+ * TextLine should return Dimension.
+ *
  * Revision 1.3  1997/11/28 19:31:07  rich
  * Fixed redisplay bug on suns.
  * Made sure all GC's use a clipmask.
@@ -40,7 +43,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: TextLine.c,v 1.3 1997/11/28 19:31:07 rich Beta rich $";
+static char        *rcsid = "$Id: TextLine.c,v 1.4 1997/12/06 04:14:50 rich Exp rich $";
 
 #endif
 
@@ -1364,7 +1367,9 @@ Notify(w, event, params, num_params)
    /* Call back to process. */
     ret.reason = 0;
     ret.event = event;
-    ret.string = XtNewString(self->text.string);
+    ret.string = XtMalloc(self->text.stringsize + 1);
+    strncpy(ret.string, self->text.string, self->text.stringsize);
+    ret.string[self->text.stringsize] = '\0';
     XtCallCallbackList(w, self->text.callbacks, (XtPointer) & ret);
    /* Free storage */
     XtFree(ret.string);
@@ -1641,8 +1646,10 @@ StartSelect(w, event, params, num_params)
    /* Remove cursor */
     EraseCursor(w);
    /* Grab focus */
-    if (self->text.focusGroup != NULL)
+    if (self->text.focusGroup != NULL) {
 	_XpwSetFocus(w, self->text.focusGroup);
+	EraseCursor(w);
+    }
    /* If there is a selection, clear selection and mark for full redraw */
     if (self->text.highstart != self->text.highend)
 	needredraw = TRUE;
@@ -2037,8 +2044,12 @@ XpwTextLineGetString(w)
 	Widget              w;
 {
     TextLineWidget      self = (TextLineWidget) w;
+    char		*p;
 
-    return XtNewString(self->text.string);
+    p = XtMalloc(self->text.stringsize + 1);
+    strncpy(p, self->text.string, self->text.stringsize);
+    p[self->text.stringsize] = '\0';
+    return p;
 }
 
 /*
@@ -2061,10 +2072,12 @@ XpwTextLineSetString(w, str)
    /* Build free new buffer */
     self->text.string = XtNewString(str);
     self->text.stringsize = strlen(str);
-    self->text.insert_point = self->text.stringsize;
+    self->text.insert_point = 0;
 
    /* Reposition cursor */
-    self->text.cursor_x = CharToOffset(self, self->text.insert_point);
+    self->text.cursor_x = 0;
+    self->text.coffset = 0;
+    self->text.textstart = 0;
     if (ReCenterCursor(w) == FALSE)
 	Redisplay(w, NULL, NULL);
 }

@@ -1,0 +1,262 @@
+! $Id: $
+!
+! XCdplay Applications default file.
+!
+
+!
+! Global Stuff.
+!
+XCdplay.allowShellResize:			true
+XCdplay*Font:               		     	-*-helvetica-bold-r-normal-*-12-*
+XCdplay*Clue.background:			yellow
+XCdplay*Background:	     		 	grey
+XCdplay*Slider.foreground:	      		grey75
+XCdplay*Slider.background:	      		grey50
+XCdplay*Select.switchSize:			0
+XCdplay*Select.switchShape:			none
+XCdplay*PmeSelect.switchShape:			diamond
+XCdplay*PmeSelect.switchColor:			SpringGreen
+XCdplay*Dialog.justify:             		Center
+XCdplay*Dialog.packing:            		even
+!
+! Main display window resources
+!
+! Labels.
+XCdplay*menubar.windows.label:			Windows
+XCdplay*menubar.file.label:			File
+XCdplay*menubar.option.label:			Options
+XCdplay*filemenu.play.label:			Play CD
+XCdplay*filemenu.stop.label:			Stop CD
+XCdplay*filemenu.edittrack.label:		Edit Track
+XCdplay*filemenu.editplay.label:		Edit Playlist
+XCdplay*filemenu.eject.label:			Eject Disc
+XCdplay*filemenu.options.label:			Edit Options
+XCdplay*filemenu.exit.label:			Exit
+XCdplay*dispmenu.toolbar.label:			Toolbar
+XCdplay*dispmenu.status.label:			Display
+XCdplay*dispmenu.volume.label:			Volume
+XCdplay*dispmenu.title.label:			CD Title
+XCdplay*dispmenu.track.label:			Track List
+XCdplay*dispmenu.infobar.label:			Disc Info
+XCdplay*optionmenu.normal.label:		Normal Play
+XCdplay*optionmenu.random.label:		Random Play
+XCdplay*optionmenu.intro.label:			Intro Play
+XCdplay*optionmenu.repeat.label:		Repeat Play
+XCdplay*optionmenu.elapsed.label:		Elapsed Time
+XCdplay*optionmenu.remaining.label:		Time Remaining
+XCdplay*optionmenu.disc.label:			Disc Time
+XCdplay*optionmenu.total.label:			Total Time
+! Toolbar.
+XCdplay*toolbar*resizeToPreferred:   	  	true
+XCdplay*toolbar*blank.shadowWidth:    		0
+XCdplay*toolbar*blank.leftMargin:      		1
+XCdplay*toolbar*blank.rightMargin:     		1
+XCdplay*toolbar*blank.width:           		4
+XCdplay*toolbar*blank.resizeToPreferred: 	false
+XCdplay*toolbar*toolExit.clue:	  		Exit Cd Player.
+XCdplay*toolbar*toolEject.clue:	   		Eject Cd.
+XCdplay*toolbar*toolPlay.clue:	   		Start Cd Playing.
+XCdplay*toolbar*toolStop.clue:	  		Stop Cd.
+XCdplay*toolbar*toolNormal.clue:		Sets Normal play mode.
+XCdplay*toolbar*toolRandom.clue:		Sets Random play mode.
+XCdplay*toolbar*toolIntro.clue:	  		Sets Intro play mode.
+XCdplay*toolbar*toolElapsed.clue:		Sets display to elapsed time in track.
+XCdplay*toolbar*toolRemaining.clue:   		Sets display to time remaining in track.
+XCdplay*toolbar*toolDisc.clue:	  		Sets display to time played so far disc.
+XCdplay*toolbar*toolTotal.clue:			Sets display to total play time of disc.
+! Status Window.
+XCdplay*status.packmode: 			fill
+XCdplay*status*resizeToPreferred:    		true
+XCdplay*status.mainwindow.font: 		-*-helvetica-bold-r-normal-*-20-*
+XCdplay*status.mainwindow.resizeToPreferred:	false
+XCdplay*status.mainwindow.justify: 		center
+XCdplay*status*mainwindow.raised:		false
+XCdplay*status*mainwindow.resizeToPreferred:	false
+XCdplay*status*mainwindow.background:  		black
+XCdplay*status*mainwindow.foreground: 		SpringGreen
+XCdplay*status.f1.rows:    			2
+XCdplay*status.f1.cols:    			4
+XCdplay*status.f1.*.justify:			center
+XCdplay*status.f1.play.resizeToPreferred:	false
+XCdplay*status.f1.play.colSpan:			3
+XCdplay*status.f1.play.row:			0
+XCdplay*status.f1.play.col:			0
+XCdplay*status.f1.stop.resizeToPreferred:	false
+XCdplay*status.f1.stop.colSpan:			3
+XCdplay*status.f1.stop.row:			0
+XCdplay*status.f1.stop.col:			0
+XCdplay*status.f1.pause.row:			0
+XCdplay*status.f1.pause.col:			3
+XCdplay*status.f1.pause.resizeToPreferred:	false
+XCdplay*status.f1.skipback.row:			1
+XCdplay*status.f1.skipback.col:			0
+XCdplay*status.f1.fastback.row:			1
+XCdplay*status.f1.fastback.col:			1
+XCdplay*status.f1.fastforw.row:			1
+XCdplay*status.f1.fastforw.col:			2
+XCdplay*status.f1.skipforw.row:			1
+XCdplay*status.f1.skipforw.col:			3
+! Title
+XCdplay*manager.title.background:		grey60
+XCdplay*manager.title.raised:			false
+! Track select.
+XCdplay*track.arrow.arrowType:			down
+XCdplay*track.arrow.background:			grey
+XCdplay*track.arrow.foreground:			grey60
+XCdplay*track.pulldown.label:			Select Track
+! Infobar.
+XCdplay*infobar.packmode: 			fill
+XCdplay*infobar.allowResize:			true
+XCdplay*infobar.packing:			fill
+XCdplay*infobar.justify:			center
+XCdplay*infobar*raised:				false
+XCdplay*runtime.resizeToPreferred:		false
+XCdplay*runtime.justify:			center
+XCdplay*totaltime.resizeToPreferred:		false
+XCdplay*totaltime.justify:			center
+!
+! Track editor 
+!
+! Save popup.
+XCdplay*SaveQuest*Label.shadowWidth:		0
+XCdplay*SaveQuest*title:			Save Changes
+XCdplay*SaveQuest*message:			Save Track List Changes?
+XCdplay*SaveQuest*cancelLabelString:		No
+XCdplay*SaveQuest.dialog.dialogType:		modeless
+! Track Editor.
+XCdplay*EditTrack*SaveQuest*message:		Save Track List Changes?
+XCdplay*EditTrack*Label.shadowWidth:		0
+XCdplay*EditTrack.dialog.dialogType:		modeless
+XCdplay*EditTrack.dialog.autoUnmanage:		false
+XCdplay*EditTrack*message:			CD Title:
+XCdplay*EditTrack*list.label:			Track List
+XCdplay*EditTrack*tracklist.defaultColumns:	1
+XCdplay*EditTrack*tracklist.height:		100
+XCdplay*EditTrack*tracklist.onlyOne:		true
+XCdplay*EditTrack*tracklabel.label:		Track Title:
+! Play List Editor.
+XCdplay*EditPlayList*SaveQuest*message:		Save Track List Changes?
+XCdplay*EditPlayList.dialog.dialogType:		modeless
+XCdplay*EditPlayList.dialog.autoUnmanage:	false
+XCdplay*EditPlayList*message:			Play List:
+XCdplay*EditPlayList*tracklist.alwaysNotify:	true
+XCdplay*EditPlayList*tracklist.row:		0
+XCdplay*EditPlayList*tracklist.rowSpan:		6
+XCdplay*EditPlayList*tracklist.col:		0
+XCdplay*EditPlayList*tracklist.defaultColumns:	1
+XCdplay*EditPlayList*tracklist.height:		100
+XCdplay*EditPlayList*tracklist.width:		150
+XCdplay*EditPlayList*playlist.alwaysNotify:	true
+XCdplay*EditPlayList*playlist.row:		0
+XCdplay*EditPlayList*playlist.rowSpan:		6
+XCdplay*EditPlayList*playlist.col:		2
+XCdplay*EditPlayList*playlist.defaultColumns:	1
+XCdplay*EditPlayList*playlist.height:		100
+XCdplay*EditPlayList*playlist.width:		150
+XCdplay*EditPlayList*manager.cols:		4
+XCdplay*EditPlayList*manager.rows:		6
+XCdplay*EditPlayList*clear.label:		Clear List
+XCdplay*EditPlayList*clear.clue:		Removes all tracks from play list
+XCdplay*EditPlayList*clear.col:			1
+XCdplay*EditPlayList*clear.row:			0
+XCdplay*EditPlayList*addall.label:		Add All Tracks
+XCdplay*EditPlayList*addall.clue:		Add all tracks to play list
+XCdplay*EditPlayList*addall.col:		1
+XCdplay*EditPlayList*addall.row:		1
+XCdplay*EditPlayList*add.label:			Add Tracks
+XCdplay*EditPlayList*add.clue:			Add selected tracks to play list
+XCdplay*EditPlayList*add.col:			1
+XCdplay*EditPlayList*add.row:			2
+XCdplay*EditPlayList*remove.label:		Remove Tracks
+XCdplay*EditPlayList*remove.clue:		Removes selected tracks from play list
+XCdplay*EditPlayList*remove.col:		1
+XCdplay*EditPlayList*remove.row:		3
+XCdplay*EditPlayList*delete.label:		Mark Unplayable
+XCdplay*EditPlayList*delete.clue:		Marks track so they will not be playable.
+XCdplay*EditPlayList*delete.col:		1
+XCdplay*EditPlayList*delete.row:		4
+XCdplay*EditPlayList*undelete.label:		Mark Playable
+XCdplay*EditPlayList*undelete.clue:		Marks track so they can be playable.
+XCdplay*EditPlayList*undelete.col:		1
+XCdplay*EditPlayList*undelete.row:		5
+XCdplay*EditPlayList*top.col:			3
+XCdplay*EditPlayList*top.row:			0
+XCdplay*EditPlayList*top.clue:			Moves selected track to top of playlist.
+XCdplay*EditPlayList*up.col:			3
+XCdplay*EditPlayList*up.row:			1
+XCdplay*EditPlayList*up.clue:			Moves selected track forward in playlist.
+XCdplay*EditPlayList*down.col:			3
+XCdplay*EditPlayList*down.row:			4
+XCdplay*EditPlayList*down.clue:			Moves selected track backward in playlist.
+XCdplay*EditPlayList*bot.col:			3
+XCdplay*EditPlayList*bot.row:			5
+XCdplay*EditPlayList*bot.clue:			Moves selected track to end of playlist.
+!
+! Options Popup.
+!
+XCdplay*EditOptions*Label.shadowWidth:		0
+XCdplay*EditOptions*Select.rightButton:		false
+XCdplay*EditOptions*Select.switchSize:		10
+XCdplay*EditOptions*Select.switchShape:		diamond
+XCdplay*EditOptions*Select.switchColor:		SpringGreen
+XCdplay*EditOptions*Select.shadowWidth:		0
+XCdplay*EditOptions*RowCol.borderWidth:		0
+XCdplay*EditOptions*TextLine.resizeToPreferred:	false
+XCdplay*EditOptions*TextLine.min:		100
+XCdplay*EditOptions.dialog.dialogType:		modeless
+XCdplay*EditOptions.dialog.autoUnmanage:	false
+XCdplay*EditOptions*message:			Set Default Options
+XCdplay*EditOptions*frame.cols:			2
+XCdplay*EditOptions*frame.rows:			8
+XCdplay*EditOptions*rcPath*label:		Defaults file:
+XCdplay*EditOptions*cdDevice*label:		CDROM device:
+XCdplay*EditOptions*cdDevice*col:		1
+XCdplay*EditOptions*cdDevice*row:		0
+XCdplay*EditOptions*mixDevice*label:		Mixer device:
+XCdplay*EditOptions*mixDevice*col:		1
+XCdplay*EditOptions*mixDevice*row:		6
+XCdplay*EditOptions*cddbPath*label:		Track Database:
+XCdplay*EditOptions*cddbPath*col:		1
+XCdplay*EditOptions*cddbPath*row:		1
+XCdplay*EditOptions*showToolbar*label:		Show Toolbar
+XCdplay*EditOptions*showToolbar.col:		0
+XCdplay*EditOptions*showToolbar.row:		0
+XCdplay*EditOptions*showStatus*label:		CD Style Display
+XCdplay*EditOptions*showStatus.col:		0
+XCdplay*EditOptions*showStatus.row:		1
+XCdplay*EditOptions*showVolume*label:		Show Volume Control
+XCdplay*EditOptions*showVolume.col:		0
+XCdplay*EditOptions*showVolume.row:		2
+XCdplay*EditOptions*showTitle*label:		Show CD Title
+XCdplay*EditOptions*showTitle.col:		0
+XCdplay*EditOptions*showTitle.row:		3
+XCdplay*EditOptions*showTrack*label:		Show Track Selector
+XCdplay*EditOptions*showTrack.col:		0
+XCdplay*EditOptions*showTrack.row:		4
+XCdplay*EditOptions*showInfobar*label:		Disc Info
+XCdplay*EditOptions*showInfobar.col:		0
+XCdplay*EditOptions*showInfobar.row:		5
+XCdplay*EditOptions*pollRate*label:		Poll Rate when playing:
+XCdplay*EditOptions*pollRate.col:		1
+XCdplay*EditOptions*pollRate.row:		2
+XCdplay*EditOptions*stopRate*label:		Poll Rate when stoped:
+XCdplay*EditOptions*stopRate.col:		1
+XCdplay*EditOptions*stopRate.row:		3
+XCdplay*EditOptions*emptyRate*label:		Poll Rate when empty:
+XCdplay*EditOptions*emptyRate.col:		1
+XCdplay*EditOptions*emptyRate.row:		4
+XCdplay*EditOptions*introTime*label:		Intro play time
+XCdplay*EditOptions*introTime.col:		0
+XCdplay*EditOptions*introTime.row:		6
+XCdplay*EditOptions*skipTime*label:		Fast Skip Time:
+XCdplay*EditOptions*skipTime.col:		0
+XCdplay*EditOptions*skipTime.row:		7
+XCdplay*EditOptions*autoPlay*label:		Start CD Play on load
+XCdplay*EditOptions*autoPlay.col:		1
+XCdplay*EditOptions*autoPlay.row:		5
+! Save Options Popup.
+XCdplay*SaveOptions*Label.shadowWidth:		0
+XCdplay*SaveOptions*title:		        Save Options
+XCdplay*SaveOptions*message:			Save as Default Options?
+XCdplay*SaveOptions*cancelLabelString:		No
+XCdplay*SaveOptions.dialog.dialogType:		modeless

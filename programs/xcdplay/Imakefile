@@ -1,0 +1,19 @@
+XCOMM $Id: $
+
+DEPLIBS = $(DEPXPWLIB) $(DEPXPMLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXLIB)
+LOCAL_LIBRARIES = -lXpw $(XMULIB) $(XTOOLLIB) $(XLIB)
+INCLUDES = -I$(BUILDINCDIR)
+EXTRA_LDOPTIONS = -L$(BUILDLIBDIR)
+DEFINES = -g
+
+SRCS=  xcdplay.cc mainwindow.cc player.cc bitmaps.cc playlist.cc \
+	tracklist.cc
+OBJS= xcdplay.o mainwindow.o player.o bitmaps.o playlist.o \
+	tracklist.o
+
+PROGRAMS = xcdplay
+
+ComplexCplusplusProgramTarget(xcdplay)
+
+InstallAppDefaults(XCdplay)
+

@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: FrameP.h,v 1.1 1997/10/04 05:04:15 rich Exp rich $
  *
- * $Log:$
+ * $Log: FrameP.h,v $
+ * Revision 1.1  1997/10/04 05:04:15  rich
+ * Initial revision
+ *
  *
  */
 
@@ -40,31 +43,43 @@
 #include "labelP.h"
 #include "threeDdrawP.h"
 
+/*********************************************************************
+ *
+ * Frame Widget Private Data
+ *
+ *********************************************************************/
+
+/* New fields for the Frame widget class record */
+
 typedef struct {
-/* methods */
     int                 foo;	/* Null record entry */
-/* class variables */
 } FrameClassPart;
 
+/* Full class record declaration */
 typedef struct _FrameClassRec {
     CoreClassPart       core_class;
     CompositeClassPart  composite_class;
     FrameClassPart      frame_class;
 } FrameClassRec;
 
+/* New fields for the Frame widget Record */
 typedef struct {
    /* resources */
     _XpwLabel		label;
     Dimension           frame_width;
     Boolean             labelontop;
     Boolean             outline;
+    Boolean		usePrefered;
 
    /* Shadow info */
     _XpmThreeDFrame	threeD;
     _XpmThreeDFrame	threeO;
 
+   /* Private info */
+    Dimension		label_height;
 } FramePart;
 
+/* Full instance record declaration */
 typedef struct _FrameRec {
     CorePart            core;
     CompositePart       composite;

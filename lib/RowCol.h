@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: RowCol.h,v 1.1 1997/10/07 05:35:41 rich Exp rich $
  *
- * $Log:$
+ * $Log: RowCol.h,v $
+ * Revision 1.1  1997/10/07 05:35:41  rich
+ * Initial revision
+ *
  *
  */
 
@@ -86,10 +89,10 @@
 
 #define ROWCOL_ASK_CHILD 0
 
-typedef enum { XpwFill, XpwNoFill, XpwEven } XpwPackingType;
 
 #ifndef XtNpacking
 #define XtNpacking "packing"
+typedef enum { XpwFill, XpwNoFill, XpwEven } XpwPackingType;
 #endif
 #ifndef XtCPackingType
 #define XtCPackingType "PackingType"

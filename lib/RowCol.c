@@ -26,6 +26,10 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: RowCol.c,v $
+ * Revision 1.3  1997/11/01 06:39:07  rich
+ * Removed unused definition.
+ * Added Justify for unfull windows.
+ *
  * Revision 1.2  1997/10/12 05:14:01  rich
  * Removed some extra pointer references.
  * Added QueryGeometry.
@@ -38,7 +42,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: RowCol.c,v 1.2 1997/10/12 05:14:01 rich Exp rich $";
+static char        *rcsid = "$Id: RowCol.c,v 1.3 1997/11/01 06:39:07 rich Beta rich $";
 
 #endif
 
@@ -204,6 +208,9 @@ RowColClassRec      rowcolClassRec =
 	NULL,				/* destroy             */
 	NULL,				/* set_values          */
 	NULL				/* extension           */
+    },
+    {   /* Rowcol class fields */
+        0
     }
 };
 
@@ -299,7 +306,7 @@ Realize(w, valueMask, attributes)
 	XtRealizeWidget(*childP);
 
    /* Set children to there prefered sizes */
-    SetChildrenSizes(self, ChildSize(w, !IsVert(self)));
+    (void)SetChildrenSizes(self, ChildSize(w, !IsVert(self)));
    /* Relayout and move children */
     PositionChildren(self);
     MoveChildren(self);
@@ -519,7 +526,7 @@ ChangeManaged(w)
 	size = 1;
 	ForAllChildren(self, childP)
 	    if (XtIsManaged(*childP) && (ChildSize(*childP, !vert) > size))
-	    size = ChildSize(*childP, !vert);
+	         size = ChildSize(*childP, !vert);
     }
    /* Compute number of managed children */
     self->rowcol.num_children = 0;
@@ -574,7 +581,7 @@ SetChildrenSizes(self, off_size)
 	    request.height = off_size;
 	}
 	if (off_size == 0)
-	    request.request_mode = CWHeight | CWWidth;
+            request.request_mode = CWHeight | CWWidth;
 	if (XtQueryGeometry(*childP, &request, &reply) == XtGeometryAlmost &&
 	    (reply.request_mode = (vert ? CWHeight : CWWidth))) {
 	    child->wp_size = GetRequestInfo(&reply, vert);

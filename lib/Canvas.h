@@ -28,16 +28,19 @@
  */
 
 /*
- * $Id: $
+ * $Id: Canvas.h,v 1.1 1997/10/19 01:41:37 rich Exp rich $
  *
- * $Log: $
+ * $Log: Canvas.h,v $
+ * Revision 1.1  1997/10/19 01:41:37  rich
+ * Initial revision
+ *
  *
  */
+
 #ifndef _Canvas_H_
 #define _Canvas_H_
 
 #include <X11/Xmu/Converters.h>
-#include "threeDdraw.h"
 
 /* Canvas Widget Resources:
  * 

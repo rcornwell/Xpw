@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: CanvasP.h,v 1.1 1997/10/19 01:41:37 rich Exp rich $
  *
- * $Log: $
+ * $Log: CanvasP.h,v $
+ * Revision 1.1  1997/10/19 01:41:37  rich
+ * Initial revision
+ *
  *
  *
  */
@@ -38,9 +41,6 @@
 #ifndef _CanvasP_H_
 #define _CanvasP_H_
 #include "Canvas.h"
-#include "threeDdrawP.h"
-
-#define DEFAULT_GRIP_SIZE	4
 
 typedef struct {
 /* methods */

@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: PmeSelect.c,v $
+ * Revision 1.2  1997/10/05 02:25:17  rich
+ * Make sure ident line is in object file.
+ *
  * Revision 1.1  1997/10/05 02:16:36  rich
  * Initial revision
  *
@@ -36,7 +39,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: PmeSelect.c,v 1.1 1997/10/05 02:16:36 rich Exp rich $";
+static char        *rcsid = "$Id: PmeSelect.c,v 1.2 1997/10/05 02:25:17 rich Exp rich $";
 
 #endif
 
@@ -213,7 +216,6 @@ Initialize(request, new, args, num_args)
 	Cardinal           *num_args;
 {
     PmeSelectObject        self = (PmeSelectObject) new;
-    Screen             *scr = XtScreenOfObject(new);
 
     _XpwLabelInit(new, &(self->pme_select.label),
 		 XtParent(new)->core.background_pixel,
@@ -355,9 +357,6 @@ Redisplay(w, event, region)
 	Region              region;
 {
     PmeSelectObject        self = (PmeSelectObject) w;
-    Display            *dpy = XtDisplayOfObject(w);
-    Window              win = XtWindowOfObject(w);
-    GC                  gc;
     int                 x_loc;
     Dimension           s = self->pme_select.threeD.shadow_width;
 
@@ -411,7 +410,6 @@ DrawSwitch(w)
     Display            *dpy = XtDisplayOfObject(w);
     Window              win = XtWindowOfObject(w);
     int                 width, x_loc, y_loc;
-    Dimension           s = self->pme_select.threeD.shadow_width;
 
    /* Figure out what colors to make arrow */
     if (!self->pme_select.state)
@@ -681,8 +679,6 @@ static char *
 GetMenuName(w)
         Widget              w;
 {
-    PmeEntryObject      self = (PmeEntryObject) w;
-
     return NULL;
 }
 

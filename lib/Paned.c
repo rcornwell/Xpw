@@ -25,13 +25,16 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log: $
+ * $Log: Paned.c,v $
+ * Revision 1.1  1997/10/12 05:18:12  rich
+ * Initial revision
+ *
  *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: Paned.c,v 1.1 1997/10/12 05:18:12 rich Exp rich $";
 
 #endif
 
@@ -744,7 +747,6 @@ MoveChildren(self)
 {
     Widget             *childP;
     Boolean             vert = IsVert(self);
-    Dimension           gx, gy, gh, gw;
     XWindowChanges      changes;
     Cursor              cursor;
 
@@ -1130,7 +1132,6 @@ HandleGrip(wid, client_data, call_data)
     PanedConstraints    child = (PanedConstraints) client_data;
     XpwGripCallDataRec *grip_info = (XpwGripCallDataRec *) call_data;
     Cursor              cursor;
-    Arg                 arg[1];
     int                 offset;
 
     if (grip_info->num_params == 0 || grip_info->num_params > 2)

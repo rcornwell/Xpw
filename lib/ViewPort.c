@@ -24,12 +24,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log: $
+ * $Log: ViewPort.c,v $
+ * Revision 1.1  1997/10/19 01:42:08  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: ViewPort.c,v 1.1 1997/10/19 01:42:08 rich Exp rich $";
 
 #endif
 
@@ -224,7 +227,6 @@ SetValues(current, request, new, args, num_args)
 {
     ViewPortWidget      self = (ViewPortWidget) new;
     ViewPortWidget      old_self = (ViewPortWidget) current;
-    int                 i;
     Boolean             ret_val = FALSE;
     Boolean             relayout = FALSE;
 
@@ -301,11 +303,9 @@ GeometryManager(wid, request, reply)
     Dimension           s = self->viewport.threeD.shadow_width;
     Dimension           h = self->core.height - 2 * s;
     Dimension           w = self->core.width - 2 * s;
-    Boolean             almost = FALSE;
-    Boolean             tryresize = FALSE;
 
     if (self->viewport.child == NULL || self->viewport.child != wid)
-	return;
+	return XtGeometryNo;
    /* Figure out new size. */
     nw = (mask & CWWidth) ? request->width : self->viewport.child->core.width;
     nh = (mask & CWHeight) ? request->height : self->viewport.child->core.height;

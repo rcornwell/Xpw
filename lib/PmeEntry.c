@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: PmeEntry.c,v $
+ * Revision 1.3  1997/10/05 02:25:17  rich
+ * Make sure ident line is in object file.
+ *
  * Revision 1.2  1997/10/05 02:17:28  rich
  * Moved clue handling into widget.
  * Widget also can return menu_name.
@@ -37,7 +40,7 @@
  */
 
 #ifndef lint
-static char         rcsid[] = "$Id: PmeEntry.c,v 1.2 1997/10/05 02:17:28 rich Exp rich $";
+static char         rcsid[] = "$Id: PmeEntry.c,v 1.3 1997/10/05 02:25:17 rich Exp rich $";
 
 #endif
 
@@ -306,8 +309,6 @@ static void
 Unhighlight(w)
         Widget              w;
 {
-    PmeEntryObject      self = (PmeEntryObject) w;
-
     _XpwDisArmClue(w);
 }
 

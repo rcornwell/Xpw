@@ -25,12 +25,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log: $
+ * $Log: Grip.c,v $
+ * Revision 1.1  1997/10/12 05:18:35  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: Grip.c,v 1.1 1997/10/12 05:18:35 rich Exp rich $";
 
 #endif
 
@@ -197,14 +200,12 @@ Redisplay(wid, event, region)
     GripWidget          self = (GripWidget) wid;
     Display            *dpy = XtDisplayOfObject(wid);
     Window              win = XtWindowOfObject(wid);
-    Dimension           s = self->grip.threeD.shadow_width;
-    Dimension           h = self->core.height;
-    Dimension           w = self->core.width;
 
     XClearWindow(dpy, win);
 
    /* Draw shadows around main window */
-    _XpwThreeDDrawShadow(wid, event, region, &(self->grip.threeD), 0, 0, w, h, 0);
+    _XpwThreeDDrawShadow(wid, event, region, &(self->grip.threeD), 0, 0,
+		 self->core.width, self->core.height, 0);
 }
 
 /*
@@ -233,7 +234,6 @@ GripAction(w, event, params, num_params)
 	String             *params;	/* unused */
 	Cardinal           *num_params;		/* unused */
 {
-    GripWidget          self = (GripWidget) w;
     XpwGripCallDataRec  call_data;
 
     call_data.event = event;

@@ -25,6 +25,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: List.c,v $
+ * Revision 1.2  1997/10/15 05:52:03  rich
+ * Don't need to destroy scrollbars, composite does it for us.
+ *
  * Revision 1.1  1997/10/09 02:40:35  rich
  * Initial revision
  *
@@ -32,7 +35,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: List.c,v 1.1 1997/10/09 02:40:35 rich Exp rich $";
+static char        *rcsid = "$Id: List.c,v 1.2 1997/10/15 05:52:03 rich Exp rich $";
 
 #endif
 
@@ -40,6 +43,7 @@ static char        *rcsid = "$Id: List.c,v 1.1 1997/10/09 02:40:35 rich Exp rich
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
 #include <X11/Xmu/Misc.h>
+#include <X11/Xmu/Drawing.h>
 #include <X11/Shell.h>
 #include <X11/CoreP.h>
 #include "XpwInit.h"
@@ -540,7 +544,6 @@ Redisplay(wid, event, region)
     int                 tstart = 0;
     GC                  gc;
     XGCValues           values;
-    XtGCMask            mask;
     XRectangle          cliparea;
 
     if (!XtIsRealized(wid))
@@ -1104,7 +1107,6 @@ GetItem(w, event)
 	XEvent             *event;
 {
     ListWidget          self = (ListWidget) w;
-    XFontSetExtents    *ext;
     Dimension           s = self->list.threeD.shadow_width;
     int                 x_loc, y_loc;
     int                 rowh, l;
@@ -1410,7 +1412,6 @@ RedisplayItem(self, item)
     int                 i, j, l;
     int                 rowh;
     int                 x_loc, y_loc;
-    XFontSetExtents    *ext;
     Display            *dpy = XtDisplayOfObject((Widget) self);
     Window              win = XtWindowOfObject((Widget) self);
     Dimension           s = self->list.threeD.shadow_width;
@@ -1774,7 +1775,7 @@ PageUp(w, event, params, num_params)
 {
     ListWidget          self = (ListWidget) w;
     int                 nyoff = self->list.yoff;
-    int                 h, th;
+    int                 h;
 
    /* Do nothing if we have no scroll bar */
     if (self->list.h_scrollbar == NULL)
@@ -1846,7 +1847,7 @@ UpLine(w, event, params, num_params)
 {
     ListWidget          self = (ListWidget) w;
     int                 nyoff = self->list.yoff;
-    int                 h, th;
+    int                 h;
 
    /* Do nothing if we have no scroll bar */
     if (self->list.h_scrollbar == NULL)
@@ -1880,7 +1881,7 @@ LeftCol(w, event, params, num_params)
 {
     ListWidget          self = (ListWidget) w;
     int                 nxoff = self->list.xoff;
-    int                 ww, tw;
+    int                 ww;
 
    /* Do nothing if we have no scroll bar */
     if (self->list.v_scrollbar == NULL)

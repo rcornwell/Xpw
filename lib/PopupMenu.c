@@ -27,6 +27,10 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: PopupMenu.c,v $
+ * Revision 1.2  1997/10/05 02:17:29  rich
+ * Make sure after a resize all children are set to correct width.
+ * Use class calls to talk to children.
+ *
  * Revision 1.1  1997/10/04 05:08:42  rich
  * Initial revision
  *
@@ -34,7 +38,7 @@
  */
 
 #ifndef line
-static char         rcsid[] = "$Id: PopupMenu.c,v 1.1 1997/10/04 05:08:42 rich Exp rich $";
+static char         rcsid[] = "$Id: PopupMenu.c,v 1.2 1997/10/05 02:17:29 rich Exp rich $";
 
 #endif
 
@@ -295,7 +299,6 @@ Initialize(request, new, args, num_args)
 	Cardinal           *num_args;
 {
     PopupMenuWidget     self = (PopupMenuWidget) new;
-    Screen             *scr = XtScreenOfObject(new);
     static XtTranslations trans = NULL;
 
     /* Add translation buffer */
@@ -651,10 +654,9 @@ DoPopup(w)
 {
     PopupMenuWidget     self = (PopupMenuWidget) w;
     PmeEntryObject      entry = self->popup_menu.entry_set;
-    Widget              child;
+    Widget              child = NULL;
     Arg                 arglist[2];
     Position            x, y;
-    int                 popup_width, popup_height;
     PmeEntryObjectClass class;
     char	       *menu;
 

@@ -25,13 +25,16 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log: $
+ * $Log: Percent.c,v $
+ * Revision 1.1  1997/10/08 04:03:06  rich
+ * Initial revision
+ *
  *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: Percent.c,v 1.1 1997/10/08 04:03:06 rich Exp rich $";
 
 #endif
 
@@ -39,6 +42,7 @@ static char        *rcsid = "$Id: $";
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
 #include <X11/Xmu/Misc.h>
+#include <X11/Xmu/Drawing.h>
 #include <X11/Shell.h>
 #include <X11/CoreP.h>
 #include "XpwInit.h"
@@ -369,7 +373,7 @@ Redisplay(wid, event, region)
     Dimension           h = self->core.height;
     Dimension           w = self->core.width;
     float               pos;
-    int                 width, th, t_width;
+    int                 th, t_width;
 
     if (!XtIsRealized(wid))
 	return;
@@ -474,8 +478,6 @@ static void
 Destroy(w)
 	Widget              w;
 {
-    PercentWidget       self = (PercentWidget) w;
-
     DestroyGCs(w);
 }
 

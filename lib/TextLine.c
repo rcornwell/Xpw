@@ -25,17 +25,21 @@
  * library in commercial applications, or for commercial software distribution.
  *
  *
- * $Log: $
+ * $Log: TextLine.c,v $
+ * Revision 1.1  1997/10/25 22:15:47  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: TextLine.c,v 1.1 1997/10/25 22:15:47 rich Exp rich $";
 
 #endif
 
 #include <stdio.h>
 #include <ctype.h>
+#include <time.h>
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
 #include <X11/Xatom.h>
@@ -229,7 +233,7 @@ static XtResource   resources[] =
      offset(fontset), XtRString, XtDefaultFontSet},
     {XtNeditable, XtCEditable, XtRBoolean, sizeof(Boolean),
      offset(editable), XtRImmediate, (XtPointer) TRUE},
-    {XtNdoArrows, XtCdoArrows, XtRBoolean, sizeof(Boolean),
+    {XtNdoArrows, XtCDoArrows, XtRBoolean, sizeof(Boolean),
      offset(doArrows), XtRImmediate, (XtPointer) TRUE},
     {XtNpassMode, XtCPassMode, XtRBoolean, sizeof(Boolean),
      offset(passmode), XtRImmediate, (XtPointer) FALSE},
@@ -237,7 +241,7 @@ static XtResource   resources[] =
      offset(callbacks), XtRCallback, (XtPointer) NULL},
     {XtNfocusGroup, XtCFocusGroup, XtRWidget, sizeof(Widget),
      offset(focusGroup), XtRImmediate, (XtPointer) NULL},
-    {XtNtraversalOn, XtNtraversalOn, XtRBoolean, sizeof(Boolean),
+    {XtNtraversalOn, XtCTraversalOn, XtRBoolean, sizeof(Boolean),
      offset(traversal), XtRImmediate, (XtPointer) False},
     /* ThreeD resouces */
     threeDresources
@@ -306,7 +310,7 @@ Initialize(junk, new, args, num_args)
 	Cardinal           *num_args;
 {
     TextLineWidget      nself = (TextLineWidget) new;
-    int                 font_ascent = 0, font_descent = 0, x_loc, y_loc;
+    int                 font_ascent = 0, font_descent = 0;
     XFontSetExtents    *ext = XExtentsOfFontSet(nself->text.fontset);
     Dimension           width, height;
     String              str;
@@ -421,7 +425,7 @@ QueryGeometry(w, intended, requested)
 	XtWidgetGeometry   *intended, *requested;
 {
     TextLineWidget      self = (TextLineWidget) w;
-    int                 font_ascent = 0, font_descent = 0, x_loc, y_loc;
+    int                 font_ascent = 0, font_descent = 0;
     XFontSetExtents    *ext = XExtentsOfFontSet(self->text.fontset);
     Dimension           width, height;
     XtGeometryResult    ret_val = XtGeometryYes;
@@ -504,7 +508,7 @@ Redisplay(wid, event, reg)
     Dimension           s = self->text.threeD.shadow_width;
     Dimension           h = self->core.height;
     Dimension           w = self->core.width;
-    int                 width, t_width;
+    int                 t_width;
     String              str;
     int                 len;
     int                 tstart;
@@ -761,8 +765,6 @@ AdjustPoint(self, newpoint)
 	TextLineWidget      self;
 	int                 newpoint;
 {
-    int                 ip = self->text.insert_point;
-
     if (newpoint < 0)
 	newpoint = 0;
 
@@ -783,7 +785,7 @@ GrowBuffer(self, num)
 {
     int                 ip = self->text.insert_point;
     int                 sz = self->text.stringsize;
-    int                 ngap, n;
+    int                 n;
     char               *p, *q;
 
     self->text.string = XtRealloc(self->text.string, sz + num + 1);
@@ -806,8 +808,7 @@ ShrinkBuffer(self, num)
 	int                 num;
 {
     int                 ip = self->text.insert_point;
-    int                 sz = self->text.stringsize;
-    int                 ngap, n;
+    int                 n;
     char               *p, *q;
 
    /* Compute old and new end. */
@@ -907,7 +908,6 @@ DeleteHighlight(self)
 	TextLineWidget      self;
 {
     int                 len;
-    char               *str;
 
     if (self->text.highstart == self->text.highend)
 	return FALSE;
@@ -944,7 +944,6 @@ OffsetToChar(self, offset)
     int                 len, dist;
     int                 cp;
     int                 t_width;
-    int                 c_width;
     int                 i;
 
    /* Adjust offset for margin and shadow */
@@ -994,18 +993,12 @@ CharToOffset(self, pos)
 	TextLineWidget      self;
 	int                 pos;
 {
-    int                 ip = self->text.insert_point;
-    String              str = self->text.string;
-    int                 len;
-    int                 t_width;
-
     if (pos < 0)
 	pos = 0;
     if (pos > self->text.stringsize)
 	pos = self->text.stringsize + 1;
    /* Compute length of part before insert pointer */
-    t_width = TextLen(self, str, pos);
-    return t_width - self->text.coffset;
+    return TextLen(self, self->text.string, pos) - self->text.coffset;
 
 }
 
@@ -1387,11 +1380,7 @@ InsertChar(w, event, params, num_params)
     int                 len, i;
     char                buf[10], *p;
     int                 ip = self->text.insert_point;
-    int                 need_redraw = FALSE;
     int                 t_width;
-    GC                  gc, rgc;
-    Display            *dpy = XtDisplayOfObject(w);
-    Window              win = XtWindowOfObject(w);
 
     _XpwDisArmClue(w);
    /* Check if editable */
@@ -1435,7 +1424,6 @@ DeleteChar(w, event, params, num_params)
 	Cardinal           *num_params;
 {
     TextLineWidget      self = (TextLineWidget) w;
-    int                 t_width;
     String              str;
 
     _XpwDisArmClue(w);
@@ -1476,8 +1464,6 @@ DeleteNextChar(w, event, params, num_params)
 	Cardinal           *num_params;
 {
     TextLineWidget      self = (TextLineWidget) w;
-    int                 t_width;
-    String              str;
 
     _XpwDisArmClue(w);
    /* Check if editable */
@@ -2023,8 +2009,6 @@ XpwTextLineSetInsertionPosition(w, pos)
 	int                 pos;
 {
     TextLineWidget      self = (TextLineWidget) w;
-    int                 len;
-    char               *p;
 
     ClearHighlight(self);
 
@@ -2046,12 +2030,8 @@ XpwTextLineGetString(w)
 	Widget              w;
 {
     TextLineWidget      self = (TextLineWidget) w;
-    char               *str;
-    int                 len;
 
-   /* Allocate Space */
-    str = XtNewString(self->text.string);
-    return str;
+    return XtNewString(self->text.string);
 }
 
 /*
@@ -2063,7 +2043,6 @@ XpwTextLineSetString(w, str)
 	char               *str;
 {
     TextLineWidget      self = (TextLineWidget) w;
-    int                 len;
 
     if (str == NULL)
 	return;

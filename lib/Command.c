@@ -25,12 +25,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: Command.c,v $
+ * Revision 1.1  1997/10/04 05:03:47  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id$";
+static char        *rcsid = "$Id: Command.c,v 1.1 1997/10/04 05:03:47 rich Exp rich $";
 
 #endif
 
@@ -212,7 +215,6 @@ SetValues(current, request, new, args, num_args)
     CommandWidget       self = (CommandWidget) new;
     CommandWidget       old_self = (CommandWidget) current;
     Boolean             ret_val = FALSE;
-    XGCValues           values;
 
     if (_XpwLabelSetValues(current, new, &(old_self->command.label),
 		      &(self->command.label), new->core.background_pixel,

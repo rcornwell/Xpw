@@ -26,6 +26,10 @@
  *
  *
  * $Log: TextLine.c,v $
+ * Revision 1.3  1997/11/28 19:31:07  rich
+ * Fixed redisplay bug on suns.
+ * Made sure all GC's use a clipmask.
+ *
  * Revision 1.2  1997/11/01 06:39:09  rich
  * Removed unused variables.
  *
@@ -36,7 +40,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: TextLine.c,v 1.2 1997/11/01 06:39:09 rich Beta rich $";
+static char        *rcsid = "$Id: TextLine.c,v 1.3 1997/11/28 19:31:07 rich Beta rich $";
 
 #endif
 
@@ -72,7 +76,7 @@ static void         DrawText(TextLineWidget /*self */ , Display * /*dpy */ ,
 				 Window /*win */ , GC /*gc */ ,
 				 int /*x_loc */ , int /*y_loc */ ,
 				 String /*str */ , int /*len */ );
-static int          TextLen(TextLineWidget /*self */ , String /*str */ ,
+static Dimension    TextLen(TextLineWidget /*self */ , String /*str */ ,
 				 int /*len */ );
 static void         AdjustPoint(TextLineWidget /*self */ , int /*newpoint */ );
 static void         GrowBuffer(TextLineWidget /*self */ , int /*num */ );
@@ -336,7 +340,6 @@ Initialize(junk, new, args, num_args)
 
     CreateGCs(new);
     _XpwThreeDInit(new, &nself->text.threeD, nself->core.background_pixel);
-    width = 0;
 
     width = nself->text.left_margin + nself->text.right_margin;
     if (nself->text.international == True) {
@@ -435,8 +438,6 @@ QueryGeometry(w, intended, requested)
     XtGeometryMask      mode = intended->request_mode;
     String              str;
     int                 len;
-
-    width = 0;
 
     width = self->text.left_margin + self->text.right_margin;
     if (self->text.international == True) {
@@ -663,7 +664,7 @@ DrawText(self, dpy, win, gc, x_loc, y_loc, str, len)
     }
 }
 
-static int 
+static Dimension 
 TextLen(self, str, len)
 	TextLineWidget      self;
 	String              str;

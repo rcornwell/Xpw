@@ -25,13 +25,16 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log: $
+ * $Log: Stack.c,v $
+ * Revision 1.1  1997/10/12 05:17:24  rich
+ * Initial revision
+ *
  *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: Stack.c,v 1.1 1997/10/12 05:17:24 rich Exp rich $";
 
 #endif
 
@@ -202,7 +205,7 @@ Realize(w, valueMask, attributes)
     (*SuperClass->core_class.realize) (w, valueMask, attributes);
 
     ForAllChildren(self, childP)
-	XtIsRealized(*childP);
+	XtRealizeWidget(*childP);
 
    /* Set children to there prefered sizes */
     SetChildrenSizes(self);
@@ -379,7 +382,6 @@ static void
 DeleteChild(w)
 	Widget              w;
 {
-    StackConstraintsPart *child = ChildInfo(w);
     StackWidget         self = (StackWidget) XtParent(w);
     int                 redo = FALSE;
 
@@ -686,7 +688,6 @@ XpwStackShowChild(w, child)
 	int                 child;
 {
     StackWidget         self = (StackWidget) w;
-    Widget             *childP;
 
     if (child < 0 || child > self->stack.num_children)
 	return;

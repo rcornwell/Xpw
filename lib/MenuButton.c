@@ -26,12 +26,15 @@
  * library in commercial applications, or for commercial software distribution.
  *
  *
- * $Log:$
+ * $Log: MenuButton.c,v $
+ * Revision 1.1  1997/10/04 05:06:55  rich
+ * Initial revision
+ *
  *
  */
 
 #ifdef lint
-static char        *rcsid = "$Id$";
+static char        *rcsid = "$Id: MenuButton.c,v 1.1 1997/10/04 05:06:55 rich Exp rich $";
 
 #endif
 
@@ -81,9 +84,10 @@ static XtActionsRec actionsList[] =
 };
 
 static char         defaultTranslations[] =
-             "<BtnUp>:	notify() unhighlight()\n\
-           <Btn1Down>:	highlight() PopupMenu()\n\
- 	<LeaveWindow>:  unhighlight()\n";
+       "<EnterWindow>:	highlight()\n\
+              <BtnUp>:	notify() unset()\n\
+           <Btn1Down>:	set() PopupMenu()\n\
+ 	<LeaveWindow>:  unhighlight() reset()\n";
 
 #define superclass (&commandClassRec)
 MenuButtonClassRec  menubuttonClassRec =

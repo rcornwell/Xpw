@@ -30,9 +30,12 @@
 /* 
  * DialogP.h - Private definitions for Dialog object
  *
- * $Id: $
+ * $Id: DialogP.h,v 1.1 1997/11/28 19:56:42 rich Exp rich $
  *
- * $Log: $
+ * $Log: DialogP.h,v $
+ * Revision 1.1  1997/11/28 19:56:42  rich
+ * Initial revision
+ *
  * 
  */
 
@@ -79,8 +82,10 @@ typedef struct _DialogConstraintsRec {
 typedef struct {
    /* resources */
     Pixmap		icon;		/* Icon to display in label */
+    Pixmap		icon_mask;	/* Mask for icon */
     String		message;	/* Message to display in label */
     int			defbut;		/* Defualt button to highlight */
+    DialogType		dialog_type;	/* Type of dialog popup */
     Boolean		minimize;	/* Minimize buttons */
     Boolean		autoUnmanage;	/* Unmanage when a button is pressed */
     Dimension		active_border;	/* How a border to show around active

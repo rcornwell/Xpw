@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id:  $
+ * $Id: Dialog.h,v 1.1 1997/11/28 19:56:42 rich Exp rich $
  *
- * $Log:  $
+ * $Log: Dialog.h,v $
+ * Revision 1.1  1997/11/28 19:56:42  rich
+ * Initial revision
+ *
  *
  */
 
@@ -54,9 +57,11 @@
  * cancelLabelString Label              String		NULL
  * cancelCallback    Callback           Callback        NULL
  * defaultButton     DefaultButton      ButtonType      XpwDialog_Ok_Button
+ * dialogType        DialogType         DialogType      XpwDialog_Modal
  * helpLabelString   Label              String		NULL
  * helpCallback      Callback           Callback        NULL
  * icon	             Bitmap		Bitmap		None
+ * iconMask          Bitmap		Bitmap		None
  * justify           Justify            Justify         Left
  * message           Label              String          None
  * minimizeButtons   MinimizeButtons    Boolean		True
@@ -100,6 +105,10 @@ typedef struct _DialogRec *DialogWidget;
 
 extern WidgetClass  dialogWidgetClass;
 
+typedef enum {
+    XpwDialog_Modeless, XpwDialog_Modal, XpwDialog_Dialog
+} DialogType;
+
 #define XtNicon		"icon"
 #define XtNmessage	"message"
 #define XtNokCallback	"okCallback"
@@ -107,6 +116,9 @@ extern WidgetClass  dialogWidgetClass;
 #define XtNcancelCallback "cancelCallback"
 #endif
 #define XtNhelpCallback	"helpCallback"
+#define XtNdialogType	"dialogType"
+#define XtCDialogType	"DialogType"
+#define XtRDialogType	"DialogType"
 
 #define XtNdefaultButton "defaultButton"
 #define XtCDefaultButton "DefaultButton"

@@ -1,4 +1,4 @@
-XCOMM $Id: $
+XCOMM $Id: Imakefile,v 1.1 1997/12/16 05:48:24 rich Exp rich $
 
 DEPLIBS = $(DEPXPWLIB) $(DEPXPMLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXLIB)
 LOCAL_LIBRARIES = -lXpw $(XMULIB) $(XTOOLLIB) $(XLIB)
@@ -12,6 +12,10 @@ OBJS= xcdplay.o mainwindow.o player.o bitmaps.o playlist.o \
 	tracklist.o
 
 PROGRAMS = xcdplay
+
+#undef CplusplusLinkRule
+#define CplusplusLinkRule(program,options,objects,libraries) \
+LinkRule(program, options, objects, libraries)
 
 ComplexCplusplusProgramTarget(xcdplay)
 

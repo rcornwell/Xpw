@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Select.c,v $
+ * Revision 1.2  1997/10/05 02:25:17  rich
+ * Make sure ident line is in object file.
+ *
  * Revision 1.1  1997/10/04 22:13:23  rich
  * Initial revision
  *
@@ -33,7 +36,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Select.c,v 1.1 1997/10/04 22:13:23 rich Exp rich $";
+static char        *rcsid = "$Id: Select.c,v 1.2 1997/10/05 02:25:17 rich Exp $";
 
 #endif
 
@@ -231,7 +234,7 @@ Initialize(request, new, args, num_args)
 	Cardinal           *num_args;
 {
     SelectWidget        self = (SelectWidget) new;
-    Screen             *scr = XtScreenOfObject(new);
+    Dimension		h, w;
 
     _XpwLabelInit(new, &(self->select.label), self->core.background_pixel,
 		  self->core.depth);
@@ -245,13 +248,16 @@ Initialize(request, new, args, num_args)
     CreateGCs(new);
 
    /* Compute default size */
-    _XpwLabelDefaultSize(new, &(self->select.label), &(self->core.width),
-					 &(self->core.height));
-    self->core.width += self->select.switchSize;
-    if (self->core.height < self->select.switchSize)
-	self->core.height = self->select.switchSize;
-    self->core.width += 2 * self->select.threeD.shadow_width;
-    self->core.height += 2 * self->select.threeD.shadow_width;
+    _XpwLabelDefaultSize(new, &(self->select.label), &w, &h);
+    w += self->select.switchSize;
+    if (h < self->select.switchSize)
+	h = self->select.switchSize;
+    w += 2 * self->select.threeD.shadow_width;
+    h += 2 * self->select.threeD.shadow_width;
+    if (self->core.width == 0)
+        self->core.width = w;
+    if (self->core.height == 0)
+        self->core.height = h;
 
     self->select.radio_group = NULL;
 
@@ -356,7 +362,7 @@ QueryGeometry(w, intended, return_val)
 	return_val->height = height;
 	ret_val = XtGeometryAlmost;
     }
-    if (ret_val == XtGeometryAlmost) {
+    if (ret_val != XtGeometryAlmost) {
 	mode = return_val->request_mode;
 
 	if (((mode & CWWidth) && (width == self->core.width)) &&
@@ -380,7 +386,6 @@ Redisplay(w, event, region)
     SelectWidget        self = (SelectWidget) w;
     Display            *dpy = XtDisplayOfObject(w);
     Window              win = XtWindowOfObject(w);
-    GC                  gc;
     int                 x_loc;
     Dimension           s = self->select.threeD.shadow_width;
 
@@ -433,8 +438,6 @@ DrawSwitch(w)
 {
     GC                  gc;
     SelectWidget        self = (SelectWidget) w;
-    Display            *dpy = XtDisplayOfObject(w);
-    Window              win = XtWindowOfObject(w);
     int                 width, x_loc, y_loc;
     Dimension           s = self->select.threeD.shadow_width;
 
@@ -453,13 +456,13 @@ DrawSwitch(w)
    /* Now Draw the bitmaps */
     width = self->select.switchSize;
    /* First figure out where to put it! */
-    y_loc = (self->core.height / 2 - self->select.switchSize / 2);
+    y_loc = (self->core.height / 2) - (self->select.switchSize / 2);
 
    /* Compute X cord first. */
     if (self->select.rightbutton)
-	x_loc = self->core.width - width - 2 * s;
+	x_loc = (int)(self->core.width) - width - 2 * s;
     else
-	x_loc = 2 * s;
+	x_loc =  2 * s;
 
     _XpwThreeDDrawShape(w, NULL, NULL, &(self->select.threeS), gc,
 		    self->select.switchShape, x_loc, y_loc, width, width,

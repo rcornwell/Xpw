@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: RowCol.c,v $
+ * Revision 1.5  1997/12/06 04:14:50  rich
+ * Make sure window resizes when larger children are added.
+ *
  * Revision 1.4  1997/11/28 19:31:07  rich
  * Insert (void) to make compiler happy.
  * Added Class initializer for RowColClass.
@@ -46,7 +49,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: RowCol.c,v 1.4 1997/11/28 19:31:07 rich Exp rich $";
+static char        *rcsid = "$Id: RowCol.c,v 1.5 1997/12/06 04:14:50 rich Exp rich $";
 
 #endif
 
@@ -259,6 +262,10 @@ Initialize(request, new, args, num_args)
 
     self->rowcol.recursively_called = False;
     self->rowcol.num_children = 0;
+    if (self->core.width == 0)
+        self->core.width = 1;
+    if (self->core.height == 0)
+        self->core.height = 1;
 }
 
 /*
@@ -359,6 +366,11 @@ QueryGeometry(w, intended, return_val)
 	height = off_size;
 	width = size;
     }
+
+    if (width == 0)
+        width = 1;
+    if (height == 0)
+        height = 1;
 
     if (((mode & CWWidth) && (intended->width != width)) ||
 	!(mode & CWWidth)) {
@@ -517,21 +529,13 @@ ChangeManaged(w)
 	Widget              w;
 {
     RowColWidget        self = (RowColWidget) w;
-    Boolean             vert = IsVert(self);
-    Dimension           size, nsize;
+    Dimension           size;
     Widget             *childP;
 
    /* Don't allow us to be called recursivly */
     if (self->rowcol.recursively_called++)
 	return;
 
-   /* If other dimension is zero, set to widest */
-    if ((size = ChildSize(w, !vert)) == 0) {
-	size = 1;
-	ForAllChildren(self, childP)
-	    if (XtIsManaged(*childP) && (ChildSize(*childP, !vert) > size))
-	         size = ChildSize(*childP, !vert);
-    }
    /* Compute number of managed children */
     self->rowcol.num_children = 0;
     ForAllChildren(self, childP) {
@@ -540,9 +544,7 @@ ChangeManaged(w)
     }
 
    /* Set children to prefered sizes */
-    nsize = SetChildrenSizes(self, 0);
-    if (nsize != size && nsize != 0)
-	size = nsize;
+    size = SetChildrenSizes(self, 0);
 
    /* See if we will fit, but don't request parent to resize */
     ResizeRowCol(self, size, (XtGeometryResult *) NULL, (Dimension *) NULL,
@@ -626,15 +628,12 @@ MoveChildren(self)
 	if (!XtIsManaged(*childP))
 	    continue;
 
-	if (vert) {
-	    XtMoveWidget(*childP, (Position) 0, child->location);
-	    XtResizeWidget(*childP, self->core.width,
-			   (Dimension) child->size, 0);
-	} else {
-	    XtMoveWidget(*childP, child->location, (Position) 0);
-	    XtResizeWidget(*childP, (Dimension) child->size,
-			   self->core.height, 0);
-	}
+	if (vert) 
+	    XtConfigureWidget(*childP, (Position) 0, child->location,
+	    		self->core.width, (Dimension) child->size, 0);
+	else
+	    XtConfigureWidget(*childP, child->location, (Position) 0,
+	    		(Dimension) child->size, self->core.height, 0);
     }
 }
 
@@ -820,7 +819,6 @@ ResizeRowCol(self, off_size, result_ret, on_size_ret, off_size_ret)
     Dimension           new_size = 0;
     Widget             *childP;
     XtWidgetGeometry    request, reply;
-    int                 resizable = 0;
 
     request.request_mode = CWWidth | CWHeight;
 
@@ -830,21 +828,12 @@ ResizeRowCol(self, off_size, result_ret, on_size_ret, off_size_ret)
 	if (!XtIsManaged(*childP))
 	    continue;
 	new_size += child->size;
-	if (child->skip_adjust ||
-	    (child->resize_to_pref && child->size == child->wp_size))
-	    continue;
-	resizable++;
-
     }
 
     new_size += (self->rowcol.num_children - 1) * self->rowcol.spacing;
 
     if (new_size < 1)
 	new_size = 1;
-
-   /* If we have resizables, don't allow us to shrink */
-    if (resizable != 0 && new_size < old_size)
-	return;
 
     if (IsVert(self)) {
 	request.width = off_size;

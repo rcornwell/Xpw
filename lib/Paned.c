@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Paned.c,v $
+ * Revision 1.3  1997/12/06 04:14:50  rich
+ * Make sure window resizes when larger children are added.
+ *
  * Revision 1.2  1997/11/01 06:39:05  rich
  * Removed unused variables.
  *
@@ -37,7 +40,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Paned.c,v 1.2 1997/11/01 06:39:05 rich Beta rich $";
+static char        *rcsid = "$Id: Paned.c,v 1.3 1997/12/06 04:14:50 rich Exp rich $";
 
 #endif
 
@@ -291,6 +294,10 @@ Initialize(request, new, args, num_args)
     self->paned.recursively_called = False;
     self->paned.num_children = 0;
     CreateGC(self);
+    if (self->core.width == 0)
+	self->core.width = 1;
+    if (self->core.height == 0)
+	self->core.height = 1;
 }
 
 /*
@@ -398,7 +405,7 @@ QueryGeometry(w, intended, return_val)
     return_val->request_mode = 0;
 
    /* Set children to there prefered sizes */
-    off_size = SetChildrenSizes(self, 0 /*ChildSize(self, !IsVert(self)) */ );
+    off_size = SetChildrenSizes(self, 0);
 
     if (off_size == 0)
 	off_size = ChildSize(self, !IsVert(self));
@@ -422,6 +429,11 @@ QueryGeometry(w, intended, return_val)
 	height = off_size;
 	width = size;
     }
+
+    if (width == 0)
+	width = 1;
+    if (height == 0)
+	height = 1;
 
     if (((mode & CWWidth) && (intended->width != width)) ||
 	!(mode & CWWidth)) {
@@ -558,7 +570,7 @@ Resize(w)
     PanedWidget         self = (PanedWidget) w;
 
    /* Set children to there prefered sizes */
-    SetChildrenSizes(self, ChildSize(w, !IsVert(self)));
+    (void) SetChildrenSizes(self, ChildSize(w, !IsVert(self)));
    /* Move children to there new places */
     StartUserAdjust(self);
     PositionChildren(self);
@@ -601,8 +613,7 @@ ChangeManaged(w)
 	Widget              w;
 {
     PanedWidget         self = (PanedWidget) w;
-    Boolean             vert = IsVert(self);
-    Dimension           size, nsize;
+    Dimension           size;
     Widget             *childP;
     int			i;
 
@@ -610,16 +621,6 @@ ChangeManaged(w)
     if (self->paned.recursively_called++)
 	return;
 
-   /* If other dimension is zero, set to widest */
-    if ((size = ChildSize(w, !vert)) == 0) {
-	size = 1;
-	ForAllChildren(self, childP) {
-	    if (IsGrip(*childP))
-		continue;
-	    if (XtIsManaged(*childP) && (ChildSize(*childP, !vert) > size))
-		size = ChildSize(*childP, !vert);
-	}
-    }
    /* Compute number of managed children */
     self->paned.num_children = 0;
     self->paned.num_resize = 0;
@@ -635,9 +636,8 @@ ChangeManaged(w)
     }
 
    /* Set children to prefered sizes */
-    nsize = SetChildrenSizes(self, 0);
-    if (nsize != size && nsize != 0)
-	size = nsize;
+    size = SetChildrenSizes(self, 0);
+    
     StartUserAdjust(self);
    /* Attempt to resize parent to fit us */
     ResizePaned(self, size, (XtGeometryResult *) NULL, (Dimension *) NULL,
@@ -775,18 +775,16 @@ MoveChildren(self)
 	    continue;
 
 	if (vert) {
-	    XtMoveWidget(*childP, (Position) 0, child->location);
-	    XtResizeWidget(*childP, self->core.width,
-			   (Dimension) child->size, 0);
+	    XtConfigureWidget(*childP, (Position) 0, child->location,
+	    		self->core.width, (Dimension) child->size, 0);
 	    if (child->grip) {
 		changes.x = (self->core.width * self->paned.griploc) / 100 -
 		    child->grip->core.width / 2;
 		changes.y = (child->location + child->size) - child->grip->core.height / 2;
 	    }
 	} else {
-	    XtMoveWidget(*childP, child->location, (Position) 0);
-	    XtResizeWidget(*childP, (Dimension) child->size,
-			   self->core.height, 0);
+	    XtConfigureWidget(*childP, child->location, (Position) 0,
+	    			(Dimension) child->size, self->core.height, 0);
 	    if (child->grip) {
 		changes.x = (child->location + child->size) - child->grip->core.width / 2;
 		changes.y = (self->core.height * self->paned.griploc) / 100 -
@@ -978,7 +976,6 @@ ResizePaned(self, off_size, result_ret, on_size_ret, off_size_ret)
     Dimension           new_size = 0;
     Widget             *childP;
     XtWidgetGeometry    request, reply;
-    int                 resizable = 0;
 
     request.request_mode = CWWidth | CWHeight;
 
@@ -988,21 +985,12 @@ ResizePaned(self, off_size, result_ret, on_size_ret, off_size_ret)
 	if (!XtIsManaged(*childP) || IsGrip(*childP))
 	    continue;
 	new_size += child->new_size;
-	if (child->skip_adjust || child->user_adjusted ||
-	    (child->resize_to_pref && child->new_size == child->wp_size))
-	    continue;
-	resizable++;
-
     }
 
     new_size += (self->paned.num_children - 1) * self->paned.spacing;
 
     if (new_size < 1)
 	new_size = 1;
-
-   /* If we have resizables, don't allow us to shrink */
-    if (resizable != 0 && new_size < old_size)
-	return;
 
     if (IsVert(self)) {
 	request.width = off_size;

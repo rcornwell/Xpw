@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: Scroller.h,v 1.1 1997/10/04 05:09:08 rich Exp rich $
+ * $Id: Scroller.h,v 1.2 1997/10/08 04:12:15 rich Exp rich $
  *
  * $Log: Scroller.h,v $
+ * Revision 1.2  1997/10/08 04:12:15  rich
+ * Make sure XtNposition is not defined multiple times.
+ *
  * Revision 1.1  1997/10/04 05:09:08  rich
  * Initial revision
  *
@@ -43,13 +46,11 @@
 #include "threeDdraw.h"
 
 /* Scroller Resources:
-/* Arrow Resources:
  * 
  * Name                Class              RepType         Default Value
  * ----                -----              -------         -------------
  * callback            Callback           Pointer         NULL
  * foreground          Foreground         Pixel           XtDefaultForeground
- * thumb               Foreground         Pixel           XtDefaultBackground
  * useArrows           UseArrows          Boolean         True
  * minimumThumb        MinimumThumb       Int             7
  * shown               Shown              Int     	  0
@@ -93,8 +94,6 @@
 #define XtNminimumThumb "minimumThumb"
 
 #define XtCShown "Shown"
-#define XtCTopOfThumb "TopOfThumb"
-#define XtNtopOfThumb "topOfThumb"
 
 #define XtNuseArrows	"useArrows"
 #define XtCUseArrows	"UseArrows"

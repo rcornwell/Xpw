@@ -26,9 +26,12 @@
  */
 
 /*
- * $Id: labelP.h,v 1.1 1997/10/12 05:20:34 rich Exp rich $
+ * $Id: labelP.h,v 1.2 1997/11/01 06:39:10 rich Beta rich $
  *
  * $Log: labelP.h,v $
+ * Revision 1.2  1997/11/01 06:39:10  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/12 05:20:34  rich
  * Initial revision
  *
@@ -54,7 +57,9 @@ typedef struct {
 					 * percentage of the font height of the
 					 * label. */
     Pixmap		bitmap;		/* Main bitmap */
+    Pixmap		bitmap_mask;	/* Main bitmap mask */
     Pixmap              left_bitmap, right_bitmap;	/* bitmaps to show. */
+    Pixmap              left_bitmap_mask, right_bitmap_mask; /* masks */
     Dimension           left_margin, right_margin;	/* left and right margins. */
     Pixel               foreground;	/* foreground color. */
     XFontStruct        *font;		/* The font to show label in. */
@@ -68,10 +73,13 @@ typedef struct {
 
     Dimension           bitmap_width;	/* size of each bitmap. */
     Dimension           bitmap_height;
+    Dimension           bitmap_depth;	/* Depth of main image */
     Dimension           left_bitmap_width;
     Dimension           left_bitmap_height;
+    Dimension           left_bitmap_depth;
     Dimension           right_bitmap_width;
     Dimension           right_bitmap_height;
+    Dimension           right_bitmap_depth;
     Dimension		label_width;
     Dimension		label_height;
 
@@ -87,14 +95,20 @@ typedef struct {
      labelOffset(label), XtRString, NULL},                              \
     {XtNbitmap, XtCBitmap, XtRBitmap, sizeof(Pixmap),                   \
      labelOffset(bitmap), XtRImmediate, (XtPointer)None},               \
+    {XtNbitmapMask, XtCBitmapMask, XtRBitmap, sizeof(Pixmap),           \
+     labelOffset(bitmap_mask), XtRImmediate, (XtPointer)None},          \
     {XtNvertSpace, XtCVertSpace, XtRInt, sizeof(int),                   \
      labelOffset(vert_space), XtRImmediate, (XtPointer) 25},            \
     {XtNleftBitmap, XtCLeftBitmap, XtRBitmap, sizeof(Pixmap),           \
      labelOffset(left_bitmap), XtRImmediate, (XtPointer) None},         \
+    {XtNleftBitmapMask, XtCLeftBitmapMask, XtRBitmap, sizeof(Pixmap),   \
+     labelOffset(left_bitmap_mask), XtRImmediate, (XtPointer) None},    \
     {XtNjustify, XtCJustify, XtRJustify, sizeof(XtJustify),             \
      labelOffset(justify), XtRImmediate, (XtPointer) XtJustifyLeft},    \
     {XtNrightBitmap, XtCRightBitmap, XtRBitmap, sizeof(Pixmap),         \
      labelOffset(right_bitmap), XtRImmediate, (XtPointer) None},        \
+    {XtNrightBitmapMask, XtCRightBitmapMask, XtRBitmap, sizeof(Pixmap), \
+     labelOffset(right_bitmap_mask), XtRImmediate, (XtPointer) None},    \
     {XtNleftMargin, XtCHorizontalMargins, XtRDimension, sizeof(Dimension), \
      labelOffset(left_margin), XtRImmediate, (XtPointer) 4},               \
     {XtNrightMargin, XtCHorizontalMargins, XtRDimension, sizeof(Dimension),\

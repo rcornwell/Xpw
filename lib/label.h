@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: label.h,v 1.1 1997/10/12 05:20:24 rich Beta rich $
  *
- * $Log:$
+ * $Log: label.h,v $
+ * Revision 1.1  1997/10/12 05:20:24  rich
+ * Initial revision
+ *
  *
  */
 
@@ -56,9 +59,12 @@
  * label             Label              String          Name of entry
  * justify           Justify            XtJustify       Left
  * bitmap            Bitmap             Pixmap          None
+ * bitmapMask        BitmapMask         Pixmap          None
  * leftBitmap        LeftBitmap         Pixmap          None
+ * leftBitmapMask    LeftBitmapMask     Pixmap          None
  * leftMargin        HorizontalMargins  Dimension       4
  * rightBitmap       RightBitmap        Pixmap          None
+ * rightBitmapMask   RightBitmapMask    Pixmap          None
  * rightMargin       HorizontalMargins  Dimension       4
  * vertSpace         VertSpace          int             25
  * 
@@ -78,6 +84,9 @@
 #define XtNrightBitmap "rightBitmap"
 #define XtNrightMargin "rightMargin"
 #define XtNvertSpace   "vertSpace"
+#define XtNbitmapMask  "bitmapMask"
+#define XtNrightBitmapMask  "rightBitmapMask"
+#define XtNleftBitmapMask  "leftBitmapMask"
 
 #ifndef XtNfontSet
 #define XtNfontSet		"fontSet"
@@ -88,8 +97,11 @@
 #endif
 
 #define XtCLeftBitmap "LeftBitmap"
+#define XtCLeftBitmapMask "LeftBitmapMask"
 #define XtCHorizontalMargins "HorizontalMargins"
 #define XtCRightBitmap "RightBitmap"
+#define XtCRightBitmapMask "RightBitmapMask"
 #define XtCVertSpace   "VertSpace"
+#define XtCBitmapMask  "BitmapMask"
 
 #endif /* _label_h */

@@ -24,6 +24,10 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: label.c,v $
+ * Revision 1.3  1997/11/28 19:31:07  rich
+ * Make sure we allocate a copy of the string before we use it.
+ * Make sure text is centered in window.
+ *
  * Revision 1.2  1997/11/01 06:39:10  rich
  * Fixed sensitivity logic.
  *
@@ -34,7 +38,7 @@
  */
 
 #ifndef lint
-static char         rcsid[] = "$Id: label.c,v 1.2 1997/11/01 06:39:10 rich Beta rich $";
+static char         rcsid[] = "$Id: label.c,v 1.3 1997/11/28 19:31:07 rich Beta rich $";
 
 #endif
 
@@ -50,7 +54,7 @@ static char         rcsid[] = "$Id: label.c,v 1.2 1997/11/01 06:39:10 rich Beta 
 /* Private functions */
 static void         GetBitmapInfo(Widget /*w */ , Pixmap /*bitmap */ ,
 		       Dimension * /*width */ , Dimension * /*height */ ,
-				  char * /*what */ );
+		       Dimension * /*depth */ , char * /*what */ );
 static void         GetTextInfo(Widget /*w */ , _XpwLabel * /*label */ );
 static void         CreateGCs(Widget /*w */ , _XpwLabel * /*label */ ,
 			      Pixel /*bg */ , int /*depth */ );
@@ -93,11 +97,11 @@ _XpwLabelInit(new, label, bg, depth)
     GetTextInfo(new, label);
 
     GetBitmapInfo(new, label->bitmap, &label->bitmap_width,
-		  &label->bitmap_height, "");
+		  &label->bitmap_height, &label->bitmap_depth, "");
     GetBitmapInfo(new, label->left_bitmap, &label->left_bitmap_width,
-		  &label->left_bitmap_height, "Left");
+		  &label->left_bitmap_height, &label->left_bitmap_depth, "Left");
     GetBitmapInfo(new, label->right_bitmap, &label->right_bitmap_width,
-		  &label->right_bitmap_height, "Right");
+		  &label->right_bitmap_height, &label->right_bitmap_depth, "Right");
 }
 
 /*  
@@ -125,17 +129,17 @@ _XpwLabelSetValues(current, new, old_label, label, bg, depth)
     }
     if (label->bitmap != old_label->bitmap) {
 	GetBitmapInfo(new, label->bitmap, &label->bitmap_width,
-		      &label->bitmap_height, "");
+		      &label->bitmap_height, &label->bitmap_depth, "");
 	ret_val = TRUE;
     }
     if (label->left_bitmap != old_label->left_bitmap) {
 	GetBitmapInfo(new, label->left_bitmap, &label->left_bitmap_width,
-		      &label->left_bitmap_height, "Left");
+		      &label->left_bitmap_height, &label->left_bitmap_depth, "Left");
 	ret_val = TRUE;
     }
     if (label->right_bitmap != old_label->right_bitmap) {
 	GetBitmapInfo(new, label->right_bitmap, &label->right_bitmap_width,
-		      &label->right_bitmap_height, "Right");
+		      &label->right_bitmap_height, &label->right_bitmap_depth, "Right");
 	ret_val = TRUE;
     }
     if (((old_label->font != label->font) &&
@@ -245,9 +249,21 @@ _XpwLabelDraw(w, label, event, region, x, y, wi, hi, dobg)
 	    if (dobg)
 		XClearArea(dpy, win, x_loc, y_loc, label->bitmap_width,
 			   label->bitmap_height, FALSE);
-	    XCopyPlane(dpy, label->bitmap, win, gc, 0, 0,
+	    if (label->bitmap_mask != (Pixmap)NULL) {
+		XSetClipOrigin(dpy, gc, x_loc, y_loc);
+		XSetClipMask(dpy, gc, label->bitmap_mask);
+	    }
+	    if (label->bitmap_depth > 1)
+	        XCopyArea(dpy, label->bitmap, win, gc, 0, 0,
+		       label->bitmap_width, label->bitmap_height,
+		       x_loc, y_loc);
+	    else
+	        XCopyPlane(dpy, label->bitmap, win, gc, 0, 0,
 		       label->bitmap_width, label->bitmap_height,
 		       x_loc, y_loc, 1);
+	/* Clear mask so other images get drawn correctly */
+	    if (label->bitmap_mask)
+		XSetClipMask(dpy, gc, None);
 	}
     } else {
 	if (label->label != NULL) {
@@ -327,9 +343,20 @@ _XpwLabelDraw(w, label, event, region, x, y, wi, hi, dobg)
 	    if (dobg)
 		XClearArea(dpy, win, x_loc, y_loc, label->left_bitmap_width,
 			   label->left_bitmap_height, FALSE);
-	    XCopyPlane(dpy, label->left_bitmap, win, gc, 0, 0,
+	    if (label->left_bitmap_mask != (Pixmap)NULL) {
+		XSetClipOrigin(dpy, gc, x_loc, y_loc);
+		XSetClipMask(dpy, gc, label->left_bitmap_mask);
+	    }
+	    if (label->left_bitmap_depth > 1)
+	        XCopyArea(dpy, label->left_bitmap, win, gc, 0, 0,
+		       label->left_bitmap_width,
+		       label->left_bitmap_height, x_loc, y_loc);
+	    else
+	        XCopyPlane(dpy, label->left_bitmap, win, gc, 0, 0,
 		       label->left_bitmap_width,
 		       label->left_bitmap_height, x_loc, y_loc, 1);
+	    if (label->left_bitmap_mask)
+		XSetClipMask(dpy, gc, None);
 	}
     }
 /*
@@ -348,9 +375,20 @@ _XpwLabelDraw(w, label, event, region, x, y, wi, hi, dobg)
 	    if (dobg)
 		XClearArea(dpy, win, x_loc, y_loc, label->right_bitmap_width,
 			   label->right_bitmap_height, FALSE);
-	    XCopyPlane(dpy, label->right_bitmap, win, gc, 0, 0,
+	    if (label->right_bitmap_mask != (Pixmap)NULL) {
+		XSetClipOrigin(dpy, gc, x_loc, y_loc);
+		XSetClipMask(dpy, gc, label->right_bitmap_mask);
+	    }
+	    if (label->right_bitmap_depth > 1)
+	        XCopyArea(dpy, label->right_bitmap, win, gc, 0, 0,
+		       label->right_bitmap_width,
+		       label->right_bitmap_height, x_loc, y_loc);
+	    else
+	        XCopyPlane(dpy, label->right_bitmap, win, gc, 0, 0,
 		       label->right_bitmap_width,
 		       label->right_bitmap_height, x_loc, y_loc, 1);
+	    if (label->right_bitmap_mask)
+		XSetClipMask(dpy, gc, None);
 	}
     }
 }
@@ -380,14 +418,15 @@ _XpwLabelDestroy(w, label)
  */
 
 static void
-GetBitmapInfo(wid, bitmap, width, height, what)
+GetBitmapInfo(wid, bitmap, width, height, depth, what)
 	Widget              wid;
 	Pixmap              bitmap;
 	Dimension          *width;
 	Dimension          *height;
+	Dimension          *depth;
 	char               *what;
 {
-    unsigned int        depth, bw;
+    unsigned int        d, bw;
     Window              root;
     int                 x, y;
     unsigned int        w, h;
@@ -396,7 +435,7 @@ GetBitmapInfo(wid, bitmap, width, height, what)
     if (bitmap != None) {
 	if (!XGetGeometry(XtDisplayOfObject(wid),
 			  bitmap, &root,
-			  &x, &y, &w, &h, &bw, &depth)) {
+			  &x, &y, &w, &h, &bw, &d)) {
 	    strcpy(buf, "Xpw label for object: Could not get ");
 	    strcat(buf, what);
 	    strcat(buf, " Bitmap geometry information \"");
@@ -404,19 +443,23 @@ GetBitmapInfo(wid, bitmap, width, height, what)
 	    strcat(buf, "\"");
 	    XtAppError(XtWidgetToApplicationContext(wid), buf);
 	}
+#if 0
 	if (depth != 1) {
 	    strcpy(buf, "Xpw label for object: ");
 	    strcat(buf, what);
 	    strcat(buf, " Bitmap of \"");
 	    strcat(buf, XtName(wid));
-	    strcat(buf, "\" is not one bit deep.");
+	    strcat(buf, "\" is not correct depth.");
 	    XtAppError(XtWidgetToApplicationContext(wid), buf);
 	}
+#endif
 	*width = (Dimension) w;
 	*height = (Dimension) h;
+	*depth = (Dimension) d;
     } else {
 	*width = (Dimension) 0;
 	*height = (Dimension) 0;
+	*depth = (Dimension) 0;
     }
 }
 

@@ -3,12 +3,15 @@
  *
  * Code to handle main interface panel.
  *
- * $Log: $
+ * $Log: mainwindow.cc,v $
+ * Revision 1.1  1997/12/16 05:48:46  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: mainwindow.cc,v 1.1 1997/12/16 05:48:46 rich Exp rich $";
 #endif
 
 /* System stuff */
@@ -61,9 +64,15 @@ MainWindow::MainWindow(Widget top, XtAppContext        app_con)
     Widget		w, w1, w2, menu;
     Pixmap              image;
     int                 i;
-	toplevel = top;
-	context = app_con;
+    int			num;
+    char		buf[6];
 
+    toplevel = top;
+    context = app_con;
+
+    num = player.setdevice(resources.cd_device); 
+    if (num == 0)
+	num = 1;
    /* Build widget tree. */
     manager = XtCreateManagedWidget("manager", rowColWidgetClass, toplevel,
 			NULL, 0);
@@ -74,15 +83,47 @@ MainWindow::MainWindow(Widget top, XtAppContext        app_con)
     w = XtCreateManagedWidget("file", barbuttonWidgetClass, menu, args, 1);
     w = XtCreatePopupShell("filemenu", popupMenuWidgetClass, menu, NULL, 0);
     w1 = XtCreateManagedWidget("play", pmeEntryObjectClass, w, NULL, 0);
-    XtAddCallback(w1, XtNcallback, &MainWindow::play, (XtPointer)this);
-    w1 = XtCreateWidget("stop", pmeEntryObjectClass, w, NULL, 0);
+    if (num > 1) {
+        w2 = XtCreatePopupShell("playdrives", popupMenuWidgetClass, w, NULL, 0);
+        XtAddCallback(w1, XtNcallback, &MainWindow::play, (XtPointer)this);
+        XtSetArg(args[0], XtNmenuName, "playdrives");
+        XtSetValues(w1, args, 1);
+        strcpy(buf, "drive0");
+        for (i = 0; i < num; i++) {
+	    buf[5] = i + '0';
+	    w1 = XtCreateManagedWidget(buf, pmeEntryObjectClass, w2, NULL, 0);
+	    XtAddCallback(w1, XtNcallback, &MainWindow::play,
+		     (XtPointer)this);
+        }
+    }
+    w1 = XtCreateWidget("stop", pmeEntryObjectClass, w, args, 1);
     XtAddCallback(w1, XtNcallback, &MainWindow::stop, (XtPointer)this);
     w1 = XtCreateManagedWidget("edittrack", pmeEntryObjectClass, w, NULL, 0);
     XtAddCallback(w1, XtNcallback, &MainWindow::editTrack, (XtPointer)this);
-    w1 = XtCreateManagedWidget("editplay", pmeEntryObjectClass, w, NULL, 0);
-    XtAddCallback(w1, XtNcallback, &MainWindow::editPlay, (XtPointer)this);
+    if (num > 1) {
+        w2 = XtCreatePopupShell("etdrives", popupMenuWidgetClass, w, NULL, 0);
+        XtSetArg(args[0], XtNmenuName, "etdrives");
+        XtSetValues(w1, args, 1);
+        for (i = 0; i < num; i++) {
+	    buf[5] = i + '0';
+	    w1 = XtCreateManagedWidget(buf, pmeEntryObjectClass, w2, NULL, 0);
+	    XtAddCallback(w1, XtNcallback, &MainWindow::editTrack,
+		     (XtPointer)this);
+        }
+    }
     w1 = XtCreateManagedWidget("eject", pmeEntryObjectClass, w, NULL, 0);
     XtAddCallback(w1, XtNcallback, &MainWindow::eject, (XtPointer)this);
+    if (num > 1) {
+        w2 = XtCreatePopupShell("ejectdrives", popupMenuWidgetClass, w, NULL, 0);
+        XtSetArg(args[0], XtNmenuName, "ejectdrives");
+        XtSetValues(w1, args, 1);
+        for (i = 0; i < num; i++) {
+	    buf[5] = i + '0';
+	    w1 = XtCreateManagedWidget(buf, pmeEntryObjectClass, w2, NULL, 0);
+	    XtAddCallback(w1, XtNcallback, &MainWindow::eject,
+		     (XtPointer)this);
+        }
+    }
     XtCreateManagedWidget("mline", pmeLineObjectClass, w, NULL, 0);
     w1 = XtCreateManagedWidget("options", pmeEntryObjectClass, w, NULL, 0);
     XtAddCallback(w1, XtNcallback, &MainWindow::options, (XtPointer)this);
@@ -113,6 +154,14 @@ MainWindow::MainWindow(Widget top, XtAppContext        app_con)
     w = XtCreatePopupShell("optionmenu", popupMenuWidgetClass, menu, NULL, 0);
     w1 = XtCreateManagedWidget("random", pmeSelectObjectClass, w, NULL, 0);
     XtAddCallback(w1, XtNcallback, &MainWindow::setplaymode, (XtPointer)this);
+    XtSetArg(args[0], XtNradioGroup, w1);
+    XtSetArg(args[1], XtNradioData, (XtPointer)1);
+    XtSetValues(w1, args, 2);
+    if (num > 1) {
+        XtSetArg(args[1], XtNradioData, (XtPointer)2);
+        w2 = XtCreateManagedWidget("shuffle", pmeSelectObjectClass, w, args, 2);
+        XtAddCallback(w2, XtNcallback, &MainWindow::setplaymode, (XtPointer)this);
+    }
     w1 = XtCreateManagedWidget("intro", pmeSelectObjectClass, w, NULL, 0);
     XtAddCallback(w1, XtNcallback, &MainWindow::setintromode, (XtPointer)this);
     w1 = XtCreateManagedWidget("repeat", pmeSelectObjectClass, w, NULL, 0);
@@ -156,10 +205,20 @@ MainWindow::MainWindow(Widget top, XtAppContext        app_con)
     XtAddCallback(w, XtNcallback, &MainWindow::stop, (XtPointer)this);
     XtSetArg(args[0], XtNlabel, " ");
     XtCreateManagedWidget("blank", labelWidgetClass, toolbar, args, 1);
-    XtSetArg(args[0], XtNbitmap, Bitmaps[toolRandom]);
-    XtSetArg(args[1], XtNbitmapMask, Bitmask[toolRandom]);
-    w = XtCreateManagedWidget("toolRandom", selectWidgetClass, toolbar, args, 2);
+    w = XtCreateManagedWidget("toolRandom", selectWidgetClass, toolbar, NULL, 0);
+    XtSetArg(args[0], XtNradioGroup, w);
+    XtSetArg(args[1], XtNradioData, (XtPointer)1);
+    XtSetArg(args[2], XtNbitmap, Bitmaps[toolRandom]);
+    XtSetArg(args[3], XtNbitmapMask, Bitmask[toolRandom]);
+    XtSetValues(w, args, 4);
     XtAddCallback(w, XtNcallback, &MainWindow::setplaymode, (XtPointer)this);
+    if (num > 1) {
+        XtSetArg(args[1], XtNradioData, (XtPointer)2);
+        XtSetArg(args[2], XtNbitmap, Bitmaps[toolShuffle]);
+        XtSetArg(args[3], XtNbitmapMask, Bitmask[toolShuffle]);
+        w1 = XtCreateManagedWidget("toolShuffle", selectWidgetClass, toolbar, args, 4);
+        XtAddCallback(w1, XtNcallback, &MainWindow::setplaymode, (XtPointer)this);
+    }
     XtSetArg(args[0], XtNbitmap, Bitmaps[toolRepeat]);
     XtSetArg(args[1], XtNbitmapMask, Bitmask[toolRepeat]);
     w = XtCreateManagedWidget("toolRepeat", selectWidgetClass, toolbar, args, 2);
@@ -221,6 +280,23 @@ MainWindow::MainWindow(Widget top, XtAppContext        app_con)
     XtSetArg(args[0], XtNbitmap, Bitmaps[skipforw]);
     w2 = XtCreateManagedWidget("skipforw", commandWidgetClass, w1, args, 1);
     XtAddCallback(w2, XtNcallback, &MainWindow::skipf, (XtPointer)this);
+    if (num > 1) {
+        XtSetArg(args[0], XtNorientation, XtorientHorizontal);
+        w1 = XtCreateManagedWidget("drives", rowColWidgetClass, w1, args, 1);
+        drivegrp = NULL;
+        for (i = 0; i < num; i++) {
+	    buf[0] = i + '1';
+	    buf[1] = '\0';
+	    w2 = XtCreateManagedWidget(buf, selectWidgetClass, w1, NULL, 0);
+	    if (drivegrp == NULL) 
+	        drivegrp = w2;
+    	    XtSetArg(args[0], XtNradioGroup, drivegrp);
+    	    XtSetArg(args[1], XtNradioData, (XtPointer)(i+1));
+	    XtSetArg(args[2], XtNallowNone, FALSE);
+            XtSetValues(w2, args, 3);
+	    XtAddCallback(w2, XtNcallback, &MainWindow::play, (XtPointer)this);
+	}
+    }
 
     /* Volume control */
     XtSetArg(args[0], XtNorientation, XtorientHorizontal);
@@ -249,7 +325,13 @@ MainWindow::MainWindow(Widget top, XtAppContext        app_con)
     playing = 0;
     intro = 0;
     repeat = 0;
-    tlist = NULL;
+    curdrive = 0;
+    player.setdrive(curdrive);
+    if (num > 1) {
+        XtSetArg(args[0], XtNstate, TRUE);
+        XtSetValues(drivegrp, args, 1);
+    }
+    for (i = 0; i< MAXDRIVES; tlist[i++] = NULL);
     dialog = NULL;
     changed = 0;
 
@@ -270,9 +352,10 @@ MainWindow::MainWindow(Widget top, XtAppContext        app_con)
 MainWindow::~MainWindow()
 {
     XtRemoveTimeOut(timer);
-    delete tlist;
+    for(int i = 0; i < MAXDRIVES; i++)
+       delete tlist[i];
     if (dialog != NULL)
-        XtDestroyWidget(dialog);
+       XtDestroyWidget(dialog);
     XtDestroyWidget(manager);
 }
 
@@ -294,7 +377,21 @@ void
 MainWindow::play(Widget w, XtPointer client_data, XtPointer call_data)
 {
     MainWindow * mw = (MainWindow *) client_data;
+    char	*p = XtName(w);
+    int		drive = mw->curdrive;
+    int odrive = mw->curdrive;
 
+    if (strncmp("drive", p, 5) == 0) {
+	drive = p[5] - '0';
+    } else if (*p >= '1' && *p <= '9') {
+	drive = *p - '1';
+	if (((Boolean)call_data) == 0)
+		return;
+    }
+    if (odrive != drive) {
+        mw->setdrive(drive);
+        mw->list.setdrive(mw->curdrive);
+    }
     mw->playing = 1;
    /* Restart timer for quick restart */
     XtRemoveTimeOut(mw->timer);
@@ -312,18 +409,16 @@ MainWindow::playtrack(Widget w, XtPointer client_data, XtPointer call_data)
 
    /* Make sure we drop out of random mode */
     XtSetArg(arg[0], XtNstate, 0);
-    if ((wid = XtNameToWidget(mw->manager, "menubar")) != NULL &&
-        (wid = XtNameToWidget(wid, "optionmenu")) != NULL &&
-        (wid = XtNameToWidget(wid, "random")) != NULL) 
+    if ((wid = XtNameToWidget(mw->manager, "menubar.optionmenu.random")) != NULL)
 	XtSetValues(wid, arg, 1);
     
-    if ((wid = XtNameToWidget(mw->manager, "toolbar")) != NULL &&
-        (wid = XtNameToWidget(wid, "toolRandom")) != NULL)
+    if ((wid = XtNameToWidget(mw->manager, "toolbar.toolRandom")) != NULL)
 	XtSetValues(wid, arg, 1);
    
    /* Reset and point at requested track */
-    mw->list.simplelist(sel->index+1);
+    mw->list.simplelist(mw->curdrive, sel->index+1);
     mw->playing = 1;
+    mw->player.stop();
    /* Restart timer for quick restart */
     XtRemoveTimeOut(mw->timer);
     mw->timer = XtAppAddTimeOut(mw->context, 10, Update, (XtPointer)mw);
@@ -337,7 +432,7 @@ MainWindow::stop(Widget w, XtPointer client_data, XtPointer call_data)
     MainWindow * mw = (MainWindow *) client_data;
 
     mw->playing = 0;
-    mw->list.restart(-1);
+    mw->list.restart(mw->curdrive, -1);
     /* Stop the CD player */
     mw->player.stop();
 }
@@ -358,8 +453,9 @@ void
 MainWindow::skipf(Widget w, XtPointer client_data, XtPointer call_data)
 {
     MainWindow * mw = (MainWindow *) client_data;
+    int		drive;
 
-    int trk = mw->list.getnexttrk();
+    int trk = mw->list.getnexttrk(drive);
 
     if (mw->playing && trk != 0)
 	mw->player.play_cd(trk, 0, (mw->intro)? resources.intro_time: 0);
@@ -385,14 +481,14 @@ void
 MainWindow::ff(Widget w, XtPointer client_data, XtPointer call_data)
 {
     MainWindow * mw = (MainWindow *) client_data;
-    int trk, tt;
+    int trk, tt, drive;
 
     if (mw->playing) {
          (void)mw->player.getposition(trk, tt);
 	 tt += resources.skip_time;
 	 if (tt >= mw->player.gettracklength(trk)) {
 		tt = 0;
-		trk = mw->list.getnexttrk();
+		trk = mw->list.getnexttrk(drive);
 	 }
   	 mw->player.play_cd(trk, tt, 0);
     }
@@ -402,44 +498,45 @@ void
 MainWindow::skipb(Widget w, XtPointer client_data, XtPointer call_data)
 {
     MainWindow * mw = (MainWindow *) client_data;
-    int trk, curtrack, tt = 0;
+    int trk, curtrack, tt = 0, drive;
 
 
     if (mw->playing) 
 	(void)mw->player.getposition(trk, tt);
     
     if (tt < 10)
-	trk = mw->list.getprevtrk();
+	trk = mw->list.getprevtrk(drive);
     if (mw->playing && trk != 0)
 	mw->player.play_cd(trk, 0, (mw->intro)? resources.intro_time: 0);
     mw->curtrack = trk;
 }
 
 void
-MainWindow::editPlay(Widget w, XtPointer client_data, XtPointer call_data)
-{
-    MainWindow * mw = (MainWindow *) client_data;
-
-    if (mw->tlist != NULL)
-    	mw->tlist->editPlaylist();
-}
-
-void
 MainWindow::editTrack(Widget w, XtPointer client_data, XtPointer call_data)
 {
     MainWindow * mw = (MainWindow *) client_data;
+    char	*p = XtName(w);
+    int		n = mw->curdrive;
 
-    if (mw->tlist != NULL)
-    	mw->tlist->editTrack();
+    if (strncmp("drive", p, 5) == 0) 
+	n = p[5] - '0';
+    if (mw->tlist[n] != NULL)
+    	mw->tlist[n]->editTrack();
 }
 
 void
 MainWindow::eject(Widget w, XtPointer client_data, XtPointer call_data)
 {
     MainWindow * mw = (MainWindow *) client_data;
+    char	*p = XtName(w);
 
     mw->playing = 0;
     mw->player.stop();
+    if (strncmp("drive", p, 5) == 0) {
+	int drive = p[5] - '0';
+	mw->player.setdrive(drive);
+        mw->curdrive = drive;
+    }
     mw->player.eject();
 }
 
@@ -457,20 +554,32 @@ MainWindow::setplaymode(Widget w, XtPointer client_data, XtPointer call_data)
     MainWindow * mw = (MainWindow *) client_data;
     Widget	wid;
     Boolean	ns = (int)call_data;
+    int		randvalue;
     Arg		arg[1];
 
+    XtSetArg(arg[0], XtNradioData, XtPointer(&randvalue));
+    XtGetValues(w, arg, 1);
+    if (ns == 0) 
+	if (XtIsSubclass(w, pmeSelectObjectClass))
+	   randvalue = (int)XpwPmeSelectGetCurrent(w);
+	else
+	   randvalue = (int)XpwSelectGetCurrent(w);
     XtSetArg(arg[0], XtNstate, ns);
-    if ((wid = XtNameToWidget(mw->manager, "menubar")) != NULL &&
-        (wid = XtNameToWidget(wid, "optionmenu")) != NULL &&
-        (wid = XtNameToWidget(wid, "random")) != NULL) 
-	XtSetValues(wid, arg, 1);
+    wid = XtNameToWidget(mw->manager, "menubar.optionmenu.random");
+    if (randvalue == 0) 
+        XpwPmeSelectUnsetCurrent(wid);
+    else
+        XpwPmeSelectSetCurrent(wid, (XtPointer)randvalue);
     
-    if ((wid = XtNameToWidget(mw->manager, "toolbar")) != NULL &&
-        (wid = XtNameToWidget(wid, "toolRandom")) != NULL)
-	XtSetValues(wid, arg, 1);
+    wid = XtNameToWidget(mw->manager, "toolbar.toolRandom");
+    if (randvalue == 0) 
+        XpwSelectUnsetCurrent(wid);
+    else
+        XpwSelectSetCurrent(wid, (XtPointer)randvalue);
    
-    mw->list.setrandom((int)call_data, (mw->playing) ? mw->curtrack : -1);
-    mw->curtrack = mw->list.peeknexttrk();
+    mw->list.setrandom(randvalue, mw->curdrive,
+			 (mw->playing) ? mw->curtrack : -1);
+    mw->curtrack = mw->list.peeknexttrk(mw->curdrive);
 }
 
 void
@@ -482,14 +591,10 @@ MainWindow::setintromode(Widget w, XtPointer client_data, XtPointer call_data)
     Arg		arg[1];
 
     XtSetArg(arg[0], XtNstate, ns);
-    if ((wid = XtNameToWidget(mw->manager, "menubar")) != NULL &&
-        (wid = XtNameToWidget(wid, "optionmenu")) != NULL &&
-        (wid = XtNameToWidget(wid, "intro")) != NULL) 
-	XtSetValues(wid, arg, 1);
-    
-    if ((wid = XtNameToWidget(mw->manager, "toolbar")) != NULL &&
-        (wid = XtNameToWidget(wid, "toolIntro")) != NULL)
-	XtSetValues(wid, arg, 1);
+    wid = XtNameToWidget(mw->manager, "menubar.optionmenu.intro");
+    XtSetValues(wid, arg, 1);
+    wid = XtNameToWidget(mw->manager, "toolbar.toolIntro");
+    XtSetValues(wid, arg, 1);
    
     mw->intro = ns;
 }
@@ -503,14 +608,11 @@ MainWindow::setrepeatmode(Widget w, XtPointer client_data, XtPointer call_data)
     Arg		arg[1];
 
     XtSetArg(arg[0], XtNstate, ns);
-    if ((wid = XtNameToWidget(mw->manager, "menubar")) != NULL &&
-        (wid = XtNameToWidget(wid, "optionmenu")) != NULL &&
-        (wid = XtNameToWidget(wid, "repeat")) != NULL) 
-	XtSetValues(wid, arg, 1);
+    wid = XtNameToWidget(mw->manager, "menubar.optionmenu.repeat");
+    XtSetValues(wid, arg, 1);
     
-    if ((wid = XtNameToWidget(mw->manager, "toolbar")) != NULL &&
-        (wid = XtNameToWidget(wid, "toolRepeat")) != NULL)
-	XtSetValues(wid, arg, 1);
+    wid = XtNameToWidget(mw->manager, "toolbar.toolRepeat");
+    XtSetValues(wid, arg, 1);
    
     mw->repeat = ns;
 }
@@ -554,7 +656,8 @@ MainWindow::Update(XtPointer client_data, XtIntervalId *timerid)
 void
 MainWindow::UpdateOptions()
 {
-    player.setdevice(resources.cd_device); 
+    Arg		args[1];
+    Widget	wid;
 
     /* Manage windows as needed */
     hideshow("toolbar", resources.show_toolbar);
@@ -563,25 +666,75 @@ MainWindow::UpdateOptions()
     hideshow("title", resources.show_title);
     hideshow("track", resources.show_track);
     hideshow("infobar", resources.show_infobar);
+
+    wid = XtNameToWidget(toplevel, "CluePopup");
+    XtSetArg(args[0], XtNshowClue, resources.show_clues);
+    XtSetValues(wid, args, 1);
+    checkdb();
+
+
 }
 
 /* Build the track list */
 void
 MainWindow::buildtracklist()
 {
-    int		ntrks = player.gettracks();
-    int		*tlens = new int [ntrks + 1];
+    int		ocur = curdrive;
+    Widget	look[5], wid;
+    char	buf[6];
+    char	buf2[2];
 
-    /* Grab frame info */
-    for(int i = 0; i < ntrks; i++) {
-	tlens[i] = player.getframe(i);
-    }
+    wid = XtNameToWidget(manager, "menubar.filemenu");
+    look[0] = XtNameToWidget(wid, "playdrives");
+    look[1] = XtNameToWidget(wid, "etdrives");
+    look[2] = XtNameToWidget(wid, "epdrives");
+    look[3] = XtNameToWidget(wid, "ejectdrives");
+    strcpy(buf, "drive0");
+    wid = XtNameToWidget(status, "f1.drives");
+ 
+    for (int j = 0; j < MAXDRIVES; j++ ) {
+	Widget		wids[5];
 
-    delete tlist;
-    tlist = new TrackList(player.getdiscid(), player.getlength(), ntrks,
-			toplevel, tlens);
-
-    updatetracklist();
+	buf[5] = j + '0';
+	buf2[0] = j + '1';
+	buf2[1] = '\0';
+	for(int i = 0; i< 4; i++) 
+	     wids[i] = (look[i] != NULL)?XtNameToWidget(look[i], buf) :
+				 (Widget)NULL;
+	wids[4] = (wid != NULL)?XtNameToWidget(wid, buf2): (Widget)NULL;
+	if (player.setdrive(j) == 0) {
+	    Str	temp;
+	    for(int i = 0; i<5; i++) {
+		if (wids[i] != NULL)
+		    XtSetSensitive(wids[i], False);
+	    }
+            delete tlist[j];
+            tlist[j] = NULL;
+            list.setinfo(j, 0, temp);
+	    continue;
+	}
+		
+        for(int i = 0; i<5; i++) {
+	    if (wids[i] != NULL)
+		 XtSetSensitive(wids[i], True);
+	}
+	
+        int		ntrks = player.gettracks();
+        int		*tlens = new int [ntrks + 1];
+        /* Grab frame info */
+        for(int i = 0; i < ntrks; i++) 
+	    tlens[i] = player.getframe(i);
+    
+        delete tlist[j];
+        tlist[j] = new TrackList(player.getdiscid(), player.getlength(),
+			     ntrks, toplevel, tlens);
+        list.setinfo(j, ntrks, tlist[j]->getplayorder());
+	for(int i = 0; i <ntrks; i++) 
+	    list.settracklen(j, i, player.gettracklength(i));
+   }
+   curdrive = ocur;
+   player.setdrive(curdrive);
+   updatetracklist();
 }
 
 /* Update the track list */
@@ -596,13 +749,14 @@ MainWindow::updatetracklist()
     Widget	wid;
 
 
-    list.setinfo(ntrks, tlist->getplayorder());
+    if (tlist[curdrive] == NULL)
+	return;
     if (!playing)
-	list.restart(-1);
+	list.restart(curdrive, -1);
 
     char	**newlist = new char * [ntrks+1];
     for(i = 0; i < ntrks; i++) {
-	Str s = tlist->getname(i);
+	Str s = tlist[curdrive]->getname(i);
 	p = s.cstring();
 	if (*p == '\0') {
 	   sprintf(buffer, "Track %d", i+1);
@@ -610,17 +764,16 @@ MainWindow::updatetracklist()
 	}
 	if (player.getdata(i)) {
 	   p = "--Data--";
-	   list.setignore(i);
+	   list.setignore(curdrive, i);
 	}
 	newlist[i] = new char[strlen(p)+1];
 	strcpy(newlist[i], p);
-	list.settracklen(i, player.gettracklength(i));
     }
     newlist[i] = NULL;
     XpwComboBoxNew(track);
     XpwComboBoxAddItems(track, newlist, 0);
     for (i = 0; i < ntrks; i++) {
-	if (list.getignore(i))
+	if (list.getignore(curdrive, i))
 	   XtSetSensitive(XpwComboBoxGetMenu(track, i), False);
 	delete [] newlist[i];
     }
@@ -638,7 +791,7 @@ MainWindow::updatetracklist()
         XtSetArg(arg[0], XtNlabel, buffer);
         XtSetValues(wid, arg, 1);
     }
-    if ((p = tlist->gettitle()) != NULL && *p != '\0') {
+    if ((p = tlist[curdrive]->gettitle()) != NULL && *p != '\0') {
 	XtSetArg(arg[0], XtNlabel, p);
 	XtSetValues(title, arg, 1);
 	XtSetArg(arg[0], XtNtitle, p);
@@ -657,55 +810,46 @@ void
 MainWindow::setstate(State newstate)
 {
     Widget	stop_set[3], play_set[3], wid;
+    char	buffer[10], *p;
     Arg		arg[1];
-    int		s = 0, p = 0;
-    int		i;
 
     /* Do nothing if in same state */
     if (newstate == cdstate)
 	return;
     /* Wander over widget tree to flip all play/stop buttons */
-    if ((wid = XtNameToWidget(manager, "status")) != NULL &&
-	(wid = XtNameToWidget(wid, "f1")) != NULL) {
-        stop_set[s] = XtNameToWidget(wid, "stop");
-        play_set[s] = XtNameToWidget(wid, "play");
-	s++;
-    }
-    if ((wid = XtNameToWidget(manager, "menubar")) != NULL &&
-        (wid = XtNameToWidget(wid, "filemenu")) != NULL)  {
-        stop_set[s] = XtNameToWidget(wid, "stop");
-        play_set[s] = XtNameToWidget(wid, "play");
-	s++;
-    }
-    if ((wid = XtNameToWidget(manager, "toolbar")) != NULL) {
-        stop_set[s] = XtNameToWidget(wid, "toolStop");
-        play_set[s] = XtNameToWidget(wid, "toolPlay");
-	s++;
-    }
+    wid = XtNameToWidget(manager, "status.f1");
+    stop_set[0] = XtNameToWidget(wid, "stop");
+    play_set[0] = XtNameToWidget(wid, "play");
+    wid = XtNameToWidget(manager, "menubar.filemenu");
+    stop_set[1] = XtNameToWidget(wid, "stop");
+    play_set[1] = XtNameToWidget(wid, "play");
+    wid = XtNameToWidget(manager, "toolbar");
+    stop_set[2] = XtNameToWidget(wid, "toolStop");
+    play_set[2] = XtNameToWidget(wid, "toolPlay");
 
     /* Make sure correct ones are showing */
     if (newstate == CDStop) {
-	for(s--; s>=0 ; s--)
+	for(int s = 2; s>=0 ; s--)
 	    XtChangeManagedSet(&stop_set[s], 1, NULL, NULL, &play_set[s], 1);
         if (cdstate == CDPause)
 	    XpwSelectUnsetCurrent(pausebut);
-	XtSetArg(arg[0], XtNiconName, "Stopped");
-	XtSetValues(toplevel, arg, 1);
+	p = "Stopped";
     } else {
-	char	buffer[10];
 	if (cdstate == CDStop) {
-	    for(s--; s>=0 ; s--)
+	    for(int s = 2; s>=0 ; s--)
 	        XtChangeManagedSet(&play_set[s], 1, NULL, NULL, &stop_set[s], 1);
 	}
-	sprintf(buffer, "Track %d", curtrack);
-	XtSetArg(arg[0], XtNiconName, buffer);
 	if (newstate == CDPause) {
-	    XtSetArg(arg[0], XtNiconName, "Paused");
+	    p = "Paused";
 	    XpwSelectSetCurrent(pausebut, NULL);
+	} else {
+	    sprintf(buffer, "Track %d", curtrack);
+	    p = buffer;
 	}
-	XtSetValues(toplevel, arg, 1);
     }
-     cdstate = newstate;
+    XtSetArg(arg[0], XtNiconName, p);
+    XtSetValues(toplevel, arg, 1);
+    cdstate = newstate;
 }
 
 
@@ -715,9 +859,8 @@ MainWindow::hideshow(String name, int state)
 {
     Widget	wid;
 
-    if ((wid = XtNameToWidget(manager, "menubar")) != NULL &&
-        (wid = XtNameToWidget(wid, "dispmenu")) != NULL && 
-        (wid = XtNameToWidget(wid, name)) != NULL) {
+    wid = XtNameToWidget(manager, "menubar.dispmenu");
+    if ((wid = XtNameToWidget(wid, name)) != NULL) {
 	Arg arg[1];
 	Boolean ns = -1;
 
@@ -748,6 +891,30 @@ MainWindow::settimemode(Timemode tm)
     XpwSelectSetCurrent(tooltime, (XtPointer)tm);
 }
 
+void
+MainWindow::setdrive(int newdrive)
+{
+    Widget	wid;
+    char 	buf[2];
+    Arg		arg[1];
+
+    if (newdrive == curdrive)
+	return;
+    curdrive = newdrive;
+    if (drivegrp != NULL)
+        XpwSelectUnsetCurrent(drivegrp);
+    player.setdrive(curdrive);
+    buf[0] = curdrive + '1';
+    buf[1] = '\0';
+    wid = XtNameToWidget(status, "f1.drives");
+    if (wid != NULL) {
+        wid = XtNameToWidget(wid, buf);
+        XtSetArg(arg[0], XtNstate, TRUE);
+        XtSetValues(wid, arg, 1);
+    }
+    updatetracklist();
+}
+
 /*
  * Load the contents of all controls.
  */
@@ -764,35 +931,41 @@ MainWindow::Update()
     static int	lasttrack = -1;
     Cdmode	mode;
     int		rate = resources.poll_rate;
+    int		newdrive = curdrive;
 
      switch(mode = player.getposition(curtrack, tt)) {
      case Empty:
 	curtrack = 1;
-	sprintf(buffer, "<00> --:--");
+#if MAXDRIVES > 1
+	strcpy(buffer, "0 <00> --:--");
+#else
+	strcpy(buffer, "<00> --:--");
+#endif
 	break;
      case New:
 	buildtracklist();
-        list.restart(-1);
+        list.restart(0, -1);
 	curtrack = -1;
 	lasttrack = -2;
 	XtSetArg(arg[0], XtNiconName, "Stopped");
 	XtSetValues(toplevel, arg, 1);
-	strcpy(buffer, "<--> --:--");
+	strcpy(buffer, "- <--> --:--");
 	if (resources.autoplay)
 	    playing = 1;
 	else
-	    curtrack = list.peeknexttrk();	
+	    curtrack = list.peeknexttrk(curdrive);	
      case Valid:
      case Stop:
 	if (playing) {
-            int trk = list.getnexttrk();
+            int trk = list.getnexttrk(newdrive);
 
 	    if (trk == 0 && repeat) {
-	        list.restart(-1);
-                trk = list.getnexttrk();
+	        list.restart(0, -1);
+                trk = list.getnexttrk(newdrive);
 	    }
 	    /* Move to next track if more to go */
             if (trk != 0) {
+		setdrive(newdrive);
             	player.play_cd(trk, 0, (intro)?resources.intro_time: 0);
 		curtrack = trk;
 		newstate = CDPlay;
@@ -800,18 +973,23 @@ MainWindow::Update()
 		dotime = 1;
 	    } else {
 		playing = 0;
-	        list.restart(-1);
-		curtrack = list.peeknexttrk();
+	        list.restart(curdrive, -1);
+		curtrack = list.peeknexttrk(newdrive);
+		setdrive(newdrive);
 	    }
 	} 
+#if MAXDRIVES > 1
+        sprintf(buffer, "%d <%02d> 00:00", curdrive + 1, curtrack);
+#else
         sprintf(buffer, "<%02d> 00:00", curtrack);
+#endif
 	if (newstate == CDStop)
    	    rate = resources.stop_rate;
 	break;
      case Play:
         newstate = CDPlay;
 	if (playing == 0 && curtrack > 0)
-	   list.setcurtrk(curtrack);
+	   list.setcurtrk(curdrive, curtrack);
 	playing = 1;		/* Make sure state gets set correctly */
 	dotime = 1;
 	break;
@@ -821,7 +999,11 @@ MainWindow::Update()
 	break;
      case Eject:
      case Mount:
+#if MAXDRIVES > 1
+	strcpy(buffer, "- <--> --:--");
+#else
 	strcpy(buffer, "<--> --:--");
+#endif
 	curtrack = -1;
    	rate = resources.empty_rate;
         XpwComboBoxNew(track);
@@ -832,13 +1014,16 @@ MainWindow::Update()
         XtSetArg(arg[0], XtNlabel, "No CD");
         XtSetValues(title, arg, 1);
 	XpwComboBoxNew(track);
-	delete tlist;
-	tlist = NULL;
+	delete tlist[curdrive];
+	tlist[curdrive] = NULL;
 	break;
     }
     setstate(newstate);
-    if (tlist != NULL && tlist->chkupded()) 
+    if (tlist[curdrive] != NULL && tlist[curdrive]->chkupded()) {
+	list.setinfo(curdrive, player.gettracks(), 
+		tlist[curdrive]->getplayorder());
 	updatetracklist();
+    }
 	
     if (dotime && lasttime != tt) {
 	char xmode = ' ';
@@ -855,21 +1040,30 @@ MainWindow::Update()
 		xmode = '-';
 		break;
 	case Disc:
-		sec = list.timeplayed(curtrack) + tt;
+		sec = list.timeplayed() + tt;
 		break;
 	case Total:
-		list.totaltime(sec, trk);
+		list.totaltime(curdrive, sec, trk);
 		break;
 	}
 	min = sec / 60;
 	if ((sec = sec % 60) < 0)
 	   sec = -sec;
+#if MAXDRIVES > 1
 	if (timemode == Disc)
-	    sprintf(buffer, "    %c%2d:%02d%c", xmode, min, sec, 
-				(newstate==CDPause)?'P':' ');
+	    sprintf(buffer, "%d     %c%2d:%02d%c", curdrive + 1, xmode,
+			 min, sec, (newstate==CDPause)?'P':' ');
 	else
-	    sprintf(buffer, "<%02d>%c%2d:%02d%c", trk, xmode, min, sec, 
-				(newstate==CDPause)?'P':' ');
+	    sprintf(buffer, "%d <%02d>%c%2d:%02d%c", curdrive + 1, trk, xmode,
+			 min, sec, (newstate==CDPause)?'P':' ');
+#else
+	if (timemode == Disc)
+	    sprintf(buffer, "    %c%2d:%02d%c", xmode,
+			 min, sec, (newstate==CDPause)?'P':' ');
+	else
+	    sprintf(buffer, "<%02d>%c%2d:%02d%c", trk, xmode,
+			 min, sec, (newstate==CDPause)?'P':' ');
+#endif
     }
 
     if ((wid = XtNameToWidget(status, "mainwindow")) != NULL && lasttime != tt) {
@@ -970,7 +1164,6 @@ MainWindow::editOptions()
     }
     /* Load defaults */
     editreset(dialog, (XtPointer)this, NULL);
-    XtRealizeWidget(tbl);
     XtManageChild(tbl);
     XtManageChild(dialog);
 }

@@ -24,12 +24,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: List.c,v $
+ * Revision 1.1  1997/10/09 02:40:35  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id$";
+static char        *rcsid = "$Id: List.c,v 1.1 1997/10/09 02:40:35 rich Exp rich $";
 
 #endif
 
@@ -771,14 +774,6 @@ Destroy(w)
     }
     if (self->list.list_attr != NULL)
 	XtFree((XtPointer) self->list.list_attr);
-    if (self->list.v_scrollbar != NULL) {
-	XtDestroyWidget(self->list.v_scrollbar);
-	self->list.v_scrollbar = NULL;
-    }
-    if (self->list.h_scrollbar != NULL) {
-	XtDestroyWidget(self->list.h_scrollbar);
-	self->list.h_scrollbar = NULL;
-    }
     _XpwThreeDDestroyShadow(w, &(self->list.threeD));
 }
 

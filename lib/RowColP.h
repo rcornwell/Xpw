@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: RowColP.h,v 1.1 1997/10/07 05:35:41 rich Exp rich $
  *
- * $Log:$
+ * $Log: RowColP.h,v $
+ * Revision 1.1  1997/10/07 05:35:41  rich
+ * Initial revision
+ *
  *
  */
 
@@ -79,11 +82,11 @@ typedef struct _RowColConstraintsPart {
     int                 size;		/* the size the widget will actually
 					 * get. */
 
-} RowColConstraintsPart;
+} RowColConstraintsPart, *RowColConstraints;
 
 typedef struct _RowColConstraintsRec {
     RowColConstraintsPart rowcol;
-} RowColConstraintsRec, *RowColConstraints;
+} RowColConstraintsRec;
 
 /* New Fields for the RowCol widget record */
 typedef struct {

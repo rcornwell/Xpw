@@ -24,6 +24,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: focus.c,v $
+ * Revision 1.2  1997/11/01 06:39:10  rich
+ * Removed unused variable.
+ *
  * Revision 1.1  1997/10/25 22:16:54  rich
  * Initial revision
  *
@@ -31,7 +34,7 @@
  */
 
 #ifndef lint
-static char         rcsid[] = "$Id: focus.c,v 1.1 1997/10/25 22:16:54 rich Exp rich $";
+static char         rcsid[] = "$Id: focus.c,v 1.2 1997/11/01 06:39:10 rich Beta rich $";
 
 #endif
 
@@ -40,6 +43,7 @@ static char         rcsid[] = "$Id: focus.c,v 1.1 1997/10/25 22:16:54 rich Exp r
 #include <X11/Xos.h>
 #include <X11/Xmu/Drawing.h>
 #include "focus.h"
+#include "XInputP.h"
 #include <stdio.h>
 
 typedef struct _focusWidget {
@@ -110,6 +114,8 @@ _XpwAddFocusGroup(w, fg)
 	nfw->next = nfw->prev = NULL;
 	grp->tree = nfw;
     }
+
+    _XpwImRegister(w);
    /* Make sure it will get removed */
     XtAddCallback(w, XtNdestroyCallback, _XpwDestroyFocusGroup,
 		  (XtPointer) grp);
@@ -134,6 +140,7 @@ _XpwClearFocusGroup(w, fg)
 	return;
     XtRemoveCallback(w, XtNdestroyCallback, _XpwDestroyFocusGroup,
 		     (XtPointer) grp);
+    _XpwImUnregister(w);
     _XpwRemoveFocusWidget(grp, fw);
 }
 
@@ -151,6 +158,7 @@ _XpwDestroyFocusGroup(w, client_data, call_data)
 
     if ((fw = _XpwFindFocusWidget(grp, w)) == NULL)
 	return;
+    _XpwImUnregister(w);
     _XpwRemoveFocusWidget(grp, fw);
 }
 

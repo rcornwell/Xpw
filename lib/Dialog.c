@@ -27,6 +27,11 @@
  *
  *
  * $Log: Dialog.c,v $
+ * Revision 1.2  1997/12/06 04:14:49  rich
+ * Added color images for default Icons.
+ * Allow control over type of grab.
+ * Support for IconMask.
+ *
  * Revision 1.1  1997/11/28 19:56:42  rich
  * Initial revision
  *
@@ -34,7 +39,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Dialog.c,v 1.1 1997/11/28 19:56:42 rich Exp rich $";
+static char        *rcsid = "$Id: Dialog.c,v 1.2 1997/12/06 04:14:49 rich Exp rich $";
 
 #endif
 
@@ -569,8 +574,16 @@ GeometryManager(w, request, reply)
 
 {
     Dimension           proposed_width, proposed_height;
+    Dimension           returned_width, returned_height;
+    Dimension           old_width, old_height;
     DialogWidget        self = (DialogWidget) XtParent(w);
-    int                 iterations;
+    DialogConstraints   child = ChildInfo(w);
+    XtGeometryResult	result;
+    Dimension           wh, ww, bh, bw, mbw;
+    Dimension           ch, cw;
+    Dimension           brd = 2 * self->dialog.spacing;
+    Widget             *childP;
+    int                 num;
 
    /* Position request always denied */
     if ((request->request_mode & CWX && request->x != w->core.x) ||
@@ -581,32 +594,72 @@ GeometryManager(w, request, reply)
     if ((request->request_mode & (CWWidth | CWHeight)) == 0)
 	return (XtGeometryNo);
 
-    proposed_width = self->core.width;
-    proposed_height = self->core.height;
+    old_width = child->width;
+    old_height = child->height;
    /* Make all three fields in the request valid */
-    if ((request->request_mode & CWWidth) == 0)
-	proposed_width = w->core.width;
-    if ((request->request_mode & CWHeight) == 0)
-	proposed_height = w->core.height;
+    if ((request->request_mode & CWWidth))
+	child->width = request->width;
+    if ((request->request_mode & CWHeight))
+	child->height = request->height;
 
-    for (iterations = 0; iterations < 10; iterations++) {
-	switch (XtMakeResizeRequest((Widget) self,
+   /* Recompute width and height */
+    wh = 0;
+    ww = 0;
+    bh = 0;
+    bw = 0;
+    mbw = 0;
+    num = 0;
+   /* Calculate size of the Children */
+    ForAllChildren(self, childP) {
+	Widget              w = *childP;
+	DialogConstraints   child = ChildInfo(w);
+
+	if (!XtIsManaged(w))
+	    continue;
+
+	cw = child->width;
+	ch = child->height;
+	if (XtIsSubclass(w, commandWidgetClass)) {
+	    ch += (2 * self->dialog.active_border) + brd;
+	    cw += (2 * self->dialog.active_border) + brd;
+	    num++;
+	    if (ch > bh)
+		bh = ch;
+	    bw += cw;
+	    if (cw > mbw)
+		mbw = cw;
+	} else {
+	    if (cw > ww)
+		ww = cw;
+	    wh += ch + brd;
+	}
+    }
+
+    if (!self->dialog.minimize)
+	bw = num * mbw;
+
+    proposed_height = wh + bh + brd;
+    proposed_width = ((bw > ww) ? bw : ww) + brd;
+
+    result = XtGeometryNo;
+    switch (XtMakeResizeRequest((Widget) self,
 				    proposed_width, proposed_height,
-				    &proposed_width, &proposed_height)) {
-	case XtGeometryYes:
-	    return (TRUE);
+				    &returned_width, &returned_height)) {
+    case XtGeometryYes:
+	   result = XtGeometryYes;
+	   break;
 
-	case XtGeometryNo:
+    case XtGeometryNo:
 	   /* protect from malicious parents who change their minds */
-	    if ((request->width <= self->core.width) &&
-		(request->height <= self->core.height))
-		return (XtGeometryYes);
-	    else
-		return (XtGeometryNo);
+	    if ((returned_width <= self->core.width) &&
+		(returned_height <= self->core.height)) {
+ 	        result = XtGeometryYes;
+	    }
+	    break;
 
-	case XtGeometryAlmost:
-	    if (proposed_height >= request->height &&
-		proposed_width >= request->width) {
+    case XtGeometryAlmost:
+	    if (proposed_height >= returned_height &&
+		proposed_width >= returned_width) {
 
 	       /*
 	        * Take it, and assume the parent knows what it is doing.
@@ -616,19 +669,27 @@ GeometryManager(w, request, reply)
 	        *
 	        */
 		(void) XtMakeResizeRequest((Widget) self,
-					 proposed_width, proposed_height,
-				      &proposed_width, &proposed_height);
-		return (XtGeometryYes);
+					 returned_width, returned_height,
+				      &returned_width, &returned_height);
+		result = XtGeometryYes;
 	    }
 	    break;
 
-	case XtGeometryDone:
-	default:
+    case XtGeometryDone:
+    default:
 	    break;
-	}
     }
 
-    return (XtGeometryNo);
+    if (result == XtGeometryYes) {
+       /* Save info about buttons for later */
+        self->dialog.button_height = bh - (2 * self->dialog.active_border + brd);
+        self->dialog.button_width = mbw - (2 * self->dialog.active_border + brd);
+        Layout(self, self->core.width, self->core.height);
+    } else {
+	child->width = old_width;
+	child->height = old_height;
+    }
+    return result;
 }
 
 static void
@@ -756,14 +817,18 @@ ComputeSize(self, width, height)
 	if (!XtIsManaged(w))
 	    continue;
 	request.request_mode = CWWidth | CWHeight | XtCWQueryOnly;
-	cw = request.width = w->core.width;
-	ch = request.height = w->core.height;
-	if (XtQueryGeometry(w, &request, &reply) == XtGeometryAlmost) {
+	cw = request.width = 0/*w->core.width*/;
+	ch = request.height = 0/*w->core.height*/;
+	if (XtQueryGeometry(w, &request, &reply) != XtGeometryNo) {
 	    if (reply.request_mode & CWWidth)
 		cw = reply.width;
 	    if (reply.request_mode & CWHeight)
 		ch = reply.height;
 	}
+	if (cw == 0)
+	    cw = w->core.width;
+	if (ch == 0)
+	    ch = w->core.height;
 	child->width = cw;
 	child->height = ch;
 	if (XtIsSubclass(w, commandWidgetClass)) {
@@ -809,7 +874,7 @@ Layout(self, width, height)
     Position            x_loc, y_loc;
     Widget             *childP;
     int                 i;
-    Dimension           size, gap;
+    int   	        size, gap;
 
     x_loc = brd;
     y_loc = brd;
@@ -820,7 +885,7 @@ Layout(self, width, height)
     ForAllChildren(self, childP) {
 	Widget              w = *childP;
 
-	if (!XtIsManaged(w) || *childP == self->dialog.line
+	if (!XtIsManaged(w) || *childP == self->dialog.line 
 	    || XtIsSubclass(w, commandWidgetClass))
 	    continue;
 	child = ChildInfo(w);
@@ -829,14 +894,13 @@ Layout(self, width, height)
 	child->y_loc = y_loc;
 	x_loc += child->height + brd;
     }
-
-   /* Place line */
+   /* Place line, make sure it is full width */
     if (XtIsManaged(self->dialog.line)) {
 	child = ChildInfo(self->dialog.line);
 	XtConfigureWidget(self->dialog.line, 0, x_loc, width + brd,
 			  child->height, 0);
 	child->x_loc = x_loc;
-	child->y_loc = y_loc;
+	child->y_loc = 0;
 	x_loc += child->height + brd;
     }
     x_loc += self->dialog.active_border;
@@ -871,19 +935,19 @@ Layout(self, width, height)
 
     switch (self->dialog.justify) {
     case XtJustifyCenter:
-	if (self->dialog.packing == XpwEven && i > 0)
-	    gap = (2 * self->dialog.active_border) + ((width - size) / i);
-	y_loc = (width - (size + gap * (i - 1))) / 2;
+	if (self->dialog.packing == XpwEven && i > 0) 
+	    gap = ((width - size) / i);
+	y_loc += (width - (size + gap * (i - 1))) / 2;
 	break;
     case XtJustifyRight:
 	if (self->dialog.packing != XpwEven)
-	    y_loc = width - (size + gap * (i - 1));
+	    y_loc += width - (size + gap * (i - 1));
 	break;
     case XtJustifyLeft:
     default:
 	break;
     }
-
+  
    /* Now fill in button bar */
     ForAllChildren(self, childP) {
 	Widget              w = *childP;
@@ -1101,6 +1165,7 @@ Popup(w, client_data, call_data)
     Dimension           ph, pw, sh, sw, ww, wh;
 
    /* Now center in child and make sure fully visable */
+    ChangeManaged((Widget)self);
 
    /* Pickup info on parent */
     XtSetArg(largs[0], XtNwidth, &pw);

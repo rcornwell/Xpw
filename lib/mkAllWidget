@@ -1,0 +1,33 @@
+#! /bin/sh
+#
+# Make AllWidgets.c and sharelib.c
+
+of='AllWidgets.c'
+echo '#include <X11/IntrinsicP.h>' >$of
+echo '#include <X11/Xmu/WidgetNode.h>' >>$of
+echo  >>$of
+
+# Grab all externals.
+grep -h 'extern WidgetClass' $* >>$of
+echo  >>$of
+
+echo 'XmuWidgetNode XpwWidgetArray[] = {' >>$of
+grep -h 'extern WidgetClass' $* |
+    sed 's/extern WidgetClass *\(.*\)\(WidgetClass\);/{ "\1", \&\1\2 },/;
+         s/extern WidgetClass *\(.*\)\(ObjectClass\);/{ "\1", \&\1\2 },/' >>$of
+echo '};' >>$of
+echo  >>$of
+echo 'int XpwWidgetCount = XtNumber(XpwWidgetArray);' >>$of
+echo  >>$of
+
+of='sharedlib.c'
+echo '#if defined(SUNSHLIB) && !defined(SHAREDCODE)' >>$of
+echo  >>$of
+echo '#include <X11/IntrinsicP.h>' >>$of
+grep 'ClassRec' $* | grep 'extern' | sed 's/^\(.*\):.*$/#include "\1"/' >>$of
+echo  >>$of
+grep -h 'ClassRec' $* | grep 'extern' |
+	 sed 'p;s/extern .*ClassRec *\(.*\)\(ClassRec\)/Widget \1ObjectClass = (WidgetClass)\&\1\2/' >>$of
+echo  >>$of
+echo '#endif /* SUNSHLIB */' >>$of
+

@@ -27,6 +27,11 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: threeDdraw.c,v $
+ * Revision 1.2  1997/11/01 06:39:10  rich
+ * Removed unused definition.
+ * Added None to switch statments.
+ * Make sure pm_data is initialized before any use.
+ *
  * Revision 1.1  1997/10/26 04:22:04  rich
  * Initial revision
  *
@@ -34,7 +39,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: threeDdraw.c,v 1.1 1997/10/26 04:22:04 rich Exp rich $";
+static char        *rcsid = "$Id: threeDdraw.c,v 1.2 1997/11/01 06:39:10 rich Beta rich $";
 
 #endif
 
@@ -709,6 +714,8 @@ cvtStringToShapeType(dpy, args, num_args, from, to, converter_data)
 	result = XaSquare;
     else if (XmuCompareISOLatin1(s, "diamond") == 0)
 	result = XaDiamond;
+    else if (XmuCompareISOLatin1(s, "none") == 0)
+	result = XaNone;
     else {
 	XtDisplayStringConversionWarning(dpy, s, XtRShapeType);
 	return FALSE;
@@ -758,6 +765,8 @@ cvtShapeTypeToString(dpy, args, num_args, from, to, converter_data)
 	result = "square";
     case XaDiamond:
 	result = "diamond";
+    case XaNone:
+	result = "none";
     default:
 	XtError("Illegal ShapeType");
 	return FALSE;

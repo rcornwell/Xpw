@@ -27,12 +27,15 @@
  * library in commercial applications, or for commercial software distribution.
  *
  *
- * $Log: $
+ * $Log: DialogShell.c,v $
+ * Revision 1.1  1997/11/28 19:56:42  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: DialogShell.c,v 1.1 1997/11/28 19:56:42 rich Exp rich $";
 
 #endif
 
@@ -43,6 +46,7 @@ static char        *rcsid = "$Id: $";
 #include <X11/StringDefs.h>
 #include <X11/ShellP.h>
 #include "DialogShellP.h"
+#include "Dialog.h"
 #include "focus.h"
 
 /***************************************************************************
@@ -168,7 +172,27 @@ ChangeManaged(w)
     for (i = self->composite.num_children - 1; i >= 0; i--) {
 	child = self->composite.children[i];
 	if (XtIsManaged(child)) {
-	    XtPopup(w, XtGrabExclusive); 	/* If so pop us up */
+	/* Ask child what kind of grab it wants */
+	    DialogType dialog_type = XpwDialog_Modal;
+	    Arg		arg[1];
+	    XtGrabKind	grab_kind;
+
+	    XtSetArg(arg[0], XtNdialogType, &dialog_type);
+	    XtGetValues(child, arg, 1);
+	    switch(dialog_type) {
+	    case XpwDialog_Modeless:
+		grab_kind = XtGrabNone;
+		break;
+	    default:
+	    case XpwDialog_Modal:
+		grab_kind = XtGrabExclusive;
+		break;
+	    case XpwDialog_Dialog:
+		grab_kind = XtGrabNonexclusive;
+		break;
+	    }
+	    
+	    XtPopup(w, grab_kind); 	/* If so pop us up */
 	    _XpwSetFocus(child, w);
 	    return;
 	}

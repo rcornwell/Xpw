@@ -26,12 +26,15 @@
  * library in commercial applications, or for commercial software distribution.
  *
  *
- * $Log: $
+ * $Log: Dialog.c,v $
+ * Revision 1.1  1997/11/28 19:56:42  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: Dialog.c,v 1.1 1997/11/28 19:56:42 rich Exp rich $";
 
 #endif
 
@@ -90,7 +93,11 @@ static int          FindWidget(DialogWidget /*self */ , int /* start */ ,
 			       int /* dir */ , Widget /* w */ );
 static Widget       MakeShell(Widget /* parent */ , String /* name */ ,
 			      String /* cname */ , Arg * /* args */ ,
-			      int /* count */ , Pixmap /* icon */ );
+			      int /* count */ , Pixmap /* icon */ ,
+			      Pixmap /* icon_mask */ );
+static Pixmap	    MakePixmap(Widget /*parent*/, char **/*data*/,
+			      char */*data_bit*/, int /*width*/,
+			      int /*height*/, Pixmap */*mask*/);
 
 /* Action functions */
 static void         ButtonCall(Widget /*w */ , XtPointer /*client_data */ ,
@@ -116,6 +123,18 @@ Boolean             cvtStringToButtonType(Display * /*dpy */ ,
 					  XrmValuePtr /*to */ ,
 				       XtPointer * /*converter_data */ );
 Boolean             cvtButtonTypeToString(Display * /*dpy */ ,
+					  XrmValuePtr /*args */ ,
+					  Cardinal * /*num_args */ ,
+					  XrmValuePtr /*from */ ,
+					  XrmValuePtr /*to */ ,
+				       XtPointer * /*converter_data */ );
+Boolean             cvtStringToDialogType(Display * /*dpy */ ,
+					  XrmValuePtr /*args */ ,
+					  Cardinal * /*num_args */ ,
+					  XrmValuePtr /*from */ ,
+					  XrmValuePtr /*to */ ,
+				       XtPointer * /*converter_data */ );
+Boolean             cvtDialogTypeToString(Display * /*dpy */ ,
 					  XrmValuePtr /*args */ ,
 					  Cardinal * /*num_args */ ,
 					  XrmValuePtr /*from */ ,
@@ -159,10 +178,14 @@ static XtResource   resources[] =
 {
     {XtNicon, XtCBitmap, XtRBitmap, sizeof(Pixmap),
      offset(icon), XtRImmediate, (XtPointer) None},
+    {XtNiconMask, XtCBitmap, XtRBitmap, sizeof(Pixmap),
+     offset(icon_mask), XtRImmediate, (XtPointer) None},
     {XtNmessage, XtCLabel, XtRString, sizeof(String),
      offset(message), XtRImmediate, (XtPointer) NULL},
     {XtNdefaultButton, XtCDefaultButton, XtRButtonType, sizeof(int),
      offset(defbut), XtRImmediate, (XtPointer) XpwDialog_Ok_Button},
+    {XtNdialogType, XtCDialogType, XtRDialogType, sizeof(DialogType),
+     offset(dialog_type), XtRImmediate, (XtPointer) XpwDialog_Modal},
     {XtNminimizeButtons, XtCMinimizeButtons, XtRBoolean, sizeof(Boolean),
      offset(minimize), XtRImmediate, (XtPointer) TRUE},
     {XtNautoUnmanage, XtCAutoUnmanage, XtRBoolean, sizeof(Boolean),
@@ -279,6 +302,10 @@ ClassInitialize()
 		       NULL, 0, XtCacheNone, NULL);
     XtSetTypeConverter(XtRButtonType, XtRString, cvtButtonTypeToString,
 		       NULL, 0, XtCacheNone, NULL);
+    XtSetTypeConverter(XtRString, XtRDialogType, cvtStringToDialogType,
+		       NULL, 0, XtCacheNone, NULL);
+    XtSetTypeConverter(XtRDialogType, XtRString, cvtDialogTypeToString,
+		       NULL, 0, XtCacheNone, NULL);
     XtSetTypeConverter(XtRString, XtRPackingType, cvtStringToPackingType,
 		       NULL, 0, XtCacheNone, NULL);
     XtSetTypeConverter(XtRPackingType, XtRString, cvtPackingTypeToString,
@@ -300,7 +327,7 @@ Initialize(request, new, args, num_args)
     Dimension           width, height;
     int                 na;
     Widget              cw;
-    Arg                 arg[3];
+    Arg                 arg[4];
 
     nself->dialog.active_child = -1;
    /* Initialize threeD shadow */
@@ -332,6 +359,10 @@ Initialize(request, new, args, num_args)
 	na++;
 	XtSetArg(arg[na], XtNleftBitmap, nself->dialog.icon);
 	na++;
+	if (nself->dialog.icon_mask != (Pixmap) NULL) {
+	    XtSetArg(arg[na], XtNleftBitmapMask, nself->dialog.icon_mask);
+	    na++;
+	}
     }
     nself->dialog.label = XtCreateManagedWidget("message", labelWidgetClass,
 						new, arg, na);
@@ -392,7 +423,7 @@ SetValues(current, request, new, args, num_args)
 {
     DialogWidget        new_self = (DialogWidget) new;
     DialogWidget        old_self = (DialogWidget) current;
-    Arg                 arg[2];
+    Arg                 arg[3];
     Boolean             ret_val = False;
 
     if (new_self->dialog.message != old_self->dialog.message) {
@@ -400,7 +431,7 @@ SetValues(current, request, new, args, num_args)
 	XtSetValues(new_self->dialog.label, arg, 1);
     }
     if (new_self->dialog.icon != old_self->dialog.icon) {
-	int                 x, y;
+	int                 x, y, a;
 	Window              root;
 	unsigned int        w, h, bw, depth;
 	char                buf[200];
@@ -416,7 +447,12 @@ SetValues(current, request, new, args, num_args)
 	}
 	XtSetArg(arg[0], XtNleftMargin, w + 4);
 	XtSetArg(arg[1], XtNleftBitmap, new_self->dialog.icon);
-	XtSetValues(new_self->dialog.label, arg, 2);
+	a = 2;
+	if (new_self->dialog.icon_mask != old_self->dialog.icon_mask) {
+	    XtSetArg(arg[a], XtNleftBitmapMask, new_self->dialog.icon_mask);
+	    a++;
+	}
+	XtSetValues(new_self->dialog.label, arg, a);
     }
     if (new_self->dialog.ok_str != old_self->dialog.ok_str) {
 	XtSetArg(arg[0], XtNlabel, new_self->dialog.ok_str);
@@ -749,7 +785,7 @@ ComputeSize(self, width, height)
     if (!self->dialog.minimize)
 	bw = num * mbw;
 
-    *height = wh + bh + brd ;
+    *height = wh + bh + brd;
     if (bw > ww)
 	*width = bw + brd;
     else
@@ -899,13 +935,14 @@ FindWidget(self, start, dir, w)
  * All the dirty work of building a dialog popup.
  */
 static              Widget
-MakeShell(parent, name, cname, args, count, icon)
+MakeShell(parent, name, cname, args, count, icon, icon_mask)
 	Widget              parent;
 	String              name;
 	String              cname;
 	Arg                *args;
 	int                 count;
 	Pixmap              icon;
+	Pixmap              icon_mask;
 {
     Widget              shell, dialog;
     Display            *dpy;
@@ -921,8 +958,15 @@ MakeShell(parent, name, cname, args, count, icon)
     dialog = XtCreateWidget(cname, dialogWidgetClass, shell, args, count);
    /* Overridde icon */
     if (icon != (Pixmap) NULL) {
-	XtSetArg(largs[0], XtNicon, icon);
-	XtSetValues(dialog, largs, 1);
+	int	na = 0;
+
+	XtSetArg(largs[na], XtNicon, icon);
+	na++;
+        if (icon_mask != (Pixmap) NULL) {
+	    XtSetArg(largs[na], XtNiconMask, icon_mask);
+	    na++;
+        }
+        XtSetValues(dialog, largs, na);
     }
    /* Make sure shell gets destroyed when dialog goes away. */
     XtAddCallback(dialog, XtNdestroyCallback, DestroyCall, (XtPointer) shell);
@@ -936,6 +980,103 @@ MakeShell(parent, name, cname, args, count, icon)
    /* Also catch iconify events */
     XtAddEventHandler(parent, StructureNotifyMask, False, Iconify, shell);
     return dialog;
+}
+
+/* Color table for builtin images */
+static XColor       clist[10] =
+{
+    {0x0000, 0x0000, 0x0000, 0x0000, 0, 0},
+    {0x0000, 0xffff, 0x0000, 0x0000, 0, 0},
+    {0x0000, 0x8000, 0x0000, 0x8000, 0, 0},
+    {0x0000, 0x8000, 0x8000, 0x8000, 0, 0},
+    {0x0000, 0xffff, 0x0000, 0xffff, 0, 0},
+    {0x0000, 0xffff, 0xffff, 0xffff, 0, 0},
+    {0x0000, 0x8000, 0x8000, 0x0000, 0, 0},
+    {0x0000, 0xffff, 0xffff, 0x0000, 0, 0},
+    {0x0000, 0x0000, 0x0000, 0x8000, 0, 0},
+    {0x0000, 0xc000, 0xc000, 0xc000, 0, 0}
+};
+
+/*
+ * Make a Pixmap from asascii representation.
+ */
+static              Pixmap
+MakePixmap(parent, data, data_bit, width, height, mask)
+	Widget              parent;
+	char              **data;
+	char               *data_bit;
+	int                 width;
+	int                 height;
+	Pixmap             *mask;
+{
+    Display            *dpy = XtDisplay(parent);
+    int                 scn = DefaultScreen(dpy);
+    Visual             *visual = XDefaultVisual(dpy, scn);
+    Colormap            cmap = DefaultColormap(dpy, scn);
+    unsigned int        depth = XDefaultDepth(dpy, scn);
+    XImage             *img;
+    Pixmap              result;
+    char               *mask_data;
+    int                 i, j;
+    int			bitmap_pad;
+    GC                  gc;
+    XGCValues           values;
+
+    if (depth == 1) {
+	if (mask != NULL)
+	    *mask = (Pixmap) NULL;
+	return XCreateBitmapFromData(dpy, DefaultRootWindow(dpy),
+			 (char *) data_bit, width, height);
+    }
+    if (depth > 16)
+        bitmap_pad = 32;
+    else if (depth > 8)
+        bitmap_pad = 16;
+    else
+        bitmap_pad = 8;
+
+    for (i = 0; i < (sizeof(clist) / sizeof(XColor)); i++)
+	XAllocColor(dpy, cmap, &clist[i]);
+   /* Make mask bitmap */
+    mask_data = XtMalloc(i = ((width / 8) * height));
+    for (; i >= 0; mask_data[--i] = 0) ;
+   /* Make image */
+    img = XCreateImage(dpy, visual, depth, ZPixmap, 0, 0,
+		       width, height, bitmap_pad, 0);
+    img->data = (char *)XtMalloc(img->bytes_per_line * height);
+
+   /* Make image and mask */
+    for (i = 0; i < height; i++) {
+	char               *line = data[i];
+
+	for (j = 0; j < width; j++) {
+	    int                 pix = line[j] - '0';
+
+	    if (pix != 0) {
+		mask_data[((i * width) + j) / 8] |= 1 << (j & 0x7);
+		pix--;
+	    }
+	    XPutPixel(img, j, i, clist[pix].pixel);
+	}
+    }
+   /* Build mask if one was requested */
+    if (mask != NULL)
+	*mask = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy),
+			 (char *) mask_data, width, height);
+   /* Make the Pixmap */
+    result = XCreatePixmap(dpy, DefaultRootWindow(dpy), width, height, depth);
+
+    values.foreground = 1;
+    values.background = 0;
+    gc = XCreateGC(dpy, result, GCForeground | GCBackground, &values);
+
+    XPutImage(dpy, result, gc, img, 0, 0, 0, 0, width, height);
+
+   /* Free stuff we don't need */
+    XFreeGC(dpy, gc);
+    XDestroyImage(img);
+    XtFree(mask_data);
+    return result;
 }
 
 /************************************************************
@@ -1294,86 +1435,348 @@ cvtButtonTypeToString(dpy, args, num_args, from, to, converter_data)
     return TRUE;
 }
 
+Boolean
+cvtStringToDialogType(dpy, args, num_args, from, to, converter_data)
+	Display            *dpy;
+	XrmValuePtr         args;
+	Cardinal           *num_args;
+	XrmValuePtr         from;
+	XrmValuePtr         to;
+	XtPointer          *converter_data;
+{
+    String              s = (String) from->addr;
+    static int          result;
+
+    if (*num_args != 0) {
+	XtAppErrorMsg(XtDisplayToApplicationContext(dpy),
+		      "cvtStringToDialogType", "wrongParameters",
+		      "XtToolkitError",
+		  "String to packing type conversion needs no arguments",
+		      (String *) NULL, (Cardinal *) NULL);
+	return FALSE;
+    }
+
+    if (XmuCompareISOLatin1(s, "modeless") == 0)
+	result = XpwDialog_Modeless;
+    else if (XmuCompareISOLatin1(s, "modal") == 0)
+	result = XpwDialog_Modal;
+    else if (XmuCompareISOLatin1(s, "dialog") == 0)
+	result = XpwDialog_Dialog;
+    else {
+	XtDisplayStringConversionWarning(dpy, s, XtRDialogType);
+	return FALSE;
+    }
+
+    if (to->addr != NULL) {
+	if (to->size < sizeof(int)) {
+	    to->size = sizeof(int);
+
+	    return FALSE;
+	}
+	*(int *) (to->addr) = result;
+    } else
+	(int *) to->addr = &result;
+    to->size = sizeof(int);
+
+    return TRUE;
+}
+
+Boolean
+cvtDialogTypeToString(dpy, args, num_args, from, to, converter_data)
+	Display            *dpy;
+	XrmValuePtr         args;
+	Cardinal           *num_args;
+	XrmValuePtr         from;
+	XrmValuePtr         to;
+	XtPointer          *converter_data;
+{
+    static String       result;
+
+    if (*num_args != 0) {
+	XtAppErrorMsg(XtDisplayToApplicationContext(dpy),
+		      "cvtButtonTypeToString", "wrongParameters",
+		      "XtToolkitError",
+		  "packing type to String conversion needs no arguments",
+		      (String *) NULL, (Cardinal *) NULL);
+	return FALSE;
+    }
+    switch ((int) from->addr) {
+    case XpwDialog_Modeless:
+	result = "modeless";
+    case XpwDialog_Modal:
+	result = "modal";
+    case XpwDialog_Dialog:
+	result = "dialog";
+    default:
+	XtError("Illegal DialogType");
+	return FALSE;
+    }
+    if (to->addr != NULL) {
+	if (to->size < sizeof(String)) {
+	    to->size = sizeof(String);
+	    return FALSE;
+	}
+	*(String *) (to->addr) = result;
+    } else
+	(String *) to->addr = &result;
+    to->size = sizeof(String);
+    return TRUE;
+}
 /************************************************************
  *
  * Built in bitmaps.
  *
  ************************************************************/
 
-#define notice_width 32
-#define notice_height 32
-static unsigned char notice_bits[] = {
-   0x00, 0xe0, 0x01, 0x00, 0x00, 0xb0, 0x02, 0x00, 0x00, 0x58, 0x05, 0x00,
-   0x00, 0xa8, 0x06, 0x00, 0x00, 0x58, 0x05, 0x00, 0x00, 0xa8, 0x06, 0x00,
-   0x00, 0x58, 0x05, 0x00, 0x00, 0xb8, 0x06, 0x00, 0x00, 0x50, 0x03, 0x00,
-   0x00, 0xb0, 0x02, 0x00, 0x00, 0x50, 0x03, 0x00, 0x00, 0xb0, 0x02, 0x00,
-   0x00, 0x50, 0x03, 0x00, 0x00, 0xb0, 0x02, 0x00, 0x00, 0x50, 0x03, 0x00,
-   0x00, 0xb0, 0x03, 0x00, 0x00, 0x60, 0x01, 0x00, 0x00, 0xa0, 0x01, 0x00,
-   0x00, 0x60, 0x01, 0x00, 0x00, 0xa0, 0x01, 0x00, 0x00, 0xe0, 0x01, 0x00,
-   0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0xc0, 0x01, 0x00, 0x00, 0xa0, 0x02, 0x00, 0x00, 0x50, 0x05, 0x00,
-   0x00, 0xb0, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00, 0x00, 0xa0, 0x02, 0x00,
-   0x00, 0xc0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00};
+#define icon_width 32
+#define icon_height 32
 
-#define error_width 32
-#define error_height 32
-static unsigned char error_bits[] = {
-   0x00, 0x00, 0x00, 0x00, 0x00, 0xe0, 0x03, 0x00, 0x00, 0xf8, 0x0f, 0x00,
-   0x00, 0x5c, 0x35, 0x00, 0x00, 0xaf, 0xea, 0x00, 0x80, 0xd5, 0x57, 0x01,
-   0xc0, 0x3a, 0xb8, 0x02, 0x60, 0x05, 0x40, 0x05, 0xb0, 0x02, 0x80, 0x0a,
-   0x70, 0x01, 0x00, 0x0d, 0xb8, 0x00, 0x00, 0x1a, 0xd8, 0x00, 0x00, 0x16,
-   0xbc, 0x00, 0x00, 0x3a, 0xdc, 0xff, 0xff, 0x37, 0xac, 0xff, 0xff, 0x2b,
-   0x5c, 0x55, 0x55, 0x35, 0xac, 0xaa, 0xaa, 0x2a, 0xd8, 0xff, 0xff, 0x37,
-   0xb8, 0x00, 0x00, 0x3b, 0xd0, 0x00, 0x00, 0x17, 0xb0, 0x00, 0x00, 0x1b,
-   0x60, 0x01, 0x80, 0x0d, 0xa0, 0x02, 0xc0, 0x0a, 0x40, 0x05, 0x78, 0x05,
-   0x80, 0x3a, 0xbf, 0x02, 0x00, 0xd5, 0x57, 0x01, 0x00, 0xae, 0xea, 0x00,
-   0x00, 0x58, 0x35, 0x00, 0x00, 0xe0, 0x0f, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+static unsigned char notice_bits[] =
+{
+  0x00, 0xe0, 0x01, 0x00, 0x00, 0xb0, 0x02, 0x00, 0x00, 0x58, 0x05, 0x00,
+  0x00, 0xa8, 0x06, 0x00, 0x00, 0x58, 0x05, 0x00, 0x00, 0xa8, 0x06, 0x00,
+  0x00, 0x58, 0x05, 0x00, 0x00, 0xb8, 0x06, 0x00, 0x00, 0x50, 0x03, 0x00,
+  0x00, 0xb0, 0x02, 0x00, 0x00, 0x50, 0x03, 0x00, 0x00, 0xb0, 0x02, 0x00,
+  0x00, 0x50, 0x03, 0x00, 0x00, 0xb0, 0x02, 0x00, 0x00, 0x50, 0x03, 0x00,
+  0x00, 0xb0, 0x03, 0x00, 0x00, 0x60, 0x01, 0x00, 0x00, 0xa0, 0x01, 0x00,
+  0x00, 0x60, 0x01, 0x00, 0x00, 0xa0, 0x01, 0x00, 0x00, 0xe0, 0x01, 0x00,
+  0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0xc0, 0x01, 0x00, 0x00, 0xa0, 0x02, 0x00, 0x00, 0x50, 0x05, 0x00,
+  0x00, 0xb0, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00, 0x00, 0xa0, 0x02, 0x00,
+  0x00, 0xc0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-#define info_width 32
-#define info_height 32
-static unsigned char info_bits[] = {
-   0x00, 0x00, 0x00, 0x00, 0x00, 0xe0, 0x00, 0x00, 0x00, 0x50, 0x01, 0x00,
-   0x00, 0xa8, 0x02, 0x00, 0x00, 0x58, 0x03, 0x00, 0x00, 0xa8, 0x02, 0x00,
-   0x00, 0x50, 0x01, 0x00, 0x00, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0xf8, 0x03, 0x00, 0x00, 0xac, 0x06, 0x00, 0x00, 0x52, 0x05, 0x00,
-   0x00, 0xbe, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00, 0x00, 0xb0, 0x06, 0x00,
-   0x00, 0x50, 0x05, 0x00, 0x00, 0xb0, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00,
-   0x00, 0xb0, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00, 0x00, 0xb0, 0x06, 0x00,
-   0x00, 0x50, 0x05, 0x00, 0x00, 0xb0, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00,
-   0x00, 0xb0, 0x06, 0x00, 0x00, 0x58, 0x0d, 0x00, 0x00, 0xaf, 0x7a, 0x00,
-   0x00, 0x55, 0x55, 0x00, 0x00, 0xab, 0x6a, 0x00, 0x00, 0x55, 0x55, 0x00,
-   0x00, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00, 0x00};
+static char *notice_data[] =
+{
+    "00000000000000011100000000000000",
+    "00000000000000155310000000000000",
+    "00000000000001554531000000000000",
+    "00000000000001545531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001565531000000000000",
+    "00000000000001545531000000000000",
+    "00000000000001555531000000000000",
+    "00000000000001555531000000000000",
+    "00000000000001555531000000000000",
+    "00000000000001355531000000000000",
+    "00000000000000133310000000000000",
+    "00000000000000011100000000000000",
+    "00000000000000000000000000000000",
+    "00000000000000011100000000000000",
+    "00000000000000155310000000000000",
+    "00000000000001564531000000000000",
+    "00000000000001545531000000000000",
+    "00000000000001355531000000000000",
+    "00000000000000133310000000000000",
+    "00000000000000011100000000000000"
+};
 
-#define quest_width 32
-#define quest_height 32
-static unsigned char quest_bits[] = {
-   0x00, 0xfc, 0x7f, 0x00, 0x00, 0xaa, 0xaa, 0x00, 0x00, 0xfd, 0x5f, 0x01,
-   0x00, 0x0f, 0xa0, 0x02, 0x00, 0x05, 0x40, 0x03, 0x00, 0x07, 0x80, 0x02,
-   0x00, 0x05, 0x80, 0x03, 0x00, 0x02, 0x80, 0x02, 0x00, 0x00, 0x80, 0x03,
-   0x00, 0x00, 0x80, 0x02, 0x00, 0x00, 0x80, 0x03, 0x00, 0x00, 0x80, 0x02,
-   0x00, 0x00, 0x80, 0x03, 0x00, 0x00, 0xe0, 0x02, 0x00, 0x00, 0x50, 0x01,
-   0x00, 0x00, 0xac, 0x00, 0x00, 0x80, 0x77, 0x00, 0x00, 0x40, 0x0d, 0x00,
-   0x00, 0xa0, 0x07, 0x00, 0x00, 0x60, 0x01, 0x00, 0x00, 0xa0, 0x01, 0x00,
-   0x00, 0x60, 0x01, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x01, 0x00, 0x00, 0xa0, 0x02, 0x00,
-   0x00, 0x50, 0x05, 0x00, 0x00, 0xb0, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00,
-   0x00, 0xa0, 0x02, 0x00, 0x00, 0xc0, 0x01, 0x00};
+static unsigned char error_bits[] =
+{
+  0x00, 0x00, 0x00, 0x00, 0x00, 0xe0, 0x03, 0x00, 0x00, 0xf8, 0x0f, 0x00,
+  0x00, 0x5c, 0x35, 0x00, 0x00, 0xaf, 0xea, 0x00, 0x80, 0xd5, 0x57, 0x01,
+  0xc0, 0x3a, 0xb8, 0x02, 0x60, 0x05, 0x40, 0x05, 0xb0, 0x02, 0x80, 0x0a,
+  0x70, 0x01, 0x00, 0x0d, 0xb8, 0x00, 0x00, 0x1a, 0xd8, 0x00, 0x00, 0x16,
+  0xbc, 0x00, 0x00, 0x3a, 0xdc, 0xff, 0xff, 0x37, 0xac, 0xff, 0xff, 0x2b,
+  0x5c, 0x55, 0x55, 0x35, 0xac, 0xaa, 0xaa, 0x2a, 0xd8, 0xff, 0xff, 0x37,
+  0xb8, 0x00, 0x00, 0x3b, 0xd0, 0x00, 0x00, 0x17, 0xb0, 0x00, 0x00, 0x1b,
+  0x60, 0x01, 0x80, 0x0d, 0xa0, 0x02, 0xc0, 0x0a, 0x40, 0x05, 0x78, 0x05,
+  0x80, 0x3a, 0xbf, 0x02, 0x00, 0xd5, 0x57, 0x01, 0x00, 0xae, 0xea, 0x00,
+  0x00, 0x58, 0x35, 0x00, 0x00, 0xe0, 0x0f, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-#define work_width 32
-#define work_height 32
-static unsigned char work_bits[] = {
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0xc0, 0xff, 0xff, 0x01, 0x20, 0x00, 0x00, 0x02, 0x20, 0x00, 0x00, 0x02,
-   0x40, 0x00, 0x00, 0x01, 0x80, 0x80, 0x80, 0x00, 0x00, 0x41, 0x41, 0x00,
-   0x00, 0xa2, 0x22, 0x00, 0x00, 0x54, 0x15, 0x00, 0x00, 0xa8, 0x0a, 0x00,
-   0x00, 0x50, 0x05, 0x00, 0x00, 0xa0, 0x02, 0x00, 0x00, 0x40, 0x01, 0x00,
-   0x00, 0xc0, 0x01, 0x00, 0x00, 0x40, 0x01, 0x00, 0x00, 0x20, 0x02, 0x00,
-   0x00, 0x10, 0x04, 0x00, 0x00, 0x08, 0x08, 0x00, 0x00, 0x84, 0x10, 0x00,
-   0x00, 0x42, 0x21, 0x00, 0x00, 0xa1, 0x42, 0x00, 0x80, 0x50, 0x85, 0x00,
-   0x40, 0xa8, 0x0a, 0x01, 0x20, 0x54, 0x15, 0x02, 0x20, 0xaa, 0x2a, 0x02,
-   0xc0, 0xff, 0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+/* XPM */
+static char *error_data[] = {
+"00000000000000000000000000000000",
+"00000000000000000000000000000000",
+"00000000000000000000000000000000",
+"00000000000002222220000000000000",
+"00000000000222222222200000000000",
+"00000000022222222222222000000000",
+"00000000222221111112222200000000",
+"00000002222110000001222220000000",
+"00000022222000000000022222000000",
+"00000222222200000000002222100000",
+"00000222222220000000000222200000",
+"00002221022222000000000022210000",
+"00002221002222200000000022210000",
+"00022210000222220000000002221000",
+"00022210000022222000000002221000",
+"00022210000002222200000002221000",
+"00022210000000222220000002221000",
+"00022210000000022222000002221000",
+"00022210000000002222200002221000",
+"00002221000000000222220022210000",
+"00002222000000000022222022110000",
+"00000222200000000002222222100000",
+"00000222220000000000222221100000",
+"00000022222000000000022211000000",
+"00000002222220000002222110000000",
+"00000000222222222222221100000000",
+"00000000012222222222211000000000",
+"00000000000112222221100000000000",
+"00000000000001111110000000000000",
+"00000000000000000000000000000000",
+"00000000000000000000000000000000",
+"00000000000000000000000000000000",
+};
+
+static unsigned char info_bits[] =
+{
+  0x00, 0x00, 0x00, 0x00, 0x00, 0xe0, 0x00, 0x00, 0x00, 0x50, 0x01, 0x00,
+  0x00, 0xa8, 0x02, 0x00, 0x00, 0x58, 0x03, 0x00, 0x00, 0xa8, 0x02, 0x00,
+  0x00, 0x50, 0x01, 0x00, 0x00, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0xf8, 0x03, 0x00, 0x00, 0xac, 0x06, 0x00, 0x00, 0x52, 0x05, 0x00,
+  0x00, 0xbe, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00, 0x00, 0xb0, 0x06, 0x00,
+  0x00, 0x50, 0x05, 0x00, 0x00, 0xb0, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00,
+  0x00, 0xb0, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00, 0x00, 0xb0, 0x06, 0x00,
+  0x00, 0x50, 0x05, 0x00, 0x00, 0xb0, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00,
+  0x00, 0xb0, 0x06, 0x00, 0x00, 0x58, 0x0d, 0x00, 0x00, 0xaf, 0x7a, 0x00,
+  0x00, 0x55, 0x55, 0x00, 0x00, 0xab, 0x6a, 0x00, 0x00, 0x55, 0x55, 0x00,
+  0x00, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+static char *info_data[] = {
+"00000000000000000000000000000000",
+"00000000000000000000000000000000",
+"00000000000000000000000000000000",
+"00000000000000000000000000000000",
+"00000000000009999999000000000000",
+"00000000000999999999990000000000",
+"00000000099999466A49999900000000",
+"00000000999999666669999990000000",
+"00000009999994666664999999000000",
+"00000099999994666669999999900000",
+"00000099999999466649999999900000",
+"00000999999999944499999999990000",
+"00000999999944444449999999990000",
+"0000999999994A666669999999999000",
+"00009999999999466669999999999000",
+"00009999999999466669999999999000",
+"00009999999999466669999999999000",
+"00009999999999466669999999999000",
+"00009999999999466669999999999000",
+"00009999999999466669999999999000",
+"00000999999999466669999999990000",
+"00000999999999466669999999990000",
+"00000099999999466669999999900000",
+"00000099999999466669999999900000",
+"0000000999994466666A449999000000",
+"0000000099994A44444A499990000000",
+"00000000099999999999999900000000",
+"00000000000999999999990000000000",
+"00000000000009999999000000000000",
+"00000000000000000000000000000000",
+"00000000000000000000000000000000",
+"00000000000000000000000000000000",
+};
+
+static unsigned char quest_bits[] =
+{
+  0x00, 0xfc, 0x7f, 0x00, 0x00, 0xaa, 0xaa, 0x00, 0x00, 0xfd, 0x5f, 0x01,
+  0x00, 0x0f, 0xa0, 0x02, 0x00, 0x05, 0x40, 0x03, 0x00, 0x07, 0x80, 0x02,
+  0x00, 0x05, 0x80, 0x03, 0x00, 0x02, 0x80, 0x02, 0x00, 0x00, 0x80, 0x03,
+  0x00, 0x00, 0x80, 0x02, 0x00, 0x00, 0x80, 0x03, 0x00, 0x00, 0x80, 0x02,
+  0x00, 0x00, 0x80, 0x03, 0x00, 0x00, 0xe0, 0x02, 0x00, 0x00, 0x50, 0x01,
+  0x00, 0x00, 0xac, 0x00, 0x00, 0x80, 0x77, 0x00, 0x00, 0x40, 0x0d, 0x00,
+  0x00, 0xa0, 0x07, 0x00, 0x00, 0x60, 0x01, 0x00, 0x00, 0xa0, 0x01, 0x00,
+  0x00, 0x60, 0x01, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x01, 0x00, 0x00, 0xa0, 0x02, 0x00,
+  0x00, 0x50, 0x05, 0x00, 0x00, 0xb0, 0x06, 0x00, 0x00, 0x50, 0x05, 0x00,
+  0x00, 0xa0, 0x02, 0x00, 0x00, 0xc0, 0x01, 0x00};
+
+static char *quest_data[] = {
+"00000000000011111110000000000000",
+"00000000001188888801100000000000",
+"00000000118866666888011000000000",
+"00000001886668888888807100000000",
+"00000018866888888888880710000000",
+"00000018668807777708888010000000",
+"00000186688071111170888871000000",
+"00000186680710000017888871000000",
+"00000188887100000001888871000000",
+"00000108807100000001888871000000",
+"00000017771000000001888871000000",
+"00000001110000000001888871000000",
+"00000000000000000118888071000000",
+"00000000000000011888888710000000",
+"00000000000000188688887710000000",
+"00000000000001886888077100000000",
+"00000000000018668807711000000000",
+"00000000000018688071100000000000",
+"00000000000186680710000000000000",
+"00000000000186687100000000000000",
+"00000000000188887100000000000000",
+"00000000000108807100000000000000",
+"00000000000017771000000000000000",
+"00000000000001110000000000000000",
+"00000000000000000000000000000000",
+"00000000000001110000000000000000",
+"00000000000018801000000000000000",
+"00000000000186687100000000000000",
+"00000000000186687100000000000000",
+"00000000000108807100000000000000",
+"00000000000017771000000000000000",
+"00000000000001110000000000000000",
+};
+
+static unsigned char work_bits[] =
+{
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0xc0, 0xff, 0xff, 0x01, 0x20, 0x00, 0x00, 0x02, 0x20, 0x00, 0x00, 0x02,
+  0x40, 0x00, 0x00, 0x01, 0x80, 0x80, 0x80, 0x00, 0x00, 0x41, 0x41, 0x00,
+  0x00, 0xa2, 0x22, 0x00, 0x00, 0x54, 0x15, 0x00, 0x00, 0xa8, 0x0a, 0x00,
+  0x00, 0x50, 0x05, 0x00, 0x00, 0xa0, 0x02, 0x00, 0x00, 0x40, 0x01, 0x00,
+  0x00, 0xc0, 0x01, 0x00, 0x00, 0x40, 0x01, 0x00, 0x00, 0x20, 0x02, 0x00,
+  0x00, 0x10, 0x04, 0x00, 0x00, 0x08, 0x08, 0x00, 0x00, 0x84, 0x10, 0x00,
+  0x00, 0x42, 0x21, 0x00, 0x00, 0xa1, 0x42, 0x00, 0x80, 0x50, 0x85, 0x00,
+  0x40, 0xa8, 0x0a, 0x01, 0x20, 0x54, 0x15, 0x02, 0x20, 0xaa, 0x2a, 0x02,
+  0xc0, 0xff, 0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+static char *work_data[] = {
+"00000001111111111111111111000000",
+"00000010006660000000444440100000",
+"00000001106011111111114011000000",
+"00000000010000000000000100000000",
+"00000000010066000004400100000000",
+"00000000010066000004400100000000",
+"00000000010066000004400100000000",
+"00000000010066000004400100000000",
+"00000000010066000004400100000000",
+"00000000010066000004400100000000",
+"00000000010066000004400100000000",
+"00000000001006880070001000000000",
+"00000000000110677700110000000000",
+"00000000000001067001000000000000",
+"00000000000000100010000000000000",
+"00000000000000010100000000000000",
+"00000000000000010100000000000000",
+"00000000000000100010000000000000",
+"00000000000001000001000000000000",
+"00000000000110067000110000000000",
+"00000000001000687700001000000000",
+"00000000010078877744700100000000",
+"00000000010778877744770100000000",
+"00000000010778877744770100000000",
+"00000000010778877744770100000000",
+"00000000010778877744770100000000",
+"00000000010778877744770100000000",
+"00000000010778877744770100000000",
+"00000000010078877744700100000000",
+"00000001106044111111114011000000",
+"00000010006660000044444400100000",
+"00000001111111111111111111000000"
+};
 
 /************************************************************
  *
@@ -1391,14 +1794,14 @@ XpwDialogCreateNotice(parent, name, args, count)
 	Arg                *args;
 	int                 count;
 {
-    Display            *dpy = XtDisplay(parent);
     static Pixmap       notice = (Pixmap) NULL;
+    static Pixmap       notice_mask = (Pixmap) NULL;
 
     if (notice == (Pixmap) NULL)
-	notice = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy),
-		      (char *) notice_bits, notice_width, notice_height);
+       notice = MakePixmap(parent, notice_data, notice_bits,
+			icon_width, icon_height, &notice_mask);
 
-    return MakeShell(parent, name, "notice", args, count, notice);
+    return MakeShell(parent, name, "notice", args, count, notice, notice_mask);
 }
 
 /*
@@ -1411,14 +1814,14 @@ XpwDialogCreateError(parent, name, args, count)
 	Arg                *args;
 	int                 count;
 {
-    Display            *dpy = XtDisplay(parent);
     static Pixmap       error = (Pixmap) NULL;
+    static Pixmap       error_mask = (Pixmap) NULL;
 
     if (error == (Pixmap) NULL)
-	error = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy),
-			 (char *) error_bits, error_width, error_height);
+       error = MakePixmap(parent, error_data, error_bits,
+			icon_width, icon_height, &error_mask);
 
-    return MakeShell(parent, name, "error", args, count, error);
+    return MakeShell(parent, name, "error", args, count, error, error_mask);
 }
 
 /*
@@ -1431,14 +1834,14 @@ XpwDialogCreateInfo(parent, name, args, count)
 	Arg                *args;
 	int                 count;
 {
-    Display            *dpy = XtDisplay(parent);
     static Pixmap       info = (Pixmap) NULL;
+    static Pixmap       info_mask = (Pixmap) NULL;
 
     if (info == (Pixmap) NULL)
-	info = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy),
-			    (char *) info_bits, info_width, info_height);
+        info = MakePixmap(parent, info_data, info_bits,
+			icon_width, icon_height, &info_mask);
 
-    return MakeShell(parent, name, "info", args, count, info);
+    return MakeShell(parent, name, "info", args, count, info, info_mask);
 }
 
 /*
@@ -1451,16 +1854,15 @@ XpwDialogCreateQuestion(parent, name, args, count)
 	Arg                *args;
 	int                 count;
 {
-    Display            *dpy = XtDisplay(parent);
     static Pixmap       quest = (Pixmap) NULL;
+    static Pixmap       quest_mask = (Pixmap) NULL;
 
     if (quest == (Pixmap) NULL)
-	quest = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy),
-			 (char *) quest_bits, quest_width, quest_height);
+        quest = MakePixmap(parent, quest_data, quest_bits,
+			icon_width, icon_height, &quest_mask);
 
-    return MakeShell(parent, name, "question", args, count, quest);
+    return MakeShell(parent, name, "question", args, count, quest, quest_mask);
 }
-
 
 /*
  * Make a new work in progresss dialog.
@@ -1472,14 +1874,14 @@ XpwDialogCreateWork(parent, name, args, count)
 	Arg                *args;
 	int                 count;
 {
-    Display            *dpy = XtDisplay(parent);
     static Pixmap       work = (Pixmap) NULL;
+    static Pixmap       work_mask = (Pixmap) NULL;
 
     if (work == (Pixmap) NULL)
-	work = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy),
-			    (char *) work_bits, work_width, work_height);
+        work = MakePixmap(parent, work_data, work_bits,
+			icon_width, icon_height, &work_mask);
 
-    return MakeShell(parent, name, "work", args, count, work);
+    return MakeShell(parent, name, "work", args, count, work, work_mask);
 }
 
 /*
@@ -1492,7 +1894,8 @@ XpwDialogCreateDialog(parent, name, args, count)
 	Arg                *args;
 	int                 count;
 {
-    return MakeShell(parent, name, "dialog", args, count, (Pixmap) NULL);
+    return MakeShell(parent, name, "dialog", args, count, (Pixmap) NULL,
+				 (Pixmap) NULL);
 }
 
 /*

@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: ClueP.h,v 1.2 1997/11/01 06:39:02 rich Beta rich $
+ * $Id: ClueP.h,v 1.3 1998/01/24 20:43:27 rich Exp $
  *
  * $Log: ClueP.h,v $
+ * Revision 1.3  1998/01/24 20:43:27  rich
+ * Added support to disable clue popup.
+ *
  * Revision 1.2  1997/11/01 06:39:02  rich
  * Cleaned up comments.
  *

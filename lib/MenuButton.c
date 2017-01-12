@@ -27,6 +27,10 @@
  *
  *
  * $Log: MenuButton.c,v $
+ * Revision 1.5  1997/11/01 06:39:04  rich
+ * Changed justify to menuJustify to avoid conflict with label.
+ * Removed unused variables.
+ *
  * Revision 1.4  1997/10/15 05:42:56  rich
  * Added justification to pulldown menus.
  *
@@ -43,7 +47,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: MenuButton.c,v 1.4 1997/10/15 05:42:56 rich Exp rich $";
+static char        *rcsid = "$Id: MenuButton.c,v 1.5 1997/11/01 06:39:04 rich Beta $";
 
 #endif
 

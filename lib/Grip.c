@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Grip.c,v $
+ * Revision 1.2  1997/11/01 06:39:02  rich
+ * Removed unused variables.
+ *
  * Revision 1.1  1997/10/12 05:18:35  rich
  * Initial revision
  *
@@ -33,7 +36,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Grip.c,v 1.1 1997/10/12 05:18:35 rich Exp rich $";
+static char        *rcsid = "$Id: Grip.c,v 1.2 1997/11/01 06:39:02 rich Beta $";
 
 #endif
 

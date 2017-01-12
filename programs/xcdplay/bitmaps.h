@@ -1,9 +1,12 @@
 /*
  * XCdplay: Plays a cd.
  *
- * "$Id: bitmaps.h,v 1.1 1997/12/16 05:48:46 rich Exp rich $"
+ * "$Id: bitmaps.h,v 1.2 1998/01/26 01:02:01 rich Exp rich $"
  *
  * $Log: bitmaps.h,v $
+ * Revision 1.2  1998/01/26 01:02:01  rich
+ * Added Shuffle bitmap.
+ *
  * Revision 1.1  1997/12/16 05:48:46  rich
  * Initial revision
  *

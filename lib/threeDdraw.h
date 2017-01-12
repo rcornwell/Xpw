@@ -31,9 +31,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: threeDdraw.h,v 1.1 1997/10/26 04:22:04 rich Beta $
  *
- * $Log: $
+ * $Log: threeDdraw.h,v $
+ * Revision 1.1  1997/10/26 04:22:04  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _threeDdraw_H_

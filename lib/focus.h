@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: focus.h,v 1.1 1997/10/25 22:16:54 rich Beta $
  *
- * $Log: $
+ * $Log: focus.h,v $
+ * Revision 1.1  1997/10/25 22:16:54  rich
+ * Initial revision
+ *
  *
  */
 

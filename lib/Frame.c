@@ -27,6 +27,11 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Frame.c,v $
+ * Revision 1.3  1997/11/01 06:39:02  rich
+ * Added support for allowing child to be smaller than parent.
+ * Cleaned up geometry management code.
+ * Label is placed at Label height down.
+ *
  * Revision 1.2  1997/10/12 05:13:48  rich
  * Removed calling child expose.
  * Ask the child what size it wants to be.
@@ -39,7 +44,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Frame.c,v 1.2 1997/10/12 05:13:48 rich Exp rich $";
+static char        *rcsid = "$Id: Frame.c,v 1.3 1997/11/01 06:39:02 rich Beta $";
 
 #endif
 

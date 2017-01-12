@@ -1,0 +1,125 @@
+.\" $Id$
+.\"
+.\"
+.\" Copyright 1997 Richard P. Cornwell All Rights Reserved,
+.\"
+.\" The software is provided "as is", without warranty of any kind, express
+.\" or implied, including but not limited to the warranties of
+.\" merchantability, fitness for a particular purpose and non-infringement.
+.\" In no event shall Richard Cornwell be liable for any claim, damages
+.\" or other liability, whether in an action of contract, tort or otherwise,
+.\" arising from, out of or in connection with the software or the use or other
+.\" dealings in the software.
+.\"
+.\" Permission to use, copy, and distribute this software and its
+.\" documentation for non commercial use is hereby granted,
+.\" provided that the above copyright notice appear in all copies and that
+.\" both that copyright notice and this permission notice appear in
+.\" supporting documentation.
+.\"
+.\" The sale, resale, or use of this library for profit without the
+.\" express written consent of the author Richard Cornwell is forbidden.
+.\" Please see attached License file for information about using this
+.\" library in commercial applications, or for commercial software distribution.
+.\"
+.TH Paned 3Xpw "2 October 97"
+.UC 4
+.SH NAME
+Paned\- Widget Class.
+.SH SYNOPSIS
+.TA 2.0i 
+.ta 2.0i
+.LP
+Class name:     PanedWidget
+.br
+Class pointer:	panedWidgetClass
+.br
+Class hierarchy:	panedWidgetClass \(-> constraintWidgetClass
+\(-> compositeWidgetClass \(-> Core
+.P
+.nf
+.B #include <X11/Xpw/Paned.h>
+.LP
+.B panedWidget = XtCreateWidget( \(lqpaned\(rq, panedWidgetClass, ...)
+.LP
+.fi
+.SH DESCRIPTION
+.LP
+The \fIPanedWidget\fR lays it's children out in rows or columns, like
+\fIRowColWidget\fR but will place grips on selected children to allow for
+the user to resize them. Constrants determine how widgets are resized.
+.SH RESOURCES
+.P
+.TA 2.0i 3.5i 4.0i
+.ta 2.0i 3.5i 4.0i 
+.P
+.BI orientation	XtOrientation	vertical
+.P
+Controls direction children are added in.
+.P
+.BI refigureMode	Boolean	True
+.P
+If set off widget will not respond to resize requests.
+.P
+.BI packing	PackingType	fill
+.P
+Controls how children are packed if they don't fill window. \fBFill\fR expands
+all children to largest size. \fBEven\fR spaces children out evenly.
+\fBNoFile\fR squeezes children to one side.
+.P
+.BI spacing	Dimension	2
+.P
+How many pixels to leave between children.
+.P
+
+.SH "CHILD RESOURCES"
+.P
+.BI allowResize	Boolean	False
+.P
+If true allow child to make resize requests.
+.P
+.BI resizeToPreferred	Boolean	True
+.P
+Resize child to it's prefered size.
+.P
+.BI skipAdjust	Boolean	False
+.P
+When readjusting children, don't change childs size.
+.P
+.BI min	Dimension	1
+.P
+Do allow child to ever get smaller then this.
+.P
+.BI max	Dimension	-1
+.P
+If greater then 0, don't allow child to grow bigger then this size.
+.P
+.SH "CALLBACK DATA"
+.P
+None
+.P
+.SH "CONVENIENCE ROUTINES"
+.P
+\fBXpwPanedSetRefigureMode\fR Set flag witch controls wether widgets will 
+relayout when changes are made.
+.P
+.nf
+void XpwPanedSetRefigureMode(Widget w, Boolean mode);
+.fi
+.P
+\fBXpwPanedGetNumSub\fR Returns the number of children in the paned widget.
+.P
+.nf
+int XpwPanedGetNumSub(Widget w);
+.fi
+.P
+\fBXpwPanedAllowResize\fR Sets or clears resize flag for widget.
+.P
+.nf
+void XpwPanedAllowResize(Widget w, Boolean allow_resize);
+.fi
+.P
+.SH "SEE ALSO"
+Paned(3), Stack(3).
+.SH AUTHOR
+Richard Cornwell

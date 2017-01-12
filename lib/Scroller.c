@@ -26,6 +26,14 @@
  *
  * 
  * $Log: Scroller.c,v $
+ * Revision 1.4  1997/11/01 06:39:07  rich
+ * Thumb is no longer a special resource.
+ * Removed unused variables.
+ * Make sure Scroller does not function when not sensitive.
+ * Added IsVert to clean up code.
+ * General code cleanup.
+ * RedrawThumb no longer accepts region and event.
+ *
  * Revision 1.3  1997/10/15 05:43:17  rich
  * Removed destroy for arrow widgets.
  *
@@ -46,7 +54,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Scroller.c,v 1.3 1997/10/15 05:43:17 rich Exp rich $";
+static char        *rcsid = "$Id: Scroller.c,v 1.4 1997/11/01 06:39:07 rich Beta $";
 
 #endif
 

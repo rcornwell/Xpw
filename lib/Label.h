@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: Label.h,v 1.1 1997/10/04 05:04:39 rich Beta $
  *
- * $Log:$
+ * $Log: Label.h,v $
+ * Revision 1.1  1997/10/04 05:04:39  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _Label_H_

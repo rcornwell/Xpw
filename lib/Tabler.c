@@ -25,6 +25,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Tabler.c,v $
+ * Revision 1.2  1998/01/24 20:43:28  rich
+ * Don't ever let width or height go to zero.
+ *
  * Revision 1.1  1997/11/28 19:57:31  rich
  * Initial revision
  *
@@ -32,7 +35,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Tabler.c,v 1.1 1997/11/28 19:57:31 rich Exp rich $";
+static char        *rcsid = "$Id: Tabler.c,v 1.2 1998/01/24 20:43:28 rich Exp $";
 
 #endif
 

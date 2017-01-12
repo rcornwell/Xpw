@@ -28,9 +28,13 @@
  */
 
 /*
- * $Id: FrameP.h,v 1.1 1997/10/04 05:04:15 rich Exp rich $
+ * $Id: FrameP.h,v 1.2 1997/11/01 06:39:02 rich Beta $
  *
  * $Log: FrameP.h,v $
+ * Revision 1.2  1997/11/01 06:39:02  rich
+ * Added usePrefered and label_height.
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/04 05:04:15  rich
  * Initial revision
  *

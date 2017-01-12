@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: ViewPort.h,v 1.1 1997/10/19 01:42:08 rich Beta $
  *
- * $Log: $
+ * $Log: ViewPort.h,v $
+ * Revision 1.1  1997/10/19 01:42:08  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _ViewPort_H_

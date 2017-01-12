@@ -28,9 +28,13 @@
  */
 
 /*
- * $Id: SliderP.h,v 1.1 1997/10/08 04:08:42 rich Exp rich $
+ * $Id: SliderP.h,v 1.2 1997/11/01 06:39:08 rich Beta $
  *
  * $Log: SliderP.h,v $
+ * Revision 1.2  1997/11/01 06:39:08  rich
+ * Removed unused GC.
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/08 04:08:42  rich
  * Initial revision
  *

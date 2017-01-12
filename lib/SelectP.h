@@ -31,9 +31,12 @@
 /* 
  * SelectP.h - Private definitions for Selection object
  *
- * $Id: SelectP.h,v 1.1 1997/10/04 22:13:23 rich Exp rich $
+ * $Id: SelectP.h,v 1.2 1997/11/01 06:39:08 rich Beta $
  *
  * $Log: SelectP.h,v $
+ * Revision 1.2  1997/11/01 06:39:08  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/04 22:13:23  rich
  * Initial revision
  *

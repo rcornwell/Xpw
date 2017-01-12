@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: List.h,v 1.1 1997/10/09 02:40:35 rich Beta rich $
+ * $Id: List.h,v 1.2 1998/01/24 20:43:28 rich Exp $
  *
  * $Log: List.h,v $
+ * Revision 1.2  1998/01/24 20:43:28  rich
+ * XpwGetItem now returns text string, if pointer is non-null.
+ *
  * Revision 1.1  1997/10/09 02:40:35  rich
  * Initial revision
  *

@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: DialogShellP.h,v 1.1 1997/11/28 19:56:42 rich Exp $
  *
- * $Log: $
+ * $Log: DialogShellP.h,v $
+ * Revision 1.1  1997/11/28 19:56:42  rich
+ * Initial revision
+ *
  *
  */
 

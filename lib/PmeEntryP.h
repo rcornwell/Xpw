@@ -25,9 +25,12 @@
  */
 
 /*
- * $Id: PmeEntryP.h,v 1.2 1997/10/05 02:17:28 rich Exp rich $
+ * $Id: PmeEntryP.h,v 1.3 1997/11/01 06:39:06 rich Beta $
  *
  * $Log: PmeEntryP.h,v $
+ * Revision 1.3  1997/11/01 06:39:06  rich
+ * Cleaned up comments.
+ *
  * Revision 1.2  1997/10/05 02:17:28  rich
  * Added callbacks into class for retrieving menu_name and doing clue handling.
  *

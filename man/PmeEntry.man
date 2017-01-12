@@ -1,0 +1,113 @@
+.\" $Id$
+.\"
+.\"
+.\" Copyright 1997 Richard P. Cornwell All Rights Reserved,
+.\"
+.\" The software is provided "as is", without warranty of any kind, express
+.\" or implied, including but not limited to the warranties of
+.\" merchantability, fitness for a particular purpose and non-infringement.
+.\" In no event shall Richard Cornwell be liable for any claim, damages
+.\" or other liability, whether in an action of contract, tort or otherwise,
+.\" arising from, out of or in connection with the software or the use or other
+.\" dealings in the software.
+.\"
+.\" Permission to use, copy, and distribute this software and its
+.\" documentation for non commercial use is hereby granted,
+.\" provided that the above copyright notice appear in all copies and that
+.\" both that copyright notice and this permission notice appear in
+.\" supporting documentation.
+.\"
+.\" The sale, resale, or use of this library for profit without the
+.\" express written consent of the author Richard Cornwell is forbidden.
+.\" Please see attached License file for information about using this
+.\" library in commercial applications, or for commercial software distribution.
+.\"
+.TH PmeEntry 3Xpw "2 October 97"
+.UC 4
+.SH NAME
+PmeEntry Widget Class.
+.SH SYNOPSIS
+.nf
+.B #include <X11/Xpw/PmeEntry.h>
+.LP
+.B pmeEntryWidget = XtCreateWidget( \(lqpmeEntry\(rq, pmeEntryWidgetClass, ...)
+.LP
+.fi
+.SH DESCRIPTION
+.LP
+The \fIPmeEntryWidget\fR draws a label for popup menus. 
+Each widget can have a clue assoicated with it and a cascaded submenu. All of
+the logic for poping these up is controled by the \fIPopupMenuWidget\fR.
+.SH RESOURCES
+.TA 2.0i 3.5i 4.0i
+.ta 2.0i 3.5i 4.0i 
+.P
+.BI clue	String	NULL
+.P
+If set to a none empty string, will cause a popop window with string contents
+to be displayed if the mouse stays in the label window for more than the
+Clue timeout value.
+.P
+.BI callback	Callback	NULL
+.P
+Call back application when button is released over this widget.
+.P
+.BI menuName	String	NULL
+.P
+Set to menu name of cascade submenu.
+.P
+.BI international	Boolean	False
+.P
+If set use fontset. Otherwise use font.
+.P
+.BI font	XFontStruct	XtDefaultFont
+.br
+.BI fontSet	XFontSet	XtDefaultFontSet
+.P
+.BI foreground	Pixel	XtDefaultForeground
+.P
+Color to display label in.
+.P
+.BI label	String	Name\ of\ widget
+.P
+Text to display.
+.P
+.BI justify	XtJustify	Left
+.P
+How to justify the label. Values are Right, Center, Left.
+.P
+.BI bitmap	Pixmap	None
+.P
+If set displayed in place of label string.
+.P
+.BI leftBitmap	Pixmap	None
+.P
+If set displayed to the left of label string.
+.P
+.BI rightBitmap	Pixmap	None
+.P
+If set displayed to the right of label string.
+.P
+.BI leftMargin	Dimension	4
+.P
+How much space to indent label or bitmap from left edge.
+.P
+.BI rightMargin	Dimension	4
+.P
+How much space to indent label or bitmap from right edge.
+.P
+.BI vertSpace	int	25
+.P
+Percent to grow height over label height.
+.SH "CALLBACK DATA"
+.P
+None
+.P
+.SH "CONVENIENCE ROUTINES"
+.P
+None
+.P
+.SH "SEE ALSO"
+PopupMenu(3), PmeLine(3), PmeSelect(3).
+.SH AUTHOR
+Richard Cornwell

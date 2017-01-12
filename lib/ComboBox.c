@@ -28,6 +28,10 @@
  *
  *
  * $Log: ComboBox.c,v $
+ * Revision 1.3  1998/01/24 20:43:27  rich
+ * Make sure changing list causes a redraw.
+ * Use SetValues to update label setting so sizes are done correctly.
+ *
  * Revision 1.2  1997/12/06 04:14:49  rich
  * Don't Free Children since they are already gone.
  * When freeing list, make sure item count it correct.
@@ -40,7 +44,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: ComboBox.c,v 1.2 1997/12/06 04:14:49 rich Exp rich $";
+static char        *rcsid = "$Id: ComboBox.c,v 1.3 1998/01/24 20:43:27 rich Exp $";
 
 #endif
 

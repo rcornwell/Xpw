@@ -25,6 +25,12 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: List.c,v $
+ * Revision 1.4  1998/01/24 20:43:27  rich
+ * Don't realize scrollbars if we are not realized.
+ * Fixed errors in XpwListDeleteItems.
+ * When replacing items if string is same, don't update.
+ * XpwGetItem now returns text string, if pointer is non-null.
+ *
  * Revision 1.3  1997/11/01 06:39:03  rich
  * Removed unused variables.
  *
@@ -38,7 +44,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: List.c,v 1.3 1997/11/01 06:39:03 rich Beta rich $";
+static char        *rcsid = "$Id: List.c,v 1.4 1998/01/24 20:43:27 rich Exp $";
 
 #endif
 

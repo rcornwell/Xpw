@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: label.h,v 1.1 1997/10/12 05:20:24 rich Beta rich $
+ * $Id: label.h,v 1.2 1997/12/06 04:14:51 rich Exp $
  *
  * $Log: label.h,v $
+ * Revision 1.2  1997/12/06 04:14:51  rich
+ * Added support for color images.
+ *
  * Revision 1.1  1997/10/12 05:20:24  rich
  * Initial revision
  *

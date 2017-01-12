@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id$
+ * $Id: Line.h,v 1.1 1997/10/04 05:05:03 rich Beta $
  *
- * $Log:$
+ * $Log: Line.h,v $
+ * Revision 1.1  1997/10/04 05:05:03  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _Line_H_

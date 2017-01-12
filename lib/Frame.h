@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: Frame.h,v 1.1 1997/10/04 05:04:15 rich Exp rich $
+ * $Id: Frame.h,v 1.2 1997/11/01 06:39:02 rich Beta $
  *
  * $Log: Frame.h,v $
+ * Revision 1.2  1997/11/01 06:39:02  rich
+ * Added usePreferedSize Resource.
+ *
  * Revision 1.1  1997/10/04 05:04:15  rich
  * Initial revision
  *

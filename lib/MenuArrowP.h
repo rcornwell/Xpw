@@ -30,9 +30,12 @@
 /* 
  * MenuArrowP.h - Private definitions for MenuArrow.
  *
- * $Id: MenuArrowP.h,v 1.2 1997/11/01 06:39:04 rich Beta rich $
+ * $Id: MenuArrowP.h,v 1.3 1997/11/28 19:31:07 rich Beta $
  *
  * $Log: MenuArrowP.h,v $
+ * Revision 1.3  1997/11/28 19:31:07  rich
+ * Added alignToParent resource for ComboBox.
+ *
  * Revision 1.2  1997/11/01 06:39:04  rich
  * Changed justify to menuJustify to avoid conflict with label.
  * Cleaned up comments.

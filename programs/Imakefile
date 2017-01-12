@@ -1,0 +1,15 @@
+XCOMM $Id: $
+#define IHaveSubdirs
+#define PassCDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
+
+XCOMM Linux specific programs
+
+#ifdef LinuxArchitecture
+  LINUXPROGS = xmixer xpppmon
+#endif
+
+
+SUBDIRS = xload xcdplay xnotepad $(LINUXPROGS)
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

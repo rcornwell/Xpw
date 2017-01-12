@@ -27,6 +27,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: threeDdraw.c,v $
+ * Revision 1.3  1997/11/28 19:31:07  rich
+ * Added shape type of none to convertion routines.
+ *
  * Revision 1.2  1997/11/01 06:39:10  rich
  * Removed unused definition.
  * Added None to switch statments.
@@ -39,7 +42,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: threeDdraw.c,v 1.2 1997/11/01 06:39:10 rich Beta rich $";
+static char        *rcsid = "$Id: threeDdraw.c,v 1.3 1997/11/28 19:31:07 rich Beta $";
 
 #endif
 

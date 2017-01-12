@@ -26,6 +26,11 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Select.c,v $
+ * Revision 1.3  1997/11/01 06:39:08  rich
+ * Cleaned up switch display handling code.
+ * Fixed some errors in geometry query code.
+ * Removed unused variables.
+ *
  * Revision 1.2  1997/10/05 02:25:17  rich
  * Make sure ident line is in object file.
  *
@@ -36,7 +41,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Select.c,v 1.2 1997/10/05 02:25:17 rich Exp $";
+static char        *rcsid = "$Id: Select.c,v 1.3 1997/11/01 06:39:08 rich Beta $";
 
 #endif
 

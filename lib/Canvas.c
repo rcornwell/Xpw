@@ -26,6 +26,11 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Canvas.c,v $
+ * Revision 1.2  1997/11/01 06:39:01  rich
+ * Don't compress motion or expose events.
+ * Fixed typo in callback reason.
+ * Removed unused definition.
+ *
  * Revision 1.1  1997/10/19 01:41:37  rich
  * Initial revision
  *
@@ -33,7 +38,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Canvas.c,v 1.1 1997/10/19 01:41:37 rich Exp rich $";
+static char        *rcsid = "$Id: Canvas.c,v 1.2 1997/11/01 06:39:01 rich Beta $";
 
 #endif
 

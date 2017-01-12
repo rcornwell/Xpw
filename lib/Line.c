@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Line.c,v $
+ * Revision 1.3  1997/11/01 06:39:03  rich
+ * Don't inherit translations, there is no translations for this widget.
+ *
  * Revision 1.2  1997/10/08 04:11:32  rich
  * Reversed direction of shadow.
  *
@@ -36,7 +39,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Line.c,v 1.2 1997/10/08 04:11:32 rich Exp rich $";
+static char        *rcsid = "$Id: Line.c,v 1.3 1997/11/01 06:39:03 rich Beta $";
 
 #endif
 

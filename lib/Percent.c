@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Percent.c,v $
+ * Revision 1.2  1997/11/01 06:39:05  rich
+ * Removed unused variables.
+ *
  * Revision 1.1  1997/10/08 04:03:06  rich
  * Initial revision
  *
@@ -34,7 +37,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Percent.c,v 1.1 1997/10/08 04:03:06 rich Exp rich $";
+static char        *rcsid = "$Id: Percent.c,v 1.2 1997/11/01 06:39:05 rich Beta $";
 
 #endif
 

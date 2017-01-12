@@ -24,6 +24,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: label.c,v $
+ * Revision 1.5  1998/01/24 20:43:29  rich
+ * Fixed redisplay problems
+ *
  * Revision 1.4  1997/12/06 04:14:51  rich
  * Added support for color images.
  *
@@ -41,7 +44,7 @@
  */
 
 #ifndef lint
-static char         rcsid[] = "$Id: label.c,v 1.4 1997/12/06 04:14:51 rich Exp rich $";
+static char         rcsid[] = "$Id: label.c,v 1.5 1998/01/24 20:43:29 rich Exp $";
 
 #endif
 

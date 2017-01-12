@@ -30,9 +30,13 @@
 /* 
  * MenuButtonP.h - Private definitions for MenuButton object
  *
- * $Id: MenuButtonP.h,v 1.2 1997/10/15 05:42:56 rich Exp rich $
+ * $Id: MenuButtonP.h,v 1.3 1997/11/01 06:39:05 rich Beta $
  *
  * $Log: MenuButtonP.h,v $
+ * Revision 1.3  1997/11/01 06:39:05  rich
+ * Changed justify to menuJustify to avoid conflict with label.
+ * Cleaned up comments.
+ *
  * Revision 1.2  1997/10/15 05:42:56  rich
  * Added justification to pulldown menus.
  *

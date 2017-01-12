@@ -25,12 +25,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log: $
+ * $Log: Chart.c,v $
+ * Revision 1.1  1997/10/15 04:57:46  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: Chart.c,v 1.1 1997/10/15 04:57:46 rich Beta $";
 
 #endif
 

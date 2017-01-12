@@ -4,6 +4,10 @@
  * Handles tracklist and xmcd database.
  *
  * $Log: tracklist.cc,v $
+ * Revision 1.2  1998/01/26 01:02:02  rich
+ * Merged Playlist edit into Tracklist Edit.
+ * Changed to support new API for List Widget.
+ *
  * Revision 1.1  1997/12/16 05:48:46  rich
  * Initial revision
  *
@@ -11,7 +15,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: tracklist.cc,v 1.1 1997/12/16 05:48:46 rich Exp rich $";
+static char        *rcsid = "$Id: tracklist.cc,v 1.2 1998/01/26 01:02:02 rich Exp rich $";
 #endif
 
 /* System stuff */

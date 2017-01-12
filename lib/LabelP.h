@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: LabelP.h,v 1.1 1997/10/04 05:04:39 rich Exp rich $
+ * $Id: LabelP.h,v 1.2 1997/11/01 06:39:03 rich Beta $
  *
  * $Log: LabelP.h,v $
+ * Revision 1.2  1997/11/01 06:39:03  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/04 05:04:39  rich
  * Initial revision
  *

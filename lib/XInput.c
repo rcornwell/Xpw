@@ -23,12 +23,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log: $
+ * $Log: XInput.c,v $
+ * Revision 1.1  1997/11/29 01:17:42  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: XInput.c,v 1.1 1997/11/29 01:17:42 rich Exp $";
 #endif
 
 /* $XConsortium: XpwIm.c /main/9 1996/11/09 08:20:50 kaleb $ */

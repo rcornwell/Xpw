@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: Chart.h,v 1.1 1997/10/15 04:57:46 rich Beta $
  *
- * $Log: $
+ * $Log: Chart.h,v $
+ * Revision 1.1  1997/10/15 04:57:46  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _Chart_H_

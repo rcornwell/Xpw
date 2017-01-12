@@ -1,0 +1,115 @@
+.\" $Id$
+.\"
+.\"
+.\" Copyright 1997 Richard P. Cornwell All Rights Reserved,
+.\"
+.\" The software is provided "as is", without warranty of any kind, express
+.\" or implied, including but not limited to the warranties of
+.\" merchantability, fitness for a particular purpose and non-infringement.
+.\" In no event shall Richard Cornwell be liable for any claim, damages
+.\" or other liability, whether in an action of contract, tort or otherwise,
+.\" arising from, out of or in connection with the software or the use or other
+.\" dealings in the software.
+.\"
+.\" Permission to use, copy, and distribute this software and its
+.\" documentation for non commercial use is hereby granted,
+.\" provided that the above copyright notice appear in all copies and that
+.\" both that copyright notice and this permission notice appear in
+.\" supporting documentation.
+.\"
+.\" The sale, resale, or use of this library for profit without the
+.\" express written consent of the author Richard Cornwell is forbidden.
+.\" Please see attached License file for information about using this
+.\" library in commercial applications, or for commercial software distribution.
+.\"
+.TH Grip 3Xpw "2 October 97"
+.UC 4
+.SH NAME
+Grip\- Widget Class.
+.SH SYNOPSIS
+.TA 2.0i 
+.ta 2.0i
+.LP
+Class name:     GripWidget
+.br
+Class pointer:	gripWidgetClass
+.br
+Class hierarchy:        gripWidgetClass \(-> Core
+.P
+.nf
+.B #include <X11/Xpw/Grip.h>
+.LP
+.B gripWidget = XtCreateWidget( \(lqgrip\(rq, gripWidgetClass, ...)
+.LP
+.fi
+.SH DESCRIPTION
+.LP
+The \fIGripWidget\fR draws a square and collects mouse events.
+.SH RESOURCES
+.TA 2.0i 3.5i 4.0i
+.ta 2.0i 3.5i 4.0i 
+.P
+.BI clue	String	NULL
+.P
+If set to a non-empty string, will cause a popop window with string contents
+to be displayed if the mouse stays in the label window for more than the
+Clue timeout value.
+.P
+.BI callback	Callback	None
+.P
+Call back to use when the mouse is selected and moving in window.
+.P
+.BI foreground	Pixel		XtDefaultForeground
+.P
+Color to draw top of widget it.
+.P
+.BI raised	Boolean	True
+.P
+Default direction for shadows.
+.P
+.BI frameType	FrameType	XfBeveled
+.P
+Controls the style of the outline around the window. Styles are:
+Beveled, Grooved, Edge, Outline, None.
+.P
+.BI topShadowPixel	Pixel	XtDefaultForeground 
+.br
+.BI botShadowPixel	Pixel	XtDefaultForeground 
+.P
+Color to use for the top and bottom shadows.
+.P
+.BI topShadowPixmap	Pixmap	Null 
+.br
+.BI botShadowPixmap	Pixmap	Null 
+.P
+Pixmap to us to shadow, overides \fItopShadowPixel\fR and \fIbotShadowPixel\fR.
+.P
+.BI topShadowContrast	Int	20 
+.br
+.BI botShadowContrast	Int	40 
+.P
+Darken the background color by this amount for shadow color.
+.P
+.BI shadowWidth	Dimension	2
+.P
+How many pixels to make shadows.
+.P
+.BI beNiceToColorMap	Boolean	True
+.P
+Use a stipple mask rather then allocating seperate colors for shadows.
+.P
+.SH "CALLBACK DATA"
+.P
+.nf
+typedef struct _XpwGripCallData {
+  XEvent *event;                /* the event causing the GripAction */
+  String *params;               /* the TranslationTable params */
+  Cardinal num_params;          /* count of params */
+} XpwGripCallDataRec, *XpwGripCallData;
+.fi
+.P
+.SH "CONVENIENCE ROUTINES"
+.P
+None
+.SH AUTHOR
+Richard Cornwell

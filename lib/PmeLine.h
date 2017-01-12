@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id$
+ * $Id: PmeLine.h,v 1.1 1997/10/04 05:08:13 rich Beta $
  *
- * $Log:$
+ * $Log: PmeLine.h,v $
+ * Revision 1.1  1997/10/04 05:08:13  rich
+ * Initial revision
+ *
  *
  */
 

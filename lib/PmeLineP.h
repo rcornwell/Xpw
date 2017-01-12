@@ -25,9 +25,12 @@
  */
 
 /*
- * $Id: PmeLineP.h,v 1.2 1997/10/05 02:17:29 rich Exp rich $
+ * $Id: PmeLineP.h,v 1.3 1997/11/01 06:39:06 rich Beta $
  *
  * $Log: PmeLineP.h,v $
+ * Revision 1.3  1997/11/01 06:39:06  rich
+ * Cleaned up comments.
+ *
  * Revision 1.2  1997/10/05 02:17:29  rich
  * Make class extensions to make PmeEntry.
  *

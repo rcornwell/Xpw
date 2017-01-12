@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id$
+ * $Id: Arrow.h,v 1.1 1997/10/04 18:59:34 rich Beta $
  *
- * $Log:$
+ * $Log: Arrow.h,v $
+ * Revision 1.1  1997/10/04 18:59:34  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _Arrow_H_

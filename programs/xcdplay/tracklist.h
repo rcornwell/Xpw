@@ -6,9 +6,12 @@
  */
 
 /*
- * $Id: tracklist.h,v 1.1 1997/12/16 05:48:46 rich Exp rich $
+ * $Id: tracklist.h,v 1.2 1998/01/26 01:02:02 rich Exp rich $
  *
  * $Log: tracklist.h,v $
+ * Revision 1.2  1998/01/26 01:02:02  rich
+ * Merged PlayList and Tracklist into one popup.
+ *
  * Revision 1.1  1997/12/16 05:48:46  rich
  * Initial revision
  *

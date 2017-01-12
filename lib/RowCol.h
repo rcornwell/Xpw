@@ -28,9 +28,13 @@
  */
 
 /*
- * $Id: RowCol.h,v 1.2 1997/10/12 05:14:16 rich Exp rich $
+ * $Id: RowCol.h,v 1.3 1997/11/01 06:39:07 rich Beta $
  *
  * $Log: RowCol.h,v $
+ * Revision 1.3  1997/11/01 06:39:07  rich
+ * Cleaned up comments.
+ * Added Justify for unfull windows.
+ *
  * Revision 1.2  1997/10/12 05:14:16  rich
  * Make sure XpwPackingType is not defined more than once.
  *

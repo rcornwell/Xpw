@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: Cardinals.h,v 1.1 1997/10/12 05:14:52 rich Beta $
  *
- * $Log: $
+ * $Log: Cardinals.h,v $
+ * Revision 1.1  1997/10/12 05:14:52  rich
+ * Initial revision
+ *
  *
  */
 

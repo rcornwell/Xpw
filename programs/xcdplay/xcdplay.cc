@@ -2,6 +2,10 @@
  * XCdplay: Plays a cd.
  *
  * $Log: xcdplay.cc,v $
+ * Revision 1.2  1998/01/26 01:02:02  rich
+ * New option, Don't show popup clues.
+ * Check if CDDB needs to be made and prompt if it does not exist.
+ *
  * Revision 1.1  1997/12/16 05:48:46  rich
  * Initial revision
  *
@@ -9,7 +13,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: xcdplay.cc,v 1.1 1997/12/16 05:48:46 rich Exp rich $";
+static char        *rcsid = "$Id: xcdplay.cc,v 1.2 1998/01/26 01:02:02 rich Exp rich $";
 #endif
 
 /* System stuff */
@@ -31,6 +35,15 @@ static char        *rcsid = "$Id: xcdplay.cc,v 1.1 1997/12/16 05:48:46 rich Exp 
 #include <X11/StringDefs.h>
 #include <Xpw/Dialog.h>
 #include <Xpw/Clue.h>
+
+/* To get Maxdrives right */
+#ifdef linux
+#include <linux/cdrom.h>
+#include <linux/ucdrom.h>
+#else
+#include <sys/cdio.h>
+#endif
+
 #include "xcdplay.h"
 #include "string.h"
 #include "player.h"

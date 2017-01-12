@@ -4,6 +4,10 @@
  * Handles playlist control.
  *
  * $Log: playlist.cc,v $
+ * Revision 1.2  1998/01/26 01:02:02  rich
+ * Added shuffle support.
+ * Added List rolling.
+ *
  * Revision 1.1  1997/12/16 05:48:46  rich
  * Initial revision
  *
@@ -11,7 +15,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: playlist.cc,v 1.1 1997/12/16 05:48:46 rich Exp rich $";
+static char        *rcsid = "$Id: playlist.cc,v 1.2 1998/01/26 01:02:02 rich Exp rich $";
 
 #endif
 
@@ -28,6 +32,14 @@ static char        *rcsid = "$Id: playlist.cc,v 1.1 1997/12/16 05:48:46 rich Exp
 #include <X11/Intrinsic.h>
 #include <X11/Shell.h>
 #include <X11/StringDefs.h>
+
+/* To get Maxdrives correct */
+#ifdef linux
+#include <linux/cdrom.h>
+#include <linux/ucdrom.h>
+#else
+#include <sys/cdio.h>
+#endif
 
 /* Local includes */
 #include "xcdplay.h"

@@ -26,9 +26,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: VendorEP.h,v 1.1 1997/11/29 01:17:56 rich Exp $
  *
- * $Log: $
+ * $Log: VendorEP.h,v $
+ * Revision 1.1  1997/11/29 01:17:56  rich
+ * Initial revision
+ *
  *
  */
 

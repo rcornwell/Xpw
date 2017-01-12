@@ -1,0 +1,189 @@
+XCOMM $XConsortium: Imakefile,v 1.78 91/09/18 14:28:23 rws Exp $
+
+#define DoNormalLib YES
+#define DoSharedLib YES
+#define DoDebugLib YES 
+#define DoProfileLib NO
+#define HasSharedData NO
+#define LibName Xpw
+SoRev=1.0
+#define IncSubdir Xpw
+#define LibInstall YES
+
+#ifdef LinkBuildLibrary
+#undef LinkBuildLibrary
+#define LinkBuildLibrary(lib) MakeDir($(BUILDLIBDIR))                  @@\
+	RemoveFile($(BUILDLIBDIR)/lib)                                  @@\
+	cd $(BUILDLIBDIR) && $(LN) $(BUILDLIBTOP)/$(CURRENT_DIR)/lib .
+#endif
+
+DEFINES=-Wall
+
+	LINTLIBS = $(LINTXLIB) $(LINTXTOOL)
+
+HEADERS =	Arrow.h  \
+		ArrowP.h  \
+		BarButton.h  \
+		BarButtonP.h  \
+		Cardinals.h  \
+		Canvas.h  \
+		CanvasP.h  \
+		Chart.h  \
+		ChartP.h  \
+		Clue.h  \
+		ClueP.h  \
+		ComboBox.h  \
+		ComboBoxP.h  \
+		Command.h  \
+		CommandP.h  \
+		Dialog.h  \
+		DialogP.h  \
+		DialogShell.h  \
+		Frame.h  \
+		FrameP.h  \
+		Grip.h  \
+		GripP.h  \
+		Label.h  \
+		LabelP.h  \
+		Line.h  \
+		LineP.h  \
+		List.h  \
+		ListP.h  \
+		MenuArrow.h  \
+		MenuArrowP.h  \
+		MenuBar.h  \
+		MenuBarP.h  \
+		MenuButton.h  \
+		MenuButtonP.h  \
+		Paned.h  \
+		PanedP.h  \
+		PmeEntry.h  \
+		PmeEntryP.h  \
+		PmeLine.h  \
+		PmeLineP.h  \
+		PmeSelect.h  \
+		PmeSelectP.h  \
+		Percent.h \
+		PercentP.h \
+		PopupMenu.h  \
+		PopupMenuP.h  \
+		RowCol.h  \
+		RowColP.h  \
+		Scroller.h  \
+		ScrollerP.h  \
+		Select.h  \
+		SelectP.h  \
+		SimpleText.h  \
+		SimpleTextP.h  \
+		Slider.h  \
+		SliderP.h  \
+		Stack.h  \
+		StackP.h  \
+		Tabler.h  \
+		TablerP.h  \
+		TextLine.h  \
+		TextLineP.h  \
+		VendorEP.h  \
+		ViewPort.h  \
+		ViewPortP.h  \
+		XInputP.h  \
+		XpwInit.h  \
+		focus.h  \
+		label.h  \
+		labelP.h  \
+		threeDdraw.h  \
+		threeDdrawP.h 
+
+SRCS =		Arrow.c  \
+		BarButton.c  \
+		Canvas.c  \
+		Chart.c  \
+		Clue.c  \
+		ComboBox.c  \
+		Command.c  \
+		Dialog.c  \
+		DialogShell.c  \
+		Frame.c  \
+		Grip.c  \
+		Label.c  \
+		Line.c  \
+		List.c  \
+		MenuArrow.c  \
+		MenuBar.c  \
+		MenuButton.c  \
+		Paned.c  \
+		PmeEntry.c  \
+		PmeLine.c  \
+		PmeSelect.c  \
+		Percent.c  \
+		PopupMenu.c  \
+		RowCol.c  \
+		Scroller.c  \
+		Select.c  \
+		SimpleText.c  \
+		Slider.c  \
+		Stack.c  \
+		Tabler.c  \
+		TextLine.c  \
+		Vendor.c  \
+		ViewPort.c  \
+		XInput.c  \
+		XpwInit.c  \
+		focus.c  \
+		label.c  \
+		threeDdraw.c 
+
+#if SharedDataSeparation
+UNSHAREDOBJS = AllWidgets.o sharedlib.o
+AllWidgets.c sharedlib.c: Imakefile
+	mkAllWidget $(HEADERS)
+#endif
+
+OBJS =		Arrow.o  \
+		BarButton.o  \
+		Canvas.o  \
+		Chart.o  \
+		Clue.o  \
+		ComboBox.o  \
+		Command.o  \
+		Dialog.o  \
+		DialogShell.o  \
+		Frame.o  \
+		Grip.o  \
+		Label.o  \
+		Line.o  \
+		List.o  \
+		MenuArrow.o  \
+		MenuBar.o  \
+		MenuButton.o  \
+		Paned.o  \
+		PmeEntry.o  \
+		PmeLine.o  \
+		PmeSelect.o  \
+		Percent.o  \
+		PopupMenu.o  \
+		RowCol.o  \
+		Scroller.o  \
+		Select.o  \
+		SimpleText.o  \
+		Slider.o  \
+		Stack.o  \
+		Tabler.o  \
+		TextLine.o  \
+		ViewPort.o  \
+		Vendor.o  \
+		XInput.o  \
+		XpwInit.o  \
+		focus.o  \
+		label.o  \
+		threeDdraw.o 
+
+#include <Library.tmpl>
+
+#if DoSharedLib && SharedDataSeparation
+SpecialCObjectRule(sharedlib.o,NullParameter,$(SHLIBDEF))
+#endif
+
+DependTarget()
+
+

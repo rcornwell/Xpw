@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: CommandP.h,v 1.1 1997/10/04 05:03:47 rich Exp rich $
+ * $Id: CommandP.h,v 1.2 1997/11/01 06:39:02 rich Beta $
  *
  * $Log: CommandP.h,v $
+ * Revision 1.2  1997/11/01 06:39:02  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/04 05:03:47  rich
  * Initial revision
  *

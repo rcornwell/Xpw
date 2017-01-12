@@ -30,9 +30,12 @@
 /* 
  * ComboBoxP.h - Private definitions for ComboBox object
  *
- * $Id: $
+ * $Id: ComboBoxP.h,v 1.1 1997/11/28 19:55:48 rich Exp $
  *
- * $Log: $
+ * $Log: ComboBoxP.h,v $
+ * Revision 1.1  1997/11/28 19:55:48  rich
+ * Initial revision
+ *
  * 
  */
 

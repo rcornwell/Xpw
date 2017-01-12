@@ -1,0 +1,126 @@
+.\" $Id$
+.\"
+.\"
+.\" Copyright 1997 Richard P. Cornwell All Rights Reserved,
+.\"
+.\" The software is provided "as is", without warranty of any kind, express
+.\" or implied, including but not limited to the warranties of
+.\" merchantability, fitness for a particular purpose and non-infringement.
+.\" In no event shall Richard Cornwell be liable for any claim, damages
+.\" or other liability, whether in an action of contract, tort or otherwise,
+.\" arising from, out of or in connection with the software or the use or other
+.\" dealings in the software.
+.\"
+.\" Permission to use, copy, and distribute this software and its
+.\" documentation for non commercial use is hereby granted,
+.\" provided that the above copyright notice appear in all copies and that
+.\" both that copyright notice and this permission notice appear in
+.\" supporting documentation.
+.\"
+.\" The sale, resale, or use of this library for profit without the
+.\" express written consent of the author Richard Cornwell is forbidden.
+.\" Please see attached License file for information about using this
+.\" library in commercial applications, or for commercial software distribution.
+.\"
+.TH BarButton 3Xpw "2 October 97"
+.UC 4
+.SH NAME
+BarButton\- Widget Class.
+.SH SYNOPSIS
+.TA 2.0i 
+.ta 2.0i
+.LP
+Class name:     BarButtonWidget
+.br
+Class pointer:  barbuttonWidgetClass
+.br
+Class hierarchy:        barbuttonWidgetClass \(-> Core
+.P
+.nf
+.B #include <X11/Xpw/BarButton.h>
+.LP
+.B barbuttonWidget = XtCreateWidget( \(lqbarbutton\(rq, barbuttonWidgetClass, ...)
+.LP
+.fi
+.SH DESCRIPTION
+.LP
+The \fIBarButtonWidget\fR
+is a label with a menu assiocated with it. It does not do any 3D highlighting,
+allowing the parent to do that when the mouse is pointed at it. When it is 
+selected, if there is a popup menu assoicated with it, it calls it's parent to
+pop up the menu.
+.SH RESOURCES
+.P
+.TA 2.0i 3.5i 4.0i
+.ta 2.0i 3.5i 4.0i 
+.BI menuName	String	NULL
+.P
+Name of menu to popup on mouse activation.
+.P
+.BI callback	Callback	NULL
+.P
+List of callbacks to preform when the button is pressed. 
+.P
+.BI shadowWidth	Dimension	2
+.P
+How many pixels to make shadows.
+.P
+.BI clue	String	NULL
+.P
+If set to a none empty string, will cause a popop window with string contents
+to be displayed if the mouse stays in the window for more than the
+Clue timeout value.
+.P
+.BI international	Boolean	False
+.P
+If set use fontset. Otherwise use font.
+.P
+.BI font	XFontStruct	XtDefaultFont
+.P
+.BI fontSet	XFontSet	XtDefaultFontSet
+.P
+.BI foreground	Pixel	XtDefaultForeground
+.P
+Color to display label in.
+.P
+.BI label	String	Name\ of\ widget
+.P
+Text to display.
+.P
+.BI justify	XtJustify	Left
+.P
+How to justify the label. Values are Right, Center, Left.
+.P
+.BI bitmap	Pixmap	None
+.P
+If set displayed in place of label string.
+.P
+.BI leftBitmap	Pixmap	None
+.P
+If set displayed to the left of label string.
+.P
+.BI rightBitmap	Pixmap	None
+.P
+If set displayed to the right of label string.
+.P
+.BI leftMargin	Dimension	4
+.P
+How much space to indent label or bitmap from left edge.
+.P
+.BI rightMargin	Dimension	4
+.P
+How much space to indent label or bitmap from right edge.
+.P
+.BI vertSpace	int	25
+.P
+Percent to grow height over label height.
+.SH "CALLBACK DATA"
+.P
+None
+.P
+.SH "CONVENIENCE ROUTINES"
+.P
+.SH "SEE ALSO"
+MenuBar(3).
+.SH AUTHOR
+Richard Cornwell

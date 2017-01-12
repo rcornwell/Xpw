@@ -1,0 +1,158 @@
+.\" $Id$
+.\"
+.\"
+.\" Copyright 1997 Richard P. Cornwell All Rights Reserved,
+.\"
+.\" The software is provided "as is", without warranty of any kind, express
+.\" or implied, including but not limited to the warranties of
+.\" merchantability, fitness for a particular purpose and non-infringement.
+.\" In no event shall Richard Cornwell be liable for any claim, damages
+.\" or other liability, whether in an action of contract, tort or otherwise,
+.\" arising from, out of or in connection with the software or the use or other
+.\" dealings in the software.
+.\"
+.\" Permission to use, copy, and distribute this software and its
+.\" documentation for non commercial use is hereby granted,
+.\" provided that the above copyright notice appear in all copies and that
+.\" both that copyright notice and this permission notice appear in
+.\" supporting documentation.
+.\"
+.\" The sale, resale, or use of this library for profit without the
+.\" express written consent of the author Richard Cornwell is forbidden.
+.\" Please see attached License file for information about using this
+.\" library in commercial applications, or for commercial software distribution.
+.\"
+.TH Label 3Xpw "2 October 97"
+.UC 4
+.SH NAME
+Label\- Widget Class.
+.SH SYNOPSIS
+.TA 2.0i 
+.ta 2.0i
+.LP
+Class name:     LabelWidget
+.br
+Class pointer:  labelWidgetClass
+.br
+Class hierarchy:        labelWidgetClass \(-> Core
+.P
+.nf
+.B #include <X11/Xpw/Label.h>
+.LP
+.B labelWidget = XtCreateWidget( \(lqlabel\(rq, labelWidgetClass, ...)
+.LP
+.fi
+.SH DESCRIPTION
+.LP
+The \fILabelWidget\fR draws a label or bitmap, with a right or left hand
+bitmap and a 3D border.
+.SH RESOURCES
+.TA 2.0i 3.5i 4.0i
+.ta 2.0i 3.5i 4.0i 
+.P
+.BI clue	String	NULL
+.P
+If set to a none empty string, will cause a popop window with string contents
+to be displayed if the mouse stays in the label window for more than the
+Clue timeout value.
+.P
+.BI international	Boolean	False
+.P
+If set use fontset. Otherwise use font.
+.P
+.BI font	XFontStruct	XtDefaultFont
+.P
+.BI fontSet	XFontSet	XtDefaultFontSet
+.P
+.BI foreground	Pixel	XtDefaultForeground
+.P
+Color to display label in.
+.P
+.BI label	String	Name\ of\ widget
+.P
+Text to display.
+.P
+.BI justify	XtJustify	Left
+.P
+How to justify the label. Values are Right, Center, Left.
+.P
+.BI bitmap	Pixmap	None
+.P
+If set displayed in place of label string.
+.P
+.BI bitmapMask	Pixmap	None
+.P
+Mask to draw bitmap through.
+.P
+.BI leftBitmap	Pixmap	None
+.P
+If set displayed to the left of label string.
+.P
+.BI leftBitmapMask	Pixmap	None
+.P
+Mask to draw left bitmap through.
+.P
+.BI rightBitmap	Pixmap	None
+.P
+.BI rightBitmapMask	Pixmap	None
+.P
+Mask to draw right bitmap through.
+.P
+If set displayed to the right of label string.
+.P
+.BI leftMargin	Dimension	4
+.P
+How much space to indent label or bitmap from left edge.
+.P
+.BI rightMargin	Dimension	4
+.P
+How much space to indent label or bitmap from right edge.
+.P
+.BI vertSpace	int	25
+.P
+Percent to grow height over label height.
+.P
+.BI raised	Boolean	True
+.P
+Default direction for shadows.
+.P
+.BI frameType	FrameType	XfBeveled
+.P
+Controls the style of the outline around the window. Styles are:
+Beveled, Grooved, Edge, Outline, None.
+.P
+.BI topShadowPixel	Pixel	XtDefaultForeground 
+.br
+.BI botShadowPixel	Pixel	XtDefaultForeground 
+.P
+Color to use for the top and bottom shadows.
+.P
+.BI topShadowPixmap	Pixmap	Null 
+.br
+.BI botShadowPixmap	Pixmap	Null 
+.P
+Pixmap to us to shadow, overides \fItopShadowPixel\fR and \fIbotShadowPixel\fR.
+.P
+.BI topShadowContrast	Int	20 
+.br
+.BI botShadowContrast	Int	40 
+.P
+Darken the background color by this amount for shadow color.
+.P
+.BI shadowWidth	Dimension	2
+.P
+How many pixels to make shadows.
+.P
+.BI beNiceToColorMap	Boolean	True
+.P
+Use a stipple mask rather then allocating seperate colors for shadows.
+.P
+.SH "CALLBACK DATA"
+.P
+None
+.P
+.SH "CONVENIENCE ROUTINES"
+.P
+None
+.SH AUTHOR
+Richard Cornwell

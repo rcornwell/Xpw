@@ -1,0 +1,65 @@
+.\" $Id$
+.\"
+.\"
+.\" Copyright 1997 Richard P. Cornwell All Rights Reserved,
+.\"
+.\" The software is provided "as is", without warranty of any kind, express
+.\" or implied, including but not limited to the warranties of
+.\" merchantability, fitness for a particular purpose and non-infringement.
+.\" In no event shall Richard Cornwell be liable for any claim, damages
+.\" or other liability, whether in an action of contract, tort or otherwise,
+.\" arising from, out of or in connection with the software or the use or other
+.\" dealings in the software.
+.\"
+.\" Permission to use, copy, and distribute this software and its
+.\" documentation for non commercial use is hereby granted,
+.\" provided that the above copyright notice appear in all copies and that
+.\" both that copyright notice and this permission notice appear in
+.\" supporting documentation.
+.\"
+.\" The sale, resale, or use of this library for profit without the
+.\" express written consent of the author Richard Cornwell is forbidden.
+.\" Please see attached License file for information about using this
+.\" library in commercial applications, or for commercial software distribution.
+.\"
+.TH PmeLine 3Xpw "2 October 97"
+.UC 4
+.SH NAME
+PmeLine Widget Class.
+.SH SYNOPSIS
+.nf
+.B #include <X11/Xpw/PmeLine.h>
+.LP
+.B pmeLineWidget = XtCreateWidget( \(lqpmeLine\(rq, pmeLineWidgetClass, ...)
+.LP
+.fi
+.SH DESCRIPTION
+.LP
+The \fIPmeLineWidget\fR draws a seporator between pmeEntry or pmeSelect widgets.
+.SH RESOURCES
+.TA 2.0i 3.5i 4.0i
+.ta 2.0i 3.5i 4.0i 
+.P
+.BI foreground	Pixel	XtDefaultForeground
+.P
+Color to display line in.
+.P
+.BI stipple	Bitmap	none
+.P
+Mask to draw line.
+.P
+.BI lineWidth	Dimension	1
+.P
+Width of drawn line.
+.SH "CALLBACK DATA"
+.P
+None
+.P
+.SH "CONVENIENCE ROUTINES"
+.P
+None
+.P
+.SH "SEE ALSO"
+PopupMenu(3), PmeEntry(3), PmeSelect(3).
+.SH AUTHOR
+Richard Cornwell

@@ -28,9 +28,13 @@
  */
 
 /*
- * $Id: RowColP.h,v 1.2 1997/10/12 05:15:35 rich Exp rich $
+ * $Id: RowColP.h,v 1.3 1997/11/01 06:39:07 rich Beta $
  *
  * $Log: RowColP.h,v $
+ * Revision 1.3  1997/11/01 06:39:07  rich
+ * Cleaned up comments.
+ * Added Justify for unfull windows.
+ *
  * Revision 1.2  1997/10/12 05:15:35  rich
  * Changed RowColConstraints to be of type RowColConstraintsPart.
  *

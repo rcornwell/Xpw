@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: Stack.h,v 1.1 1997/10/12 05:17:36 rich Beta $
  *
- * $Log: $
+ * $Log: Stack.h,v $
+ * Revision 1.1  1997/10/12 05:17:36  rich
+ * Initial revision
+ *
  *
  *
  */

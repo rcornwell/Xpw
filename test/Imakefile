@@ -1,0 +1,37 @@
+XCOMM =====================================================================
+XCOMM 
+XCOMM $Id:$
+XCOMM 
+XCOMM $Log: $
+XCOMM 
+XCOMM =====================================================================
+
+DEFINES = -I$(BUILDINCDIR)
+
+DEPLIBS = $(DEPXPWLIB) $(DEPXPMLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXLIB)
+#ifdef LinuxArchitecture
+LOCAL_LIBRARIES = -L$(BUILDLIBDIR) -Wl,-rpath,$(BUILDLIBDIR) -lXpw $(XMULIB) $(XTOOLLIB)
+#else
+LOCAL_LIBRARIES = -L$(BUILDLIBDIR) -lXpw $(XMULIB) $(XTOOLLIB) $(XLIB)
+#endif
+
+PROGRAMS = XpwTest XpwCanvasTest XpwTableTest
+
+SRCS1 = XpwTest.c 
+
+NormalProgramTarget(XpwTest, XpwTest.o, $(DEPLIBS), $(LOCAL_LIBRARIES), \
+		NullParameter)
+
+SRCS2 = XpwCanvasTest.c 
+
+NormalProgramTarget(XpwCanvasTest, XpwCanvasTest.o, $(DEPLIBS), \
+		$(LOCAL_LIBRARIES), NullParameter)
+
+SRCS3 = XpwTableTest.c 
+
+NormalProgramTarget(XpwTableTest, XpwTableTest.o, $(DEPLIBS), \
+		$(LOCAL_LIBRARIES), NullParameter)
+
+AllTarget($(PROGRAMS))
+
+DependTarget3($(SRCS1), $(SRCS2), $(SRCS3))

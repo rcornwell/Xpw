@@ -1,0 +1,32 @@
+XCOMM $Id: $
+
+MANDIR = $(LIBMANDIR)
+MANSUFFIX = 3Xpw
+
+all::
+
+InstallManPage(Arrow, $(MANDIR))
+InstallManPage(BarButton, $(MANDIR))
+InstallManPage(Canvas, $(MANDIR))
+InstallManPage(Chart, $(MANDIR))
+InstallManPage(Clue, $(MANDIR))
+InstallManPage(Command, $(MANDIR))
+InstallManPage(Frame, $(MANDIR))
+InstallManPage(Grip, $(MANDIR))
+InstallManPage(Label, $(MANDIR))
+InstallManPage(Line, $(MANDIR))
+InstallManPage(MenuArrow, $(MANDIR))
+InstallManPage(MenuBar, $(MANDIR))
+InstallManPage(MenuButton, $(MANDIR))
+InstallManPage(Paned, $(MANDIR))
+InstallManPage(Percent, $(MANDIR))
+InstallManPage(PmeEntry, $(MANDIR))
+InstallManPage(PmeLine, $(MANDIR))
+InstallManPage(PmeSelect, $(MANDIR))
+InstallManPage(PopupMenu, $(MANDIR))
+InstallManPage(RowCol, $(MANDIR))
+InstallManPage(Scroller, $(MANDIR))
+InstallManPage(Select, $(MANDIR))
+InstallManPage(Slider, $(MANDIR))
+InstallManPage(TextLine, $(MANDIR))
+InstallManPage(ViewPort, $(MANDIR))

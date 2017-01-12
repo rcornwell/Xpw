@@ -1,0 +1,116 @@
+.\" $Id$
+.\"
+.\"
+.\" Copyright 1997 Richard P. Cornwell All Rights Reserved,
+.\"
+.\" The software is provided "as is", without warranty of any kind, express
+.\" or implied, including but not limited to the warranties of
+.\" merchantability, fitness for a particular purpose and non-infringement.
+.\" In no event shall Richard Cornwell be liable for any claim, damages
+.\" or other liability, whether in an action of contract, tort or otherwise,
+.\" arising from, out of or in connection with the software or the use or other
+.\" dealings in the software.
+.\"
+.\" Permission to use, copy, and distribute this software and its
+.\" documentation for non commercial use is hereby granted,
+.\" provided that the above copyright notice appear in all copies and that
+.\" both that copyright notice and this permission notice appear in
+.\" supporting documentation.
+.\"
+.\" The sale, resale, or use of this library for profit without the
+.\" express written consent of the author Richard Cornwell is forbidden.
+.\" Please see attached License file for information about using this
+.\" library in commercial applications, or for commercial software distribution.
+.\"
+.TH ViewPort 3Xpw "2 October 97"
+.UC 4
+.SH NAME
+ViewPort\- Widget Class.
+.SH SYNOPSIS
+.nf
+.B #include <X11/Xpw/ViewPort.h>
+.LP
+.B viewportWidget = XtCreateWidget( \(lqviewport\(rq, viewportWidgetClass, ...)
+.LP
+.fi
+.SH DESCRIPTION
+.LP
+The \fIViewPortWidget\fR provides scrollers for its child and allows for the
+child to be larger then window.
+.SH RESOURCES
+.P
+.TA 2.0i 3.5i 4.0i
+.ta 2.0i 3.5i 4.0i 
+.P
+.BI foreground	Pixel	XtDefaultForeground
+.P
+Foreground color.
+.P
+.BI scrollOnTop	Boolean	false
+.P
+Place scroll bar on top if true.
+.P
+.BI scrollOnLeft	Boolean	false
+.P
+Place scroll bar on left if true.
+.P
+.BI vScroll	Boolean	false
+.P
+Forces vertical scroll bar on.
+.P
+.BI hScroll	Boolean	false
+.P
+Forces horizontal scroll bar on.
+.P
+.BI scrollBorder	Dimension	4
+.P
+Amount of space between scrollbars and window.
+.P
+.BI topColor	Pixel	XtDefaultBackground
+.P
+Color for scrollbar borders.
+.P
+.BI raised	Boolean	True
+.P
+Default direction for shadows.
+.P
+.BI frameType	FrameType	XfBeveled
+.P
+Controls the style of the outline around the window. Styles are:
+Beveled, Grooved, Edge, Outline, None.
+.P
+.BI topShadowPixel	Pixel	XtDefaultForeground 
+.br
+.BI botShadowPixel	Pixel	XtDefaultForeground 
+.P
+Color to use for the top and bottom shadows.
+.P
+.BI topShadowPixmap	Pixmap	Null 
+.br
+.BI botShadowPixmap	Pixmap	Null 
+.P
+Pixmap to us to shadow, overides \fItopShadowPixel\fR and \fIbotShadowPixel\fR.
+.P
+.BI topShadowContrast	Int	20 
+.br
+.BI botShadowContrast	Int	40 
+.P
+Darken the background color by this amount for shadow color.
+.P
+.BI shadowWidth	Dimension	2
+.P
+How many pixels to make shadows.
+.P
+.BI beNiceToColorMap	Boolean	True
+.P
+Use a stipple mask rather then allocating seperate colors for shadows.
+.P
+.SH "CALLBACK DATA"
+.P
+None
+.P
+.SH "CONVENIENCE ROUTINES"
+.P
+.SH "SEE ALSO"
+.SH AUTHOR
+Richard Cornwell

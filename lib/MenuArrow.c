@@ -27,6 +27,9 @@
  *
  *
  * $Log: MenuArrow.c,v $
+ * Revision 1.3  1997/11/28 19:31:07  rich
+ * Added alignToParent resource for ComboBox.
+ *
  * Revision 1.2  1997/11/01 06:39:04  rich
  * Changed justify to menuJustify to avoid conflict with label.
  *
@@ -37,7 +40,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: MenuArrow.c,v 1.2 1997/11/01 06:39:04 rich Beta rich $";
+static char        *rcsid = "$Id: MenuArrow.c,v 1.3 1997/11/28 19:31:07 rich Beta $";
 
 #endif
 

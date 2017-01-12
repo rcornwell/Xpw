@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: TextLine.h,v 1.1 1997/10/25 22:15:47 rich Exp rich $
+ * $Id: TextLine.h,v 1.2 1997/11/01 06:39:09 rich Beta $
  *
  * $Log: TextLine.h,v $
+ * Revision 1.2  1997/11/01 06:39:09  rich
+ * Removed old resourse.
+ *
  * Revision 1.1  1997/10/25 22:15:47  rich
  * Initial revision
  *

@@ -25,9 +25,12 @@
  */
 
 /*
- * $Id$
+ * $Id: XpwInit.h,v 1.1 1997/10/08 17:11:50 rich Beta $
  *
- * $Log:$
+ * $Log: XpwInit.h,v $
+ * Revision 1.1  1997/10/08 17:11:50  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _Init_H_

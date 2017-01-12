@@ -29,9 +29,12 @@
  */
 
 /* 
- * $Id: $
+ * $Id: PmeSelect.h,v 1.1 1997/10/05 02:16:36 rich Beta $
  *
- * $Log: $
+ * $Log: PmeSelect.h,v $
+ * Revision 1.1  1997/10/05 02:16:36  rich
+ * Initial revision
+ *
  *
  * 
  */

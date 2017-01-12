@@ -24,6 +24,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: focus.c,v $
+ * Revision 1.3  1997/11/29 01:29:29  rich
+ * Added support for Input Methods.
+ *
  * Revision 1.2  1997/11/01 06:39:10  rich
  * Removed unused variable.
  *
@@ -34,7 +37,7 @@
  */
 
 #ifndef lint
-static char         rcsid[] = "$Id: focus.c,v 1.2 1997/11/01 06:39:10 rich Beta rich $";
+static char         rcsid[] = "$Id: focus.c,v 1.3 1997/11/29 01:29:29 rich Exp $";
 
 #endif
 

@@ -1,12 +1,15 @@
 /*
  * setmixer: Control sound card volume settings.
  *
- * $Log: $
+ * $Log: setmixer.c,v $
+ * Revision 1.1  1997/10/29 05:41:52  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: $";
+static char        *rcsid = "$Id: setmixer.c,v 1.1 1997/10/29 05:41:52 rich Rel $";
 #endif
 
 /* System stuff */

@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id$
+ * $Id: Command.h,v 1.1 1997/10/04 05:03:47 rich Beta $
  *
- * $Log:$
+ * $Log: Command.h,v $
+ * Revision 1.1  1997/10/04 05:03:47  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _Command_H_

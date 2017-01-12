@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id: mainwindow.h,v 1.1 1997/12/16 05:48:46 rich Exp rich $
+ * $Id: mainwindow.h,v 1.2 1998/01/26 01:02:01 rich Exp rich $
  *
  * $Log: mainwindow.h,v $
+ * Revision 1.2  1998/01/26 01:02:01  rich
+ * Support for stacker drives.
+ *
  * Revision 1.1  1997/12/16 05:48:46  rich
  * Initial revision
  *
@@ -63,7 +66,7 @@ class MainWindow
      XtIntervalId	timer;	/* Update Timer */
      Player	player;		/* Cd Player object */
      PlayList   list;
-     TrackList	*tlist[MAXDRIVES]; /* List of track names */
+     TrackList	*tlist[MAXDRIVES+1]; /* List of track names */
      int	curdrive;	/* Current drive */
      int	curtrack;	/* Current track */
      State	cdstate;

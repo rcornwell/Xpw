@@ -26,6 +26,9 @@
  *
  *
  * $Log: Arrow.c,v $
+ * Revision 1.3  1997/11/01 06:39:00  rich
+ * Removed unused definition.
+ *
  * Revision 1.2  1997/10/08 04:10:03  rich
  * Make sure we don't clear a unset timer.
  * When not pressed display foreground.
@@ -37,7 +40,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Arrow.c,v 1.2 1997/10/08 04:10:03 rich Exp rich $";
+static char        *rcsid = "$Id: Arrow.c,v 1.3 1997/11/01 06:39:00 rich Beta $";
 #endif
 
 #include <stdio.h>

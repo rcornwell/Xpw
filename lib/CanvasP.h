@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: CanvasP.h,v 1.2 1997/10/21 18:50:30 rich Exp rich $
+ * $Id: CanvasP.h,v 1.3 1997/11/01 06:39:01 rich Beta $
  *
  * $Log: CanvasP.h,v $
+ * Revision 1.3  1997/11/01 06:39:01  rich
+ * Cleaned up comments.
+ *
  * Revision 1.2  1997/10/21 18:50:30  rich
  * Removed reference to 3D library.
  *

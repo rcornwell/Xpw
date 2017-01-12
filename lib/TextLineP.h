@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id: TextLineP.h,v 1.2 1997/11/01 06:39:09 rich Beta rich $
+ * $Id: TextLineP.h,v 1.3 1997/12/06 04:14:51 rich Exp $
  *
  * $Log: TextLineP.h,v $
+ * Revision 1.3  1997/12/06 04:14:51  rich
+ * Margins should be type Dimension.
+ *
  * Revision 1.2  1997/11/01 06:39:09  rich
  * Cleaned up comments.
  *

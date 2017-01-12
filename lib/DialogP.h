@@ -30,9 +30,12 @@
 /* 
  * DialogP.h - Private definitions for Dialog object
  *
- * $Id: DialogP.h,v 1.1 1997/11/28 19:56:42 rich Exp rich $
+ * $Id: DialogP.h,v 1.2 1997/12/06 04:14:49 rich Exp $
  *
  * $Log: DialogP.h,v $
+ * Revision 1.2  1997/12/06 04:14:49  rich
+ * Added support for IconMask.
+ *
  * Revision 1.1  1997/11/28 19:56:42  rich
  * Initial revision
  *

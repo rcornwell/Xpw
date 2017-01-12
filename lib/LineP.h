@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: LineP.h,v 1.1 1997/10/04 05:05:03 rich Exp rich $
+ * $Id: LineP.h,v 1.2 1997/11/01 06:39:03 rich Beta $
  *
  * $Log: LineP.h,v $
+ * Revision 1.2  1997/11/01 06:39:03  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/04 05:05:03  rich
  * Initial revision
  *

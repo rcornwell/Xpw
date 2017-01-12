@@ -24,6 +24,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: PmeLine.c,v $
+ * Revision 1.3  1997/10/05 02:25:17  rich
+ * Make sure ident line is in object file.
+ *
  * Revision 1.2  1997/10/05 02:17:28  rich
  * Make class extensions to match PmeEntry.
  *
@@ -34,7 +37,7 @@
  */
 
 #ifndef lint
-static char         rcsid[] = "$Id: PmeLine.c,v 1.2 1997/10/05 02:17:28 rich Exp rich $";
+static char         rcsid[] = "$Id: PmeLine.c,v 1.3 1997/10/05 02:25:17 rich Beta $";
 
 #endif
 

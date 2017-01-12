@@ -25,6 +25,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: ViewPort.c,v $
+ * Revision 1.2  1997/11/01 06:39:09  rich
+ * Removed unused variables.
+ *
  * Revision 1.1  1997/10/19 01:42:08  rich
  * Initial revision
  *
@@ -32,7 +35,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: ViewPort.c,v 1.1 1997/10/19 01:42:08 rich Exp rich $";
+static char        *rcsid = "$Id: ViewPort.c,v 1.2 1997/11/01 06:39:09 rich Beta $";
 
 #endif
 

@@ -1,9 +1,12 @@
 /*
  * XCdplay: Plays a cd.
  *
- * $Id: xcdplay.h,v 1.2 1998/01/26 01:02:02 rich Exp rich $
+ * $Id: xcdplay.h,v 1.3 1998/01/28 02:56:22 rich Exp rich $
  *
  * $Log: xcdplay.h,v $
+ * Revision 1.3  1998/01/28 02:56:22  rich
+ * Fixed support for non changing CD drives
+ *
  * Revision 1.2  1998/01/26 01:02:02  rich
  * Support for hiding clues.
  *

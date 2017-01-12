@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: PmeEntry.c,v $
+ * Revision 1.4  1997/11/01 06:39:05  rich
+ * Removed unused variables.
+ *
  * Revision 1.3  1997/10/05 02:25:17  rich
  * Make sure ident line is in object file.
  *
@@ -40,7 +43,7 @@
  */
 
 #ifndef lint
-static char         rcsid[] = "$Id: PmeEntry.c,v 1.3 1997/10/05 02:25:17 rich Exp rich $";
+static char         rcsid[] = "$Id: PmeEntry.c,v 1.4 1997/11/01 06:39:05 rich Beta $";
 
 #endif
 

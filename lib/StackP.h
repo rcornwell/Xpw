@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id: StackP.h,v 1.1 1997/10/12 05:17:36 rich Exp rich $
+ * $Id: StackP.h,v 1.2 1997/11/01 06:39:09 rich Beta $
  *
  * $Log: StackP.h,v $
+ * Revision 1.2  1997/11/01 06:39:09  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/12 05:17:36  rich
  * Initial revision
  *

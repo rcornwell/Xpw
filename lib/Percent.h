@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: Percent.h,v 1.1 1997/10/08 04:03:06 rich Beta $
  *
- * $Log: $
+ * $Log: Percent.h,v $
+ * Revision 1.1  1997/10/08 04:03:06  rich
+ * Initial revision
+ *
  *
  *
  */

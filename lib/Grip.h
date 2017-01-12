@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: Grip.h,v 1.1 1997/10/12 05:18:35 rich Beta $
  *
- * $Log: $
+ * $Log: Grip.h,v $
+ * Revision 1.1  1997/10/12 05:18:35  rich
+ * Initial revision
+ *
  *
  */
 #ifndef _Grip_H_

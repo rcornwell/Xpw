@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: Canvas.h,v 1.2 1997/10/21 18:50:30 rich Exp rich $
+ * $Id: Canvas.h,v 1.3 1997/11/01 06:39:01 rich Beta $
  *
  * $Log: Canvas.h,v $
+ * Revision 1.3  1997/11/01 06:39:01  rich
+ * Fixed typo in callback reason.
+ *
  * Revision 1.2  1997/10/21 18:50:30  rich
  * Removed reference to 3D library.
  *

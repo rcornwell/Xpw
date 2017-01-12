@@ -4,6 +4,9 @@
  * Code to handle main interface panel.
  *
  * $Log: player.cc,v $
+ * Revision 1.3  1998/01/28 02:56:22  rich
+ * Make sure non changer CD's work correctly
+ *
  * Revision 1.2  1998/01/26 01:02:02  rich
  * Support for Stacker CDrom drives.
  *
@@ -14,7 +17,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: player.cc,v 1.2 1998/01/26 01:02:02 rich Exp rich $";
+static char        *rcsid = "$Id: player.cc,v 1.3 1998/01/28 02:56:22 rich Exp rich $";
 #endif
     
 /* System stuff */

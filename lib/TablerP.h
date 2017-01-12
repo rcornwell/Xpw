@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: TablerP.h,v 1.1 1997/11/28 19:57:31 rich Exp $
  *
- * $Log: $
+ * $Log: TablerP.h,v $
+ * Revision 1.1  1997/11/28 19:57:31  rich
+ * Initial revision
+ *
  *
  */
 

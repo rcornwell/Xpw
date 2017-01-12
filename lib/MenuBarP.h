@@ -29,9 +29,14 @@
  */
 
 /*
- * $Id: MenuBarP.h,v 1.2 1997/10/15 05:42:55 rich Exp rich $
+ * $Id: MenuBarP.h,v 1.3 1997/11/01 06:39:04 rich Beta $
  *
  * $Log: MenuBarP.h,v $
+ * Revision 1.3  1997/11/01 06:39:04  rich
+ * Changed justify to menuJustify to avoid conflict with label.
+ * Removed unused resource foreground.
+ * Cleaned up comments.
+ *
  * Revision 1.2  1997/10/15 05:42:55  rich
  * Added justification to pulldown menus.
  *

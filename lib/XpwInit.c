@@ -23,6 +23,10 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: XpwInit.c,v $
+ * Revision 1.2  1997/11/01 06:39:10  rich
+ * Added support for Vendor Shell.
+ * Defines for label init and threeD init.
+ *
  * Revision 1.1  1997/10/08 17:11:50  rich
  * Initial revision
  *
@@ -35,7 +39,7 @@
 #include "threeDdrawP.h"
 
 #ifndef lint
-char rcsid[] = "$Id: XpwInit.c,v 1.1 1997/10/08 17:11:50 rich Exp rich $";
+char rcsid[] = "$Id: XpwInit.c,v 1.2 1997/11/01 06:39:10 rich Beta $";
 #endif
 
 void 

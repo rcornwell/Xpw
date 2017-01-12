@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id: Slider.h,v 1.2 1997/11/01 06:39:08 rich Beta rich $
+ * $Id: Slider.h,v 1.3 1997/12/06 04:14:50 rich Beta $
  *
  * $Log: Slider.h,v $
+ * Revision 1.3  1997/12/06 04:14:50  rich
+ * Thickness is of type Dimension.
+ *
  * Revision 1.2  1997/11/01 06:39:08  rich
  * Removed a comment error.
  *

@@ -27,6 +27,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: PopupMenu.c,v $
+ * Revision 1.3  1997/11/01 06:39:06  rich
+ * Removed unused variables.
+ *
  * Revision 1.2  1997/10/05 02:17:29  rich
  * Make sure after a resize all children are set to correct width.
  * Use class calls to talk to children.
@@ -38,7 +41,7 @@
  */
 
 #ifndef line
-static char         rcsid[] = "$Id: PopupMenu.c,v 1.2 1997/10/05 02:17:29 rich Exp rich $";
+static char         rcsid[] = "$Id: PopupMenu.c,v 1.3 1997/11/01 06:39:06 rich Beta $";
 
 #endif
 

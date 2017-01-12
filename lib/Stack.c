@@ -26,6 +26,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Stack.c,v $
+ * Revision 1.3  1998/01/24 20:43:28  rich
+ * Don't ever let width or height go to zero.
+ *
  * Revision 1.2  1997/11/01 06:39:09  rich
  * Fixed error in realize code.
  * Removed unused variable.
@@ -38,7 +41,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Stack.c,v 1.2 1997/11/01 06:39:09 rich Beta rich $";
+static char        *rcsid = "$Id: Stack.c,v 1.3 1998/01/24 20:43:28 rich Exp $";
 
 #endif
 

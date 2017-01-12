@@ -25,6 +25,9 @@
  *
  *
  * $Log: Vendor.c,v $
+ * Revision 1.2  1997/12/06 04:14:51  rich
+ * Core height should be type Dimension.
+ *
  * Revision 1.1  1997/11/29 01:17:56  rich
  * Initial revision
  *
@@ -32,7 +35,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Vendor.c,v 1.1 1997/11/29 01:17:56 rich Exp rich $";
+static char        *rcsid = "$Id: Vendor.c,v 1.2 1997/12/06 04:14:51 rich Exp $";
 #endif
 
 /* $XConsortium: Vendor.c,v 1.27 94/04/17 20:13:25 kaleb Exp $ */

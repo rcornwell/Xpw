@@ -26,6 +26,10 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Paned.c,v $
+ * Revision 1.4  1998/01/24 20:43:28  rich
+ * Don't ever let width or height go to zero.
+ * Fixed resize code.
+ *
  * Revision 1.3  1997/12/06 04:14:50  rich
  * Make sure window resizes when larger children are added.
  *
@@ -40,7 +44,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Paned.c,v 1.3 1997/12/06 04:14:50 rich Exp rich $";
+static char        *rcsid = "$Id: Paned.c,v 1.4 1998/01/24 20:43:28 rich Exp $";
 
 #endif
 

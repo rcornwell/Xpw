@@ -6,9 +6,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: string.h,v 1.1 1997/12/16 05:48:46 rich Exp rich $
  *
- * $Log: $
+ * $Log: string.h,v $
+ * Revision 1.1  1997/12/16 05:48:46  rich
+ * Initial revision
+ *
  *
  */
 

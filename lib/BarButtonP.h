@@ -31,9 +31,12 @@
 /* 
  * BarButtonP.h - Private definitions for BarButton object
  *
- * $Id: BarButtonP.h,v 1.1 1997/10/04 05:00:59 rich Exp rich $
+ * $Id: BarButtonP.h,v 1.2 1997/11/01 06:39:01 rich Beta $
  *
  * $Log: BarButtonP.h,v $
+ * Revision 1.2  1997/11/01 06:39:01  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/04 05:00:59  rich
  * Initial revision
  *

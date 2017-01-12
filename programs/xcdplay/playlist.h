@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id: playlist.h,v 1.1 1997/12/16 05:48:46 rich Exp rich $
+ * $Id: playlist.h,v 1.2 1998/01/26 01:02:02 rich Exp rich $
  *
  * $Log: playlist.h,v $
+ * Revision 1.2  1998/01/26 01:02:02  rich
+ * Support for multiple drives.
+ *
  * Revision 1.1  1997/12/16 05:48:46  rich
  * Initial revision
  *

@@ -25,12 +25,15 @@
  * Please see attached License file for information about using this
  * library in commercial applications, or for commercial software distribution.
  *
- * $Log:$
+ * $Log: Label.c,v $
+ * Revision 1.1  1997/10/04 05:04:39  rich
+ * Initial revision
+ *
  *
  */
 
 #ifndef lint
-static char        *rcsid = "$Id$";
+static char        *rcsid = "$Id: Label.c,v 1.1 1997/10/04 05:04:39 rich Beta $";
 
 #endif
 

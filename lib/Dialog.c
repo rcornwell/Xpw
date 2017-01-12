@@ -27,6 +27,12 @@
  *
  *
  * $Log: Dialog.c,v $
+ * Revision 1.3  1998/01/24 20:43:27  rich
+ * Fixed GeometryManager so it works correctly.
+ * Don't give child any size hints, let it fit itself correctly.
+ * Size and gap need to be int so gap can be negative.
+ * Call changemanaged to relayout the children before popup.
+ *
  * Revision 1.2  1997/12/06 04:14:49  rich
  * Added color images for default Icons.
  * Allow control over type of grab.
@@ -39,7 +45,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Dialog.c,v 1.2 1997/12/06 04:14:49 rich Exp rich $";
+static char        *rcsid = "$Id: Dialog.c,v 1.3 1998/01/24 20:43:27 rich Exp $";
 
 #endif
 

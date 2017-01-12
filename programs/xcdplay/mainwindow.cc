@@ -4,6 +4,10 @@
  * Code to handle main interface panel.
  *
  * $Log: mainwindow.cc,v $
+ * Revision 1.2  1998/01/26 01:02:01  rich
+ * Added support for stacker CD drives.
+ * Merged Playlist and Tracklist into one popup.
+ *
  * Revision 1.1  1997/12/16 05:48:46  rich
  * Initial revision
  *
@@ -11,7 +15,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: mainwindow.cc,v 1.1 1997/12/16 05:48:46 rich Exp rich $";
+static char        *rcsid = "$Id: mainwindow.cc,v 1.2 1998/01/26 01:02:01 rich Exp rich $";
 #endif
 
 /* System stuff */
@@ -45,6 +49,13 @@ static char        *rcsid = "$Id: mainwindow.cc,v 1.1 1997/12/16 05:48:46 rich E
 #include <Xpw/PmeEntry.h>
 #include <Xpw/PmeLine.h>
 #include <Xpw/PmeSelect.h>
+/* To get Maxdrives right */
+#ifdef linux
+#include <linux/cdrom.h>
+#include <linux/ucdrom.h>
+#else
+#include <sys/cdio.h>
+#endif
 
 /* Local includes */
 #include "xcdplay.h"

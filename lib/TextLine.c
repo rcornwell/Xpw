@@ -26,6 +26,10 @@
  *
  *
  * $Log: TextLine.c,v $
+ * Revision 1.5  1998/01/24 20:43:28  rich
+ * Make sure we only copy a actual string.
+ * Make sure when we put a new string in we realy start at begining of line.
+ *
  * Revision 1.4  1997/12/06 04:14:50  rich
  * TextLine should return Dimension.
  *
@@ -43,7 +47,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: TextLine.c,v 1.4 1997/12/06 04:14:50 rich Exp rich $";
+static char        *rcsid = "$Id: TextLine.c,v 1.5 1998/01/24 20:43:28 rich Exp $";
 
 #endif
 

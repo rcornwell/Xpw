@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: GripP.h,v 1.1 1997/10/12 05:18:35 rich Exp rich $
+ * $Id: GripP.h,v 1.2 1997/11/01 06:39:02 rich Beta $
  *
  * $Log: GripP.h,v $
+ * Revision 1.2  1997/11/01 06:39:02  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/12 05:18:35  rich
  * Initial revision
  *

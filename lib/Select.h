@@ -29,9 +29,12 @@
  */
 
 /* 
- * $Id$
+ * $Id: Select.h,v 1.1 1997/10/04 22:13:23 rich Beta $
  *
- * $Log:$
+ * $Log: Select.h,v $
+ * Revision 1.1  1997/10/04 22:13:23  rich
+ * Initial revision
+ *
  * 
  */
 

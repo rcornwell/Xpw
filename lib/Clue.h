@@ -35,9 +35,12 @@
  */
 
 /*
- * $Id: Clue.h,v 1.1 1997/10/04 05:02:12 rich Beta rich $
+ * $Id: Clue.h,v 1.2 1998/01/24 20:43:27 rich Exp $
  *
  * $Log: Clue.h,v $
+ * Revision 1.2  1998/01/24 20:43:27  rich
+ * Added support to disable clue popup.
+ *
  * Revision 1.1  1997/10/04 05:02:12  rich
  * Initial revision
  *

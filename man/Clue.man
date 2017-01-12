@@ -1,0 +1,120 @@
+.\" $Id$
+.\"
+.\"
+.\" Copyright 1997 Richard P. Cornwell All Rights Reserved,
+.\"
+.\" The software is provided "as is", without warranty of any kind, express
+.\" or implied, including but not limited to the warranties of
+.\" merchantability, fitness for a particular purpose and non-infringement.
+.\" In no event shall Richard Cornwell be liable for any claim, damages
+.\" or other liability, whether in an action of contract, tort or otherwise,
+.\" arising from, out of or in connection with the software or the use or other
+.\" dealings in the software.
+.\"
+.\" Permission to use, copy, and distribute this software and its
+.\" documentation for non commercial use is hereby granted,
+.\" provided that the above copyright notice appear in all copies and that
+.\" both that copyright notice and this permission notice appear in
+.\" supporting documentation.
+.\"
+.\" The sale, resale, or use of this library for profit without the
+.\" express written consent of the author Richard Cornwell is forbidden.
+.\" Please see attached License file for information about using this
+.\" library in commercial applications, or for commercial software distribution.
+.\"
+.TH Clue 3Xpw "2 October 97"
+.UC 4
+.SH NAME
+Clue\- Widget Class.
+.SH SYNOPSIS
+.nf
+.B #include <X11/Xpw/Clue.h>
+.LP
+.B XtCreatePopupShell( \(lqclue\(rq, clueWidgetClass, ...)
+.LP
+.fi
+.SH DESCRIPTION
+.LP
+The \fIClueWidget\fR handles the automatic display of short help messages
+for widgets.
+.SH RESOURCES
+.TA 2.0i 3.5i 4.0i
+.ta 2.0i 3.5i 4.0i 
+.P
+How many milliseconds from time clue is armed till it should be popped up.
+.P
+.BI label	String	NULL
+.P
+Unused, set by clue widget to string to be popped up.
+.P
+.BI international	Boolean	False
+.P
+If set use fontset. Otherwise use font.
+.P
+.BI font	XFontStruct	XtDefaultFont
+.br
+.BI fontSet	XFontSet	XtDefaultFontSet
+.P
+.BI foreground	Pixel	XtDefaultForeground
+.P
+Color to display label in.
+.P
+.BI justify	XtJustify	Left
+.P
+How to justify the label. Values are Right, Center, Left.
+.P
+.BI bitmap	Pixmap	None
+.P
+If set displayed in place of label string.
+.P
+.BI leftBitmap	Pixmap	None
+.P
+If set displayed to the left of label string.
+.P
+.BI rightBitmap	Pixmap	None
+.P
+If set displayed to the right of label string.
+.P
+.BI leftMargin	Dimension	4
+.P
+How much space to indent label or bitmap from left edge.
+.P
+.BI rightMargin	Dimension	4
+.P
+How much space to indent label or bitmap from right edge.
+.P
+.BI vertSpace	int	25
+.P
+Percent to grow height over label height.
+.P
+.SH "CALLBACK DATA"
+.P
+None
+.P
+.SH "CONVENIENCE ROUTINES"
+.P
+\fBClueWidget\fR convenience routines are mainly ment to be called by
+widget writers, but could be used to add clue support to widgets not
+written to handle them.
+.P
+\fB_XpwArmClue\fR Arms the clue call back.
+.P
+.nf
+void _XpwArmClue(Widget w, String clue);
+.fi
+.P
+\fB_XpwDisArmClue\fR Removes any timers and pops the clue down if needed.
+.P
+.nf
+void _XpwDisArmClue(Widget w);
+.fi
+.P
+\fB_XpwHoldClue\fR Removes the timer for the clue, but does not pop it down
+if it already popped up.
+.P
+.nf
+void _XpwHoldClue(Widget w);
+.fi
+.P
+.SH AUTHOR
+Richard Cornwell

@@ -1,0 +1,143 @@
+.\" $Id$
+.\"
+.\"
+.\" Copyright 1997 Richard P. Cornwell All Rights Reserved,
+.\"
+.\" The software is provided "as is", without warranty of any kind, express
+.\" or implied, including but not limited to the warranties of
+.\" merchantability, fitness for a particular purpose and non-infringement.
+.\" In no event shall Richard Cornwell be liable for any claim, damages
+.\" or other liability, whether in an action of contract, tort or otherwise,
+.\" arising from, out of or in connection with the software or the use or other
+.\" dealings in the software.
+.\"
+.\" Permission to use, copy, and distribute this software and its
+.\" documentation for non commercial use is hereby granted,
+.\" provided that the above copyright notice appear in all copies and that
+.\" both that copyright notice and this permission notice appear in
+.\" supporting documentation.
+.\"
+.\" The sale, resale, or use of this library for profit without the
+.\" express written consent of the author Richard Cornwell is forbidden.
+.\" Please see attached License file for information about using this
+.\" library in commercial applications, or for commercial software distribution.
+.\"
+.TH Scroller 3Xpw "2 October 97"
+.UC 4
+.SH NAME
+Scroller\- Widget Class.
+.SH SYNOPSIS
+.nf
+.B #include <X11/Xpw/Scroller.h>
+.LP
+.B scrollerWidget = XtCreateWidget( \(lqscroller\(rq, scrollerWidgetClass, ...)
+.LP
+.fi
+.SH DESCRIPTION
+.LP
+The \fIScrollerWidget\fR draws a scrollbar with arrow widgets to control
+full window jumps. The thumb is adjusted to indicate amount of controled
+object shown. The left mouse button moves forward based on location within
+window, closer top more it moves, clicking on arrow moves full screen.
+Middle button positions absolutely. Right button moves backwards in object.
+.SH RESOURCES
+.TA 2.0i 3.5i 4.0i
+.ta 2.0i 3.5i 4.0i 
+.P
+.BI clue	String	NULL
+.P
+If set to a none empty string, will cause a popop window with string contents
+to be displayed if the mouse stays in the scroller window for more than the
+Clue timeout value.
+.P
+.BI callback	Callback	NULL
+.P
+Called for any change in pointer position.
+.P
+.BI useArrows	Boolean	True
+.P
+Place arrow widgets at ends.
+.P
+.BI foreground	Pixel	XtDefaultForeground
+.P
+Color to display scroller in.
+.P
+.BI thumb	Pixel	XtDefaultForeground
+.P
+Color to draw thumb in.
+.P
+.BI thickness	Int	14
+.P
+How wide to make display.
+.P
+.BI minimumThumb	Int	7
+.P
+Minimum size to let thumb shrink too.
+.P
+.BI lenght	Int	0
+.P
+Total size of scrolled object.
+.P
+.BI shown	Int	100
+.P
+Number of object showing of scrolled object.
+.P
+.BI positions	Int	0
+.P
+Current object being shown.
+.P
+.BI orientation	Orientation	vertical
+.P
+Orientation of widget.
+.P
+.BI delayTime	Int	0
+.P
+Passed to arrows to indicate amount of time before starting to repeat scroll.
+.P
+.BI repeatTime	Int	0
+.P
+Passed to arrows to indicate how fast to repeat scroll after delay.
+.P
+.BI raised	Boolean	True
+.P
+Default direction for shadows.
+.P
+.BI frameType	FrameType	XfBeveled
+.P
+Controls the style of the outline around the window. Styles are:
+Beveled, Grooved, Edge, Outline, None.
+.P
+.BI topShadowPixel	Pixel	XtDefaultForeground 
+.br
+.BI botShadowPixel	Pixel	XtDefaultForeground 
+.P
+Color to use for the top and bottom shadows.
+.P
+.BI topShadowPixmap	Pixmap	Null 
+.br
+.BI botShadowPixmap	Pixmap	Null 
+.P
+Pixmap to us to shadow, overides \fItopShadowPixel\fR and \fIbotShadowPixel\fR.
+.P
+.BI topShadowContrast	Int	20 
+.br
+.BI botShadowContrast	Int	40 
+.P
+Darken the background color by this amount for shadow color.
+.P
+.BI shadowWidth	Dimension	2
+.P
+How many pixels to make shadows.
+.P
+.BI beNiceToColorMap	Boolean	True
+.P
+Use a stipple mask rather then allocating seperate colors for shadows.
+.P
+.SH "CALLBACK DATA"
+.P
+None
+.P
+.SH "CONVENIENCE ROUTINES"
+.P
+.SH AUTHOR
+Richard Cornwell

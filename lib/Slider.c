@@ -27,6 +27,9 @@
  *
  * 
  * $Log: Slider.c,v $
+ * Revision 1.3  1997/12/06 04:14:50  rich
+ * Thickness is a dimension not a integer.
+ *
  * Revision 1.2  1997/11/01 06:39:08  rich
  * Make sure slider does not work when set insensitve.
  * Thumb resource no longer used.
@@ -42,7 +45,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Slider.c,v 1.2 1997/11/01 06:39:08 rich Beta rich $";
+static char        *rcsid = "$Id: Slider.c,v 1.3 1997/12/06 04:14:50 rich Beta $";
 #endif
 
 #include <stdio.h>

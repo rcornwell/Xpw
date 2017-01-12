@@ -1,0 +1,115 @@
+.\" $Id$
+.\"
+.\"
+.\" Copyright 1997 Richard P. Cornwell All Rights Reserved,
+.\"
+.\" The software is provided "as is", without warranty of any kind, express
+.\" or implied, including but not limited to the warranties of
+.\" merchantability, fitness for a particular purpose and non-infringement.
+.\" In no event shall Richard Cornwell be liable for any claim, damages
+.\" or other liability, whether in an action of contract, tort or otherwise,
+.\" arising from, out of or in connection with the software or the use or other
+.\" dealings in the software.
+.\"
+.\" Permission to use, copy, and distribute this software and its
+.\" documentation for non commercial use is hereby granted,
+.\" provided that the above copyright notice appear in all copies and that
+.\" both that copyright notice and this permission notice appear in
+.\" supporting documentation.
+.\"
+.\" The sale, resale, or use of this library for profit without the
+.\" express written consent of the author Richard Cornwell is forbidden.
+.\" Please see attached License file for information about using this
+.\" library in commercial applications, or for commercial software distribution.
+.\"
+.TH Arrow 3Xpw "2 October 97"
+.UC 4
+.SH NAME
+Arrow\- Widget Class.
+.SH SYNOPSIS
+.TA 2.0i 
+.ta 2.0i
+.LP
+Class name:	ArrowWidget
+.br
+Class pointer:	arrowWidgetClass
+.br
+Class hierarchy:	arrowWidgetClass \(-> Core
+.P
+.nf
+.B #include <X11/Xpw/Arrow.h>
+.LP
+.B arrowWidget = XtCreateWidget( \(lqarrow\(rq, arrowWidgetClass, ...)
+.LP
+.fi
+.SH DESCRIPTION
+.LP
+The \fIArrowWidget\fR draws a 3D looking arrow in a given direction.
+Clicking any mouse  button  will  cause  a  callback event.  Pressing  and
+holding a mouse button will start a timer, after a delay a repeated string
+of callback  events will occur until the mouse button is released.
+.SH RESOURCES
+.P
+.sp
+.TA 2.0i 3.5i 4.0i
+.ta 2.0i 3.5i 4.0i 
+.P 
+.BI arrowType	XtRArrowType	XaUp		
+.P
+Sets the direction of the arrow, values are: \fIXaUp, XaDown,
+XaLeft, XaRight, XaSquare, XaDiamond, XaNone\fR.
+.P
+.BI foreground	Pixel	XtDefaultForeground		
+.P
+Sets the foreground color of arrows.
+.P
+.BI delayTime	Int	0		
+.P
+Sets the amount of time in seconds to wait after the first
+mouse  press  to  begin  repeating.   If  set  to zero and
+repeatTime is non-zero, repeating begins immediatly.
+.P
+.BI repeatTime	Int	0		
+.P
+After delayTime proform call backs every  repeatTime  seconds.
+.P
+.BI raised	Boolean	True		
+.P
+Default direction for shadows.
+.P
+.BI topShadowPixel	Pixel	XtDefaultForeground		
+.br
+.BI botShadowPixel	Pixel	XtDefaultForeground		
+.P
+Color to use for the top and bottom shadows.
+.P
+.BI topShadowPixmap	Pixmap	Null		
+.P
+.BI botShadowPixmap	Pixmap	Null		
+.P
+Pixmap  to  us to shadow, overides topShadowPixel and botShadowPixel
+.P
+.BI topShadowContrast	Int	20		
+.br
+.BI botShadowContrast	Int	40		
+.P
+Darken the background color  by  this  amount  for  shadow
+color.
+.P
+.BI shadowWidth	Dimension	2		
+.P
+How many pixels to make shadows.
+.P
+.BI beNiceToColorMap	Boolean	True		
+.P
+Use stipple maskes instead of seperate colors for shadows.
+.SH "CALLBACK DATA"
+.P
+None
+.P
+.SH "CONVENIENCE ROUTINES"
+.P
+None
+.P
+.SH AUTHOR
+Richard Cornwell

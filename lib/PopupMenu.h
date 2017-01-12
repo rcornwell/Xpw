@@ -26,9 +26,12 @@
  */
 
 /*
- * $Id: PopupMenu.h,v 1.1 1997/10/04 05:08:42 rich Exp rich $
+ * $Id: PopupMenu.h,v 1.2 1997/11/01 06:39:06 rich Beta $
  *
  * $Log: PopupMenu.h,v $
+ * Revision 1.2  1997/11/01 06:39:06  rich
+ * Removed unused defines.
+ *
  * Revision 1.1  1997/10/04 05:08:42  rich
  * Initial revision
  *

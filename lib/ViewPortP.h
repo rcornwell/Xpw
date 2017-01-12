@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: ViewPortP.h,v 1.1 1997/10/19 01:42:08 rich Exp rich $
+ * $Id: ViewPortP.h,v 1.2 1997/11/01 06:39:10 rich Beta $
  *
  * $Log: ViewPortP.h,v $
+ * Revision 1.2  1997/11/01 06:39:10  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/19 01:42:08  rich
  * Initial revision
  *

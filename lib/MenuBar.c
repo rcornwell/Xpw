@@ -28,6 +28,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: MenuBar.c,v $
+ * Revision 1.6  1997/12/06 04:14:50  rich
+ * Make sure initial QueryGeometry call actualy computes sizes.
+ *
  * Revision 1.5  1997/11/01 06:39:04  rich
  * Changed justify to menuJustify to avoid conflict with label.
  * Removed unused resource foreground.
@@ -49,7 +52,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: MenuBar.c,v 1.5 1997/11/01 06:39:04 rich Beta rich $";
+static char        *rcsid = "$Id: MenuBar.c,v 1.6 1997/12/06 04:14:50 rich Exp $";
 
 #endif
 

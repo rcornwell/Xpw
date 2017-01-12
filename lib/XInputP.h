@@ -26,9 +26,12 @@
  */
 
 /*
- * $Id: $
+ * $Id: XInputP.h,v 1.1 1997/11/29 01:17:42 rich Exp $
  *
- * $Log: $
+ * $Log: XInputP.h,v $
+ * Revision 1.1  1997/11/29 01:17:42  rich
+ * Initial revision
+ *
  *
  */
 

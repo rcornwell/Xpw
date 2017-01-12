@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id: MenuButton.h,v 1.2 1997/10/15 05:42:56 rich Exp rich $
+ * $Id: MenuButton.h,v 1.3 1997/11/01 06:39:04 rich Beta $
  *
  * $Log: MenuButton.h,v $
+ * Revision 1.3  1997/11/01 06:39:04  rich
+ * Changed justify to menuJustify to avoid conflict with label.
+ *
  * Revision 1.2  1997/10/15 05:42:56  rich
  * Added justification to pulldown menus.
  *

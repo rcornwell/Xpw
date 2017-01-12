@@ -1,0 +1,175 @@
+.\" $Id$
+.\"
+.\"
+.\" Copyright 1997 Richard P. Cornwell All Rights Reserved,
+.\"
+.\" The software is provided "as is", without warranty of any kind, express
+.\" or implied, including but not limited to the warranties of
+.\" merchantability, fitness for a particular purpose and non-infringement.
+.\" In no event shall Richard Cornwell be liable for any claim, damages
+.\" or other liability, whether in an action of contract, tort or otherwise,
+.\" arising from, out of or in connection with the software or the use or other
+.\" dealings in the software.
+.\"
+.\" Permission to use, copy, and distribute this software and its
+.\" documentation for non commercial use is hereby granted,
+.\" provided that the above copyright notice appear in all copies and that
+.\" both that copyright notice and this permission notice appear in
+.\" supporting documentation.
+.\"
+.\" The sale, resale, or use of this library for profit without the
+.\" express written consent of the author Richard Cornwell is forbidden.
+.\" Please see attached License file for information about using this
+.\" library in commercial applications, or for commercial software distribution.
+.\"
+.TH Select 3Xpw "2 October 97"
+.UC 4
+.SH NAME
+PmeSelect\- Widget Class.
+.SH SYNOPSIS
+.nf
+.B #include <X11/Xpw/Select.h>
+.LP
+.B pmeselectWidget = XtCreateWidget( \(lqpmeselect\(rq, pmeselectWidgetClass, ...)
+.LP
+.fi
+.SH DESCRIPTION
+.LP
+The \fIPmeSelectWidget\fR draws a label or bitmap, with a right or left hand
+bitmap, a 3D border, and a switch indicator for pulldown menus. 
+Selecting widget with mouse will toggle state of widget. If Widget is in a
+Radio group all other children will be cleared. If \fBallowNone\fR is set
+true, then group can not be cleared.
+.SH RESOURCES
+.TA 2.0i 3.5i 4.0i
+.ta 2.0i 3.5i 4.0i 
+.P
+.BI callback	Callback	NULL
+.P
+Procedure to call on state changes.
+.P
+.BI state	Boolean	NULL
+.P
+Current state of widget.
+.P
+.BI switchShape	ShapeType	square
+.P
+Shape to draw for selector, setting to none will not draw a shape.
+.P
+.BI switchShadow	Dimension	2
+.P
+Size of switch shadow with.
+.P
+.BI switchColor	Pixel	XtDefaultForeground
+.P
+Color of switch when selected.
+.P
+.BI radioGroup	Widget	NULL
+.P
+Radio group of widget.
+.P
+.BI radioData	Pointer	NULL
+.P
+Data value for widget.
+.P
+.BI allowNone	Boolean	True
+.P
+Allows none of the widgets in Radio group to be selected.
+.P
+.BI rightButton	Boolean	True
+.P
+Displays button on right or left.
+.P
+.BI clue	String	NULL
+.P
+If set to a none empty string, will cause a popop window with string contents
+to be displayed if the mouse stays in the label window for more than the
+Clue timeout value.
+.P
+.BI international	Boolean	False
+.P
+If set use fontset. Otherwise use font.
+.P
+.BI font	XFontStruct	XtDefaultFont
+.P
+.BI fontSet	XFontSet	XtDefaultFontSet
+.P
+.BI foreground	Pixel	XtDefaultForeground
+.P
+Color to display label in.
+.P
+.BI label	String	Name\ of\ widget
+.P
+Text to display.
+.P
+.BI justify	XtJustify	Left
+.P
+How to justify the label. Values are Right, Center, Left.
+.P
+.BI bitmap	Pixmap	None
+.P
+If set displayed in place of label string.
+.P
+.BI leftBitmap	Pixmap	None
+.P
+If set displayed to the left of label string.
+.P
+.BI rightBitmap	Pixmap	None
+.P
+If set displayed to the right of label string.
+.P
+.BI leftMargin	Dimension	4
+.P
+How much space to indent label or bitmap from left edge.
+.P
+.BI rightMargin	Dimension	4
+.P
+How much space to indent label or bitmap from right edge.
+.P
+.BI vertSpace	int	25
+.P
+Percent to grow height over label height.
+.P
+.BI raised	Boolean	True
+.P
+Default direction for shadows.
+.P
+.BI frameType	FrameType	XfBeveled
+.P
+Controls the style of the outline around the window. Styles are:
+Beveled, Grooved, Edge, Outline, None.
+.P
+.BI topShadowPixel	Pixel	XtDefaultForeground 
+.br
+.BI botShadowPixel	Pixel	XtDefaultForeground 
+.P
+Color to use for the top and bottom shadows.
+.P
+.BI topShadowPixmap	Pixmap	Null 
+.br
+.BI botShadowPixmap	Pixmap	Null 
+.P
+Pixmap to us to shadow, overides \fItopShadowPixel\fR and \fIbotShadowPixel\fR.
+.P
+.BI topShadowContrast	Int	20 
+.br
+.BI botShadowContrast	Int	40 
+.P
+Darken the background color by this amount for shadow color.
+.P
+.BI shadowWidth	Dimension	2
+.P
+How many pixels to make shadows.
+.P
+.BI beNiceToColorMap	Boolean	True
+.P
+Use a stipple mask rather then allocating seperate colors for shadows.
+.P
+.SH "CALLBACK DATA"
+.P
+None
+.P
+.SH "CONVENIENCE ROUTINES"
+.P
+.SH AUTHOR
+Richard Cornwell

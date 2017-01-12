@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id$
+ * $Id: BarButton.h,v 1.1 1997/10/04 05:00:43 rich Beta $
  *
- * $Log:$
+ * $Log: BarButton.h,v $
+ * Revision 1.1  1997/10/04 05:00:43  rich
+ * Initial revision
+ *
  *
  */
 

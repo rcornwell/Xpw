@@ -29,6 +29,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: Clue.c,v $
+ * Revision 1.4  1998/01/24 20:43:27  rich
+ * Added support to disable clue popup.
+ *
  * Revision 1.3  1997/11/01 06:39:01  rich
  * Removed unused definition.
  *
@@ -44,7 +47,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: Clue.c,v 1.3 1997/11/01 06:39:01 rich Beta rich $";
+static char        *rcsid = "$Id: Clue.c,v 1.4 1998/01/24 20:43:27 rich Exp $";
 #endif
 
 #include <stdio.h>

@@ -2,6 +2,10 @@
  * Xmixer: Control sound card volume settings.
  *
  * $Log: xmixer.c,v $
+ * Revision 1.5  1997/12/06 04:20:23  rich
+ * Added color images.
+ * Cleaned up some unused bitmaps.
+ *
  * Revision 1.4  1997/11/28 21:46:33  rich
  * Added Dialog boxes.
  *
@@ -19,7 +23,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: xmixer.c,v 1.4 1997/11/28 21:46:33 rich Rel rich $";
+static char        *rcsid = "$Id: xmixer.c,v 1.5 1997/12/06 04:20:23 rich Exp $";
 #endif
 
 /* System stuff */

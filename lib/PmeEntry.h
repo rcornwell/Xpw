@@ -29,9 +29,12 @@
  */
 
 /*
- * $Id$
+ * $Id: PmeEntry.h,v 1.1 1997/10/04 05:07:44 rich Beta $
  *
- * $Log:$
+ * $Log: PmeEntry.h,v $
+ * Revision 1.1  1997/10/04 05:07:44  rich
+ * Initial revision
+ *
  *
  */
 

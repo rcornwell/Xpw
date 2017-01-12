@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: ChartP.h,v 1.1 1997/10/15 04:57:46 rich Exp rich $
+ * $Id: ChartP.h,v 1.2 1997/11/01 06:39:01 rich Beta $
  *
  * $Log: ChartP.h,v $
+ * Revision 1.2  1997/11/01 06:39:01  rich
+ * Cleaned up comments.
+ *
  * Revision 1.1  1997/10/15 04:57:46  rich
  * Initial revision
  *

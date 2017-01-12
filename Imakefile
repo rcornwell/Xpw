@@ -1,0 +1,92 @@
+XCOMM $XConsortium: Imakefile /main/137 1996/10/08 07:38:14 swick $
+XCOMM $XFree86: xc/Imakefile,v 3.11 1996/12/23 05:49:49 dawes Exp $
+#define IHaveSubdirs
+#define PassCDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
+
+	INCLUDES=$(BUILDINCDIR)
+
+RELEASE = "Release 0.0"
+#ifndef OSName
+#define OSName Unknown Operating System!
+#endif
+
+	SUBDIRS = lib test programs man
+	LNINSTALLDIRS = lib
+
+#if HasParallelMake
+#ifdef ParallelDefines
+	PARALLELOPTS = ParallelDefines
+#endif
+#endif
+
+MakeSubdirs($(SUBDIRS))
+
+MakeLintSubdirs($(LNINSTALLDIRS),install.ln,install.ln)
+
+MakeLintSubdirs($(LNINSTALLDIRS),external.ln,lintlib)
+
+DependSubdirs($(SUBDIRS))
+
+#define IHaveSpecialMakefileTarget
+
+VerifyOS::
+	@echo ""
+	@echo Building on OSName.
+	@echo ""
+
+includes::
+	MakeDir($(BUILDINCDIR))
+	MakeDir($(BUILDLIBDIR))
+XCOMM	MakeDir($(BUILDBINDIR))
+
+XCOMM
+XCOMM Watch out!!!  Make sure you do make includes after removing X11....
+XCOMM
+clean::
+	$(RM) -r $(BUILDINCDIR)
+	$(RM) -r $(BUILDLIBDIR)
+XCOMM	$(RM) -r $(BUILDBINDIR)
+
+World:: 
+	@echo ""
+	@echo Rebuilding $(RELEASE) of Xpw
+	@echo ""
+	@date
+	@echo ""
+	$(MAKE) $(MFLAGS) Makefiles
+	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) includes
+	$(MAKE) $(MFLAGS) depend
+	$(MAKE) $(MFLAGS) $(PARALLELOPTS) all
+	@echo ""
+	@date
+	@echo ""
+	@echo Rebuild of $(RELEASE) of Xpw
+	@echo ""
+
+Everything::
+	@echo ""
+	@echo Rebuilding $(RELEASE) of Xpw
+	@echo ""
+	@date
+	@echo ""
+	$(MAKE) $(MFLAGS) Makefiles
+	$(MAKE) $(MFLAGS) includes
+	$(MAKE) $(MFLAGS) depend
+	$(MAKE) $(MFLAGS) $(WORLDOPTS)
+	@echo ""
+	@date
+	@echo ""
+	@echo Rebuild of $(RELEASE) of Xpw
+	@echo ""
+
+
+XCOMM special target to determine if the xmakefile exists. 
+XCOMM Works on both Unix and NMAKE.EXE
+xmakefile-exists::
+
+
+#ifndef MakeManKeywords
+#define MakeManKeywords YES	/* install.man rebuilds "man -k" database? */
+#endif
+

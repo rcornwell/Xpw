@@ -28,9 +28,12 @@
  */
 
 /*
- * $Id: Scroller.h,v 1.2 1997/10/08 04:12:15 rich Exp rich $
+ * $Id: Scroller.h,v 1.3 1997/11/01 06:39:08 rich Beta $
  *
  * $Log: Scroller.h,v $
+ * Revision 1.3  1997/11/01 06:39:08  rich
+ * Removed comment error.
+ *
  * Revision 1.2  1997/10/08 04:12:15  rich
  * Make sure XtNposition is not defined multiple times.
  *

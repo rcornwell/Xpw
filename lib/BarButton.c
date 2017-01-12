@@ -27,6 +27,9 @@
  * library in commercial applications, or for commercial software distribution.
  *
  * $Log: BarButton.c,v $
+ * Revision 1.3  1997/11/01 06:39:01  rich
+ * Removed unused variable.
+ *
  * Revision 1.2  1997/10/05 02:25:17  rich
  * Make sure ident line is in object file.
  *
@@ -37,7 +40,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: BarButton.c,v 1.2 1997/10/05 02:25:17 rich Exp rich $";
+static char        *rcsid = "$Id: BarButton.c,v 1.3 1997/11/01 06:39:01 rich Beta $";
 #endif
 
 #include <X11/Xlib.h>

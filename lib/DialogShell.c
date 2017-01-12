@@ -28,6 +28,9 @@
  *
  *
  * $Log: DialogShell.c,v $
+ * Revision 1.2  1997/12/06 04:14:50  rich
+ * Ask child what kind of grab it wants
+ *
  * Revision 1.1  1997/11/28 19:56:42  rich
  * Initial revision
  *
@@ -35,7 +38,7 @@
  */
 
 #ifndef lint
-static char        *rcsid = "$Id: DialogShell.c,v 1.1 1997/11/28 19:56:42 rich Exp rich $";
+static char        *rcsid = "$Id: DialogShell.c,v 1.2 1997/12/06 04:14:50 rich Exp $";
 
 #endif
 

@@ -27,9 +27,12 @@
  */
 
 /*
- * $Id: player.h,v 1.1 1997/12/16 05:48:46 rich Exp rich $
+ * $Id: player.h,v 1.2 1998/01/26 01:02:02 rich Exp rich $
  *
  * $Log: player.h,v $
+ * Revision 1.2  1998/01/26 01:02:02  rich
+ * Support for stacker drives.
+ *
  * Revision 1.1  1997/12/16 05:48:46  rich
  * Initial revision
  *
@@ -54,7 +57,7 @@ struct driveinfo
 
    
 
-const max_volume = 256;
+const max_volume = 255;
 const min_volume = 128;
 
 
@@ -66,7 +69,7 @@ class Player
      int	mixdevice;	/* Mixer device */
      Str	name;		/* Name opened on */
      int	numdrives;	/* Number of drives. */
-     driveinfo  info[MAXDRIVES];/* Drive info */
+     driveinfo  info[MAXDRIVES+1];/* Drive info */
      int	volume;		/* Current volume setting */
      int	curdrive;	/* Current Drive */
      Cdmode	curmode;	/* Current mode */
